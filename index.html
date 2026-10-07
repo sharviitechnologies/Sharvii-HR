@@ -246,7 +246,7 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
    The anon key is safe to publish; the database rules (RLS) protect the data.
    ====================================================================== */
 const CONFIG = {
-  SUPABASE_URL: 'https://sharviitechnologies.github.io/Sharvii-HR/',
+  SUPABASE_URL: 'https://zzbiaqmtoxtcnnfcsbbo.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6YmlhcW10b3h0Y25uZmNzYmJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzU4NDMsImV4cCI6MjEwNjk1MTg0M30.pYBwT8WC7uW2XRklTeTHfQr-qy-lOw0LcxoLge3bTMQ',
   APP_NAME: 'Sharvii People',
   COMPANY: 'Sharvii Technologies',
@@ -260,6 +260,9 @@ const CONFIG = {
 document.documentElement.style.setProperty('--brand', CONFIG.BRAND_COLOR);
 document.title = CONFIG.APP_NAME;
 
+// Remove spaces, line breaks, curly quotes or other hidden characters picked up while copying the keys
+CONFIG.SUPABASE_URL = String(CONFIG.SUPABASE_URL).replace(/[^\x21-\x7E]/g, '').replace(/[‘’“”'"]/g, '').replace(/\/+$/, '');
+CONFIG.SUPABASE_ANON_KEY = String(CONFIG.SUPABASE_ANON_KEY).replace(/[^\x21-\x7E]/g, '').replace(/[‘’“”'"]/g, '');
 const configured = !CONFIG.SUPABASE_URL.includes('YOUR-PROJECT');
 const sb = configured ? supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY) : null;
 const S = { me: null, profiles: [], leaveTypes: [], holidays: [], settings: null, running: null, timerTick: null, clockTimer: null, attMonth: null, attWho: null, apprTab: 'pending', taskScope: 'mine', taskFilter: 'open' };
@@ -288,7 +291,7 @@ const monthBounds = ym => { const [y, m] = ym.split('-').map(Number); const last
 async function q(p) { const { data, error } = await p; if (error) throw error; return data; }
 
 /* Shift & working-day helpers (settings come from the database) */
-const DEFAULT_SETTINGS = { shift_start: '09:30:00', shift_end: '18:30:00', checkin_opens: '08:30:00', checkout_closes: '23:00:00', late_grace_minutes: 10, saturday_rule: 'second', tracking_start: '2026-10-07' };
+const DEFAULT_SETTINGS = { shift_start: '09:30:00', shift_end: '18:30:00', checkin_opens: '08:30:00', checkin_closes: '11:00:00', checkout_closes: '23:00:00', late_grace_minutes: 10, saturday_rule: 'second', tracking_start: '2026-10-07' };
 S.settings = { ...DEFAULT_SETTINGS };
 const pad2 = n => String(n).padStart(2, '0');
 const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
@@ -396,8 +399,13 @@ function renderLogin() {
   $('#login').onsubmit = async e => {
     e.preventDefault();
     const btn = $('button[type=submit]', e.target); btn.disabled = true; btn.textContent = 'Signing in…';
-    const { error } = await sb.auth.signInWithPassword({ email: $('#em').value.trim(), password: $('#pw').value });
-    if (error) { $('#err').textContent = error.message === 'Invalid login credentials' ? 'Email or password is incorrect.' : error.message; btn.disabled = false; btn.textContent = 'Sign in'; return; }
+    let error; try { ({ error } = await sb.auth.signInWithPassword({ email: $('#em').value.trim().toLowerCase(), password: $('#pw').value })); } catch (e) { error = e; }
+    if (error) {
+      const m = error.message || '';
+      $('#err').textContent = m === 'Invalid login credentials' ? 'Email or password is incorrect.'
+        : /pattern|Invalid API key|fetch|Failed/i.test(m) ? 'The app can\u2019t reach the database. Check SUPABASE_URL and SUPABASE_ANON_KEY at the top of index.html.' : m;
+      btn.disabled = false; btn.textContent = 'Sign in'; return;
+    }
     await startApp();
   };
   $('#forgot').onclick = async () => {
@@ -610,14 +618,14 @@ VIEWS.home = async el => {
   let apprCount = 0;
   if (isMgr()) { const r = await sb.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', S.me.id); apprCount = r.count || 0; }
 
-  const now = istMin(), opens = toMin(st.checkin_opens), sStart = toMin(st.shift_start), sEnd = toMin(st.shift_end), closes = toMin(st.checkout_closes);
+  const now = istMin(), opens = toMin(st.checkin_opens), cClose = toMin(st.checkin_closes || '11:00'), sStart = toMin(st.shift_start), sEnd = toMin(st.shift_end), closes = toMin(st.checkout_closes);
   const shiftTxt = `${fmtClock(sStart)} – ${fmtClock(sEnd)}`;
   const off = offReason(today);
   let state, label, status;
   if (!att) {
     if (now < opens) { state = 'early'; label = `Opens at ${fmtClock(opens)}`; status = `Check-in opens at ${fmtClock(opens)}. Your shift is ${shiftTxt}.`; }
-    else if (now > sEnd) { state = 'closed'; label = 'Check-in closed'; status = `Check-in closed at ${fmtClock(sEnd)}. If you worked today, ask your admin to add your attendance.`; }
-    else { state = 'out'; label = 'Check in'; status = now > sStart + Number(st.late_grace_minutes || 0) ? `Your shift started at ${fmtClock(sStart)}. Check in now.` : `Your shift is ${shiftTxt}.`; }
+    else if (now > cClose) { state = 'closed'; label = 'Check-in closed'; status = `Check-in closed at ${fmtClock(cClose)}. If you're working today, ask your admin to add your attendance, or apply for leave.`; }
+    else { state = 'out'; label = 'Check in'; status = now > sStart + Number(st.late_grace_minutes || 0) ? `Your shift started at ${fmtClock(sStart)}. Checking in now will be marked late. Check-in closes at ${fmtClock(cClose)}.` : `Your shift is ${shiftTxt}. Check in by ${fmtClock(sStart)} to be on time.`; }
     if (off && state !== 'closed') status = `Today is a day off (${off}). You can still check in if you're working.`;
   } else if (!att.check_out) {
     if (now >= closes) { state = 'missed'; label = 'Check-out closed'; status = `You didn't check out by ${fmtClock(closes)}, so today counts as leave. Ask your admin to correct it if you worked.`; }
@@ -1056,8 +1064,9 @@ VIEWS.settings = async el => {
       <div class="card"><div class="card-h"><h2>Shift &amp; working days</h2></div><div class="card-b">
         <div class="form-grid">
           <div class="field"><label for="sh-start">Shift starts</label><input id="sh-start" type="time" value="${t5(st.shift_start)}"></div>
-          <div class="field"><label for="sh-end">Shift ends</label><input id="sh-end" type="time" value="${t5(st.shift_end)}"><span class="hint">Check-in closes at this time.</span></div>
+          <div class="field"><label for="sh-end">Shift ends</label><input id="sh-end" type="time" value="${t5(st.shift_end)}"></div>
           <div class="field"><label for="sh-open">Check-in opens</label><input id="sh-open" type="time" value="${t5(st.checkin_opens)}"></div>
+          <div class="field"><label for="sh-cclose">Check-in closes</label><input id="sh-cclose" type="time" value="${t5(st.checkin_closes || '11:00')}"><span class="hint">After this, check-in is blocked for the day.</span></div>
           <div class="field"><label for="sh-close">Check-out closes</label><input id="sh-close" type="time" value="${t5(st.checkout_closes)}"><span class="hint">Without a check-out by then, the day counts as leave.</span></div>
           <div class="field"><label for="sh-grace">Late after (minutes past start)</label><input id="sh-grace" type="number" min="0" max="120" value="${st.late_grace_minutes}"></div>
           <div class="field"><label for="sh-sat">Saturdays</label><select id="sh-sat">${[['none', 'All Saturdays working'], ['second', '2nd Saturday off'], ['second_fourth', '2nd & 4th Saturdays off'], ['all', 'All Saturdays off']].map(([v, l]) => `<option value="${v}" ${st.saturday_rule === v ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="hint">Sundays are always off.</span></div>
@@ -1082,8 +1091,8 @@ VIEWS.settings = async el => {
 
   $('#sh-save').onclick = async () => {
     const v = id => $(id).value;
-    const row = { shift_start: v('#sh-start'), shift_end: v('#sh-end'), checkin_opens: v('#sh-open'), checkout_closes: v('#sh-close'), late_grace_minutes: +v('#sh-grace') || 0, saturday_rule: v('#sh-sat'), tracking_start: v('#sh-track'), updated_at: new Date().toISOString() };
-    if (!(row.checkin_opens <= row.shift_start && row.shift_start < row.shift_end && row.shift_end <= row.checkout_closes)) return toast('Times must go in order: check-in opens, shift starts, shift ends, check-out closes', 'bad');
+    const row = { shift_start: v('#sh-start'), shift_end: v('#sh-end'), checkin_opens: v('#sh-open'), checkin_closes: v('#sh-cclose'), checkout_closes: v('#sh-close'), late_grace_minutes: +v('#sh-grace') || 0, saturday_rule: v('#sh-sat'), tracking_start: v('#sh-track'), updated_at: new Date().toISOString() };
+    if (!(row.checkin_opens <= row.shift_start && row.shift_start < row.checkin_closes && row.checkin_closes <= row.shift_end && row.shift_end <= row.checkout_closes)) return toast('Times must go in order: check-in opens, shift starts, check-in closes, shift ends, check-out closes', 'bad');
     try { await q(sb.from('settings').update(row).eq('id', 1)); toast('Shift settings saved'); route(); }
     catch (e) { toast(e.message, 'bad'); }
   };
