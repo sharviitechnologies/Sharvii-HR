@@ -21,10 +21,12 @@
   --bad:#B53A2B; --bad-soft:#FBE8E5;
   --muted-soft:#EEF0F3;
   --side:240px;
+  --logo-bg:#0F1E3A;
   font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
   color:var(--ink); font-size:15px; line-height:1.5;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{margin:0;height:100%}
 body{background:var(--canvas)}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -36,8 +38,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* ---------- Layout ---------- */
 .layout{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh}
 .side{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-.brand{display:flex;align-items:center;gap:10px;padding:20px 20px 18px;border-bottom:1px solid var(--line)}
-.brand img{height:34px;max-width:150px;object-fit:contain}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 20px;background:var(--logo-bg)}
+.brand img{height:38px;max-width:170px;object-fit:contain}
 .brand-fallback{display:none;width:34px;height:34px;border-radius:8px;background:var(--brand);color:var(--brand-ink);font-weight:700;align-items:center;justify-content:center}
 .brand-name{font-weight:700;font-size:14px;line-height:1.2}
 .brand-name small{display:block;font-weight:500;color:var(--ink-3);font-size:12px}
@@ -51,7 +53,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .top{height:64px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 28px;position:sticky;top:0;z-index:5}
 .top h1{font-size:19px;margin:0;font-weight:700}
 .top .today{color:var(--ink-3);font-size:13px}
-.user{margin-left:auto;display:flex;align-items:center;gap:10px;background:none;border:1px solid transparent;border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:12px;min-width:0}
+.user{display:flex;align-items:center;gap:10px;background:none;border:1px solid transparent;border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer}
 .user:hover{border-color:var(--line)}
 .avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
 .user-text{text-align:left;line-height:1.2}
@@ -71,7 +74,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card-b{padding:18px 20px}
 .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:20px}
 .toolbar .grow{flex:1}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--ink-3)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
@@ -148,6 +151,24 @@ td.num,td:first-child{white-space:nowrap}
 .date-chip b{display:block;font-size:17px}
 .date-chip small{font-size:11px;color:var(--ink-3)}
 
+/* ---------- Tasks & timer ---------- */
+.timer-pill{display:inline-flex;align-items:center;gap:8px;background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:6px 14px;text-decoration:none;font-size:13px;font-weight:600;max-width:340px;min-width:0}
+.timer-pill .tp-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-weight:500}
+.rec{width:8px;height:8px;border-radius:50%;background:var(--bad);flex:none;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.3}}
+.run-banner{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:12px;padding:16px 20px;margin-bottom:20px}
+.run-banner small{display:block;color:var(--ink-3);font-size:12.5px}
+.run-banner .big{margin-left:auto;font-size:28px;font-weight:700}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.seg button{border:none;background:none;padding:8px 14px;font-weight:600;color:var(--ink-3);cursor:pointer}
+.seg button.on{background:var(--brand-soft);color:var(--brand)}
+.task-title{font-weight:600}
+.task-sub{font-size:12.5px;color:var(--ink-3)}
+.overdue{color:var(--bad);font-weight:600}
+select.mini{width:auto;padding:5px 8px;font-size:13px}
+.icon-btn{padding:6px 10px}
+.icon-btn .ic{width:16px;height:16px}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -175,7 +196,7 @@ td.num,td:first-child{white-space:nowrap}
 /* ---------- Login ---------- */
 .auth{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
 .auth-brand{background:var(--brand);color:var(--brand-ink);padding:48px;display:flex;flex-direction:column;justify-content:space-between}
-.auth-logo{background:#fff;border-radius:12px;padding:10px 14px;display:inline-flex;align-self:flex-start}
+.auth-logo{background:var(--logo-bg);border-radius:12px;padding:12px 16px;display:inline-flex;align-self:flex-start}
 .auth-logo img{height:40px}
 .auth-brand h2{font-size:clamp(28px,3.4vw,42px);line-height:1.15;margin:0 0 14px;font-weight:700;letter-spacing:-.01em;max-width:14ch}
 .auth-brand p{opacity:.88;max-width:40ch;margin:0}
@@ -192,7 +213,8 @@ td.num,td:first-child{white-space:nowrap}
   .layout{grid-template-columns:1fr}
   .side{display:none}
   .top{padding:0 16px;height:58px}
-  .top .today,.user-text{display:none}
+  .top .today,.user-text,.timer-pill .tp-title{display:none}
+  .run-banner{flex-wrap:wrap}.run-banner .big{font-size:22px}
   .user{padding:4px}
   .content{padding:16px 16px calc(84px + env(safe-area-inset-bottom))}
   .bottom-nav{display:flex;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:20;overflow-x:auto}
@@ -224,15 +246,14 @@ td.num,td:first-child{white-space:nowrap}
    The anon key is safe to publish; the database rules (RLS) protect the data.
    ====================================================================== */
 const CONFIG = {
-  SUPABASE_URL: 'https://zzbiaqmtoxtcnnfcsbbo.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6YmlhcW10b3h0Y25uZmNzYmJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzU4NDMsImV4cCI6MjEwNjk1MTg0M30.pYBwT8WC7uW2XRklTeTHfQr-qy-lOw0LcxoLge3bTMQ',
+  SUPABASE_URL: 'https://YOUR-PROJECT-ID.supabase.co',
+  SUPABASE_ANON_KEY: 'YOUR-ANON-PUBLIC-KEY',
   APP_NAME: 'Sharvii People',
   COMPANY: 'Sharvii Technologies',
   LOGO_URL: 'https://sharviitechnologies.com/wp-content/uploads/2026/04/sharvi-logo.png',
   BRAND_COLOR: '#1E4FA3',      // change to your logo colour
-  SHIFT_HOURS: 9,              // used for the progress bar on Home
-  TIMEZONE: 'Asia/Kolkata',
-  WEEKEND_DAYS: [0, 6]         // 0 = Sunday, 6 = Saturday (keep in sync with SQL)
+  TIMEZONE: 'Asia/Kolkata'
+  // Shift timings and days off are set by admins in the app: Leave & holidays → Shift & working days
 };
 /* ====================================================================== */
 
@@ -241,7 +262,7 @@ document.title = CONFIG.APP_NAME;
 
 const configured = !CONFIG.SUPABASE_URL.includes('YOUR-PROJECT');
 const sb = configured ? supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY) : null;
-const S = { me: null, profiles: [], leaveTypes: [], clockTimer: null, attMonth: null, attWho: null, apprTab: 'pending' };
+const S = { me: null, profiles: [], leaveTypes: [], holidays: [], settings: null, running: null, timerTick: null, clockTimer: null, attMonth: null, attWho: null, apprTab: 'pending', taskScope: 'mine', taskFilter: 'open' };
 const TZ = CONFIG.TIMEZONE;
 
 /* ---------- Helpers ---------- */
@@ -265,6 +286,32 @@ const profileOf = id => S.profiles.find(p => p.id === id) || {};
 const typeName = id => S.leaveTypes.find(t => t.id === id)?.name || 'Leave';
 const monthBounds = ym => { const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate(); return { first: `${ym}-01`, last: `${ym}-${String(last).padStart(2, '0')}`, days: last }; };
 async function q(p) { const { data, error } = await p; if (error) throw error; return data; }
+
+/* Shift & working-day helpers (settings come from the database) */
+const DEFAULT_SETTINGS = { shift_start: '09:30:00', shift_end: '18:30:00', checkin_opens: '08:30:00', checkout_closes: '23:00:00', late_grace_minutes: 10, saturday_rule: 'second', tracking_start: '2026-10-07' };
+S.settings = { ...DEFAULT_SETTINGS };
+const pad2 = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const addDays = (date, n) => { const d = dObj(date); d.setDate(d.getDate() + n); return ymd(d); };
+const toMin = t => { const [h, m] = String(t || '0:0').split(':').map(Number); return h * 60 + (m || 0); };
+const istMin = (d = new Date()) => { const [h, m] = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d).split(':'); return +h * 60 + +m; };
+const istHM = ts => ts ? new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(ts)) : '';
+const fmtClock = t => { const m = typeof t === 'number' ? t : toMin(t), h = Math.floor(m / 60); return `${h % 12 || 12}:${pad2(m % 60)} ${h < 12 ? 'AM' : 'PM'}`; };
+const shiftHours = () => (toMin(S.settings.shift_end) - toMin(S.settings.shift_start)) / 60;
+function offReason(date) {
+  const h = S.holidays.find(x => x.holiday_date === date); if (h) return h.name;
+  const d = dObj(date), dow = d.getDay(), wk = Math.floor((d.getDate() - 1) / 7), r = S.settings.saturday_rule;
+  if (dow === 0) return 'Sunday';
+  if (dow === 6 && (r === 'all' || (r === 'second' && wk === 1) || (r === 'second_fourth' && (wk === 1 || wk === 3)))) return wk === 1 ? '2nd Saturday' : wk === 3 ? '4th Saturday' : 'Saturday off';
+  return null;
+}
+const trackFrom = p => [S.settings.tracking_start, p?.date_of_joining || ''].sort().pop();
+const lateBy = a => istMin(new Date(a.check_in)) - toMin(S.settings.shift_start);
+const isLate = a => !!a?.check_in && lateBy(a) > Number(S.settings.late_grace_minutes || 0);
+const isMissed = (a, date) => !!a?.check_in && !a.check_out && (date < istDate() || (date === istDate() && istMin() >= toMin(S.settings.checkout_closes)));
+const hms = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 3600)}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`; };
+const hm = mins => { const m = Math.round(mins || 0); return `${Math.floor(m / 60)}h ${pad2(m % 60)}m`; };
+const logMinutes = l => l.ended_at ? Number(l.minutes || 0) : (Date.now() - new Date(l.started_at)) / 60000;
 
 function teamList() {
   if (isAdmin()) return S.profiles.filter(p => p.is_active);
@@ -294,7 +341,10 @@ const ICONS = {
   settings: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
   report: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
   download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>'
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  tasks: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M3.5 6l1.5 1.5L7.5 5M3.5 12l1.5 1.5 2.5-2.5M3.5 18l1.5 1.5 2.5-2.5"/>',
+  play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+  stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>'
 };
 const icon = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 const logoImg = (cls = '') => `<img class="${cls}" src="${esc(CONFIG.LOGO_URL)}" alt="${esc(CONFIG.COMPANY)}" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex'">`;
@@ -377,11 +427,14 @@ function renderResetPassword() {
 
 /* ---------- App start ---------- */
 async function loadDirectory() {
-  const [profiles, types] = await Promise.all([
+  const [profiles, types, hols, st] = await Promise.all([
     q(sb.from('profiles').select('*').order('full_name')),
-    q(sb.from('leave_types').select('*').order('id'))
+    q(sb.from('leave_types').select('*').order('id')),
+    q(sb.from('holidays').select('*').order('holiday_date')),
+    sb.from('settings').select('*').eq('id', 1).maybeSingle()
   ]);
-  S.profiles = profiles; S.leaveTypes = types;
+  S.profiles = profiles; S.leaveTypes = types; S.holidays = hols;
+  S.settings = { ...DEFAULT_SETTINGS, ...(st.data || {}) };
 }
 
 async function startApp() {
@@ -401,6 +454,7 @@ function navItems() {
     { id: 'home', label: 'Home', icon: 'home' },
     { id: 'attendance', label: 'Attendance', icon: 'clock' },
     { id: 'leave', label: 'Leave', icon: 'leave' },
+    { id: 'tasks', label: 'Tasks', icon: 'tasks' },
     m && { id: 'approvals', label: 'Approvals', icon: 'check' },
     m && { id: 'team', label: 'Team', icon: 'team' },
     m && { id: 'reports', label: 'Reports', icon: 'report' },
@@ -422,10 +476,12 @@ function renderShell() {
       <header class="top">
         <h1 id="page-title"></h1>
         <span class="today">${new Date().toLocaleDateString('en-IN', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' })}</span>
+        <div class="top-right">
+        <a class="timer-pill" id="timer-pill" href="#/tasks" hidden title="Timer running"><span class="rec"></span><span class="tp-title" id="timer-pill-title"></span><b class="num" data-live-timer>0:00:00</b></a>
         <button class="user" id="user-btn" aria-label="My profile">
           <span class="avatar">${esc(initials(S.me.full_name || S.me.email))}</span>
           <span class="user-text"><b>${esc(S.me.full_name || S.me.email)}</b><span>${esc(S.me.designation || S.me.role)}</span></span>
-        </button>
+        </button></div>
       </header>
       <main class="content" id="view"></main>
     </div>
@@ -434,6 +490,7 @@ function renderShell() {
   $('#user-btn').onclick = openProfile;
   S.shell = true;
   refreshBadge();
+  refreshRunning();
 }
 
 async function refreshBadge() {
@@ -515,40 +572,76 @@ function balanceRows(bals, pending, year) {
   }).join('')}</div>`;
 }
 
+/* ---------- Timer (shared) ---------- */
+async function refreshRunning() {
+  try {
+    const log = await q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).is('ended_at', null).maybeSingle());
+    const task = log ? await q(sb.from('tasks').select('id,title,project').eq('id', log.task_id).maybeSingle()) : null;
+    S.running = log ? { ...log, task } : null;
+  } catch { S.running = null; }
+  paintTimer();
+}
+function paintTimer() {
+  const pill = $('#timer-pill');
+  if (pill) { pill.hidden = !S.running; if (S.running) $('#timer-pill-title').textContent = S.running.task?.title || 'Task'; }
+  clearInterval(S.timerTick);
+  if (!S.running) return;
+  const tick = () => { const t = hms(Date.now() - new Date(S.running.started_at)); $$('[data-live-timer]').forEach(e => e.textContent = t); };
+  tick(); S.timerTick = setInterval(tick, 1000);
+}
+async function startTimer(taskId) {
+  try { await q(sb.rpc('start_timer', { p_task_id: taskId })); await refreshRunning(); toast('Timer started'); route(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+async function stopTimer() {
+  try { await q(sb.rpc('stop_timer')); await refreshRunning(); toast('Timer stopped'); route(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+
 VIEWS.home = async el => {
-  const today = istDate(), year = today.slice(0, 4);
-  const [att, bals, pending, hols, onLeave] = await Promise.all([
+  const st = S.settings, today = istDate(), year = today.slice(0, 4);
+  const [att, bals, pending, onLeave, myTasks] = await Promise.all([
     q(sb.from('attendance').select('*').eq('employee_id', S.me.id).eq('work_date', today).maybeSingle()),
     q(sb.from('leave_balances').select('*').eq('employee_id', S.me.id).eq('year', +year)),
     q(sb.from('leave_requests').select('*').eq('employee_id', S.me.id).eq('status', 'pending')),
-    q(sb.from('holidays').select('*').gte('holiday_date', today).order('holiday_date').limit(5)),
-    isMgr() ? q(sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', today).gte('end_date', today).neq('employee_id', S.me.id)) : Promise.resolve([])
+    isMgr() ? q(sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', today).gte('end_date', today).neq('employee_id', S.me.id)) : Promise.resolve([]),
+    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).neq('status', 'done').order('due_date', { ascending: true, nullsFirst: false }).limit(5)).catch(() => [])
   ]);
   let apprCount = 0;
   if (isMgr()) { const r = await sb.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', S.me.id); apprCount = r.count || 0; }
 
-  const state = !att ? 'out' : !att.check_out ? 'in' : 'done';
-  const label = { out: 'Check in', in: 'Check out', done: 'Done for today' }[state];
-  const status = {
-    out: 'You haven\u2019t checked in yet today.',
-    in: `Checked in at ${fmtTime(att?.check_in)}. Have a good day.`,
-    done: `You worked ${dur(new Date(att?.check_out) - new Date(att?.check_in))} today.`
-  }[state];
-  const expectedOut = att?.check_in ? fmtTime(new Date(new Date(att.check_in).getTime() + CONFIG.SHIFT_HOURS * 36e5).toISOString()) : '—';
+  const now = istMin(), opens = toMin(st.checkin_opens), sStart = toMin(st.shift_start), sEnd = toMin(st.shift_end), closes = toMin(st.checkout_closes);
+  const shiftTxt = `${fmtClock(sStart)} – ${fmtClock(sEnd)}`;
+  const off = offReason(today);
+  let state, label, status;
+  if (!att) {
+    if (now < opens) { state = 'early'; label = `Opens at ${fmtClock(opens)}`; status = `Check-in opens at ${fmtClock(opens)}. Your shift is ${shiftTxt}.`; }
+    else if (now > sEnd) { state = 'closed'; label = 'Check-in closed'; status = `Check-in closed at ${fmtClock(sEnd)}. If you worked today, ask your admin to add your attendance.`; }
+    else { state = 'out'; label = 'Check in'; status = now > sStart + Number(st.late_grace_minutes || 0) ? `Your shift started at ${fmtClock(sStart)}. Check in now.` : `Your shift is ${shiftTxt}.`; }
+    if (off && state !== 'closed') status = `Today is a day off (${off}). You can still check in if you're working.`;
+  } else if (!att.check_out) {
+    if (now >= closes) { state = 'missed'; label = 'Check-out closed'; status = `You didn't check out by ${fmtClock(closes)}, so today counts as leave. Ask your admin to correct it if you worked.`; }
+    else { state = 'in'; label = 'Check out'; status = `Checked in at ${fmtTime(att.check_in)}${isLate(att) ? ` (${lateBy(att)} min late)` : ''}. Check out by ${fmtClock(closes)}.`; }
+  } else { state = 'done'; label = 'Done for today'; status = `You worked ${dur(new Date(att.check_out) - new Date(att.check_in))} today.`; }
+  const look = state === 'in' ? 'in' : state === 'out' ? 'out' : 'done';
   const longDate = new Date().toLocaleDateString('en-IN', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
+  // upcoming days off: holidays + off Saturdays in the next 120 days
+  const upcoming = [];
+  for (let i = 0; i < 120 && upcoming.length < 5; i++) { const d = addDays(today, i), r = offReason(d); if (r && r !== 'Sunday') upcoming.push({ d, r }); }
+
   el.innerHTML = `
-  <section class="punch" data-state="${state}">
+  <section class="punch" data-state="${look}">
     <div>
       <div class="punch-date">${esc(longDate)}</div>
       <div class="punch-clock" id="clock">--:--</div>
       <div class="punch-status">${esc(status)}</div>
     </div>
     <div>
-      <button class="btn punch-btn" id="punch" ${state === 'done' ? 'disabled' : ''}>${label}</button>
+      <button class="btn punch-btn" id="punch" ${['in', 'out'].includes(state) ? '' : 'disabled'}>${esc(label)}</button>
       <div class="shift">
         <div class="shift-bar"><span id="shift-fill" style="width:0%"></span></div>
-        <div class="shift-meta"><span>In <b>${fmtTime(att?.check_in)}</b></span><span id="worked">${att ? '' : CONFIG.SHIFT_HOURS + 'h shift'}</span><span>${state === 'done' ? 'Out' : 'Expected out'} <b>${state === 'done' ? fmtTime(att.check_out) : expectedOut}</b></span></div>
+        <div class="shift-meta"><span>In <b>${fmtTime(att?.check_in)}</b></span><span id="worked">Shift ${esc(shiftTxt)}</span><span>${state === 'done' ? 'Out' : 'Shift ends'} <b>${state === 'done' ? fmtTime(att.check_out) : fmtClock(sEnd)}</b></span></div>
       </div>
     </div>
   </section>
@@ -560,14 +653,24 @@ VIEWS.home = async el => {
   </div>` : ''}
 
   <div class="grid g-2">
-    <div class="card">
-      <div class="card-h"><h2>Leave balance ${year}</h2><div class="right"><button class="btn primary sm" id="apply">${icon('plus')}Apply leave</button></div></div>
-      <div class="card-b">${balanceRows(bals, pending, year)}</div>
+    <div class="grid" style="align-content:start">
+      <div class="card">
+        <div class="card-h"><h2>My tasks</h2><div class="right"><a class="btn sm" href="#/tasks">All tasks</a></div></div>
+        <div class="card-b">${myTasks.length ? myTasks.map(t => {
+          const running = S.running?.task_id === t.id;
+          return `<div class="list-row"><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}${t.due_date ? ` · due <span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : ''}</div></div>
+            ${running ? `<b class="num" data-live-timer style="color:var(--bad)"></b><button class="btn danger sm icon-btn" data-stop aria-label="Stop timer">${icon('stop')}Stop</button>` : `<button class="btn sm icon-btn" data-start="${t.id}" aria-label="Start timer">${icon('play')}Start</button>`}</div>`; }).join('')
+          : '<div class="empty">No open tasks. Add one on the Tasks page to track your time.</div>'}</div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>Leave balance ${year}</h2><div class="right"><button class="btn primary sm" id="apply">${icon('plus')}Apply leave</button></div></div>
+        <div class="card-b">${balanceRows(bals, pending, year)}</div>
+      </div>
     </div>
     <div class="grid" style="align-content:start">
       <div class="card">
-        <div class="card-h"><h2>Upcoming holidays</h2></div>
-        <div class="card-b">${hols.length ? hols.map(h => `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long' })}</div></div></div>`).join('') : '<div class="empty">No upcoming holidays added.</div>'}</div>
+        <div class="card-h"><h2>Upcoming days off</h2></div>
+        <div class="card-b">${upcoming.length ? upcoming.map(h => `<div class="list-row"><span class="date-chip"><b>${dObj(h.d).getDate()}</b><small>${dObj(h.d).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div><b>${esc(h.r)}</b><div class="muted" style="font-size:13px">${dObj(h.d).toLocaleDateString('en-IN', { weekday: 'long' })}</div></div></div>`).join('') : '<div class="empty">No upcoming holidays added.</div>'}</div>
       </div>
       ${isMgr() ? `<div class="card">
         <div class="card-h"><h2>On leave today</h2></div>
@@ -583,25 +686,29 @@ VIEWS.home = async el => {
       const end = att.check_out ? new Date(att.check_out) : new Date();
       const ms = end - new Date(att.check_in);
       $('#worked').textContent = dur(ms) + ' worked';
-      $('#shift-fill').style.width = Math.min(100, ms / (CONFIG.SHIFT_HOURS * 36e5) * 100) + '%';
+      $('#shift-fill').style.width = Math.min(100, ms / (shiftHours() * 36e5) * 100) + '%';
     }
   };
   tick(); S.clockTimer = setInterval(tick, 1000);
+  paintTimer();
 
   $('#punch').onclick = async e => {
-    if (state === 'done') return;
+    if (!['in', 'out'].includes(state)) return;
     const b = e.currentTarget, orig = b.textContent;
-    if (state === 'in' && !confirm('Check out for today? You can only check out once.')) return;
+    if (state === 'in' && !confirm('Check out for today? You can only check out once.' + (S.running ? ' Your task timer will stop too.' : ''))) return;
     b.disabled = true; b.textContent = 'Recording…';
     const loc = await getLocation();
     try {
       const fn = state === 'out' ? 'check_in' : 'check_out';
       const rec = await q(sb.rpc(fn, { lat: loc.lat ?? null, lng: loc.lng ?? null }));
       toast(fn === 'check_in' ? `Checked in at ${fmtTime(rec.check_in)}` : `Checked out at ${fmtTime(rec.check_out)}`);
+      if (fn === 'check_out') await refreshRunning();
       route();
     } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = orig; }
   };
   $('#apply').onclick = () => openApplyLeave();
+  $$('[data-start]', el).forEach(b => b.onclick = () => startTimer(b.dataset.start));
+  $$('[data-stop]', el).forEach(b => b.onclick = () => stopTimer());
 };
 
 /* ---------- Attendance ---------- */
@@ -617,44 +724,77 @@ VIEWS.attendance = async el => {
   $('#a-who') && ($('#a-who').onchange = e => { S.attWho = e.target.value; route(); });
 
   const { first, last, days } = monthBounds(month);
-  const [att, hols, leaves] = await Promise.all([
+  const [att, leaves] = await Promise.all([
     q(sb.from('attendance').select('*').eq('employee_id', who).gte('work_date', first).lte('work_date', last)),
-    q(sb.from('holidays').select('*').gte('holiday_date', first).lte('holiday_date', last)),
     q(sb.from('leave_requests').select('*').eq('employee_id', who).eq('status', 'approved').lte('start_date', last).gte('end_date', first))
   ]);
-  const today = istDate();
+  const today = istDate(), from = trackFrom(profileOf(who));
   const rows = [];
-  let present = 0, totalH = 0, leaveDays = 0, absent = 0;
+  let present = 0, totalH = 0, leaveDays = 0, absent = 0, late = 0, missed = 0;
   for (let d = days; d >= 1; d--) {
-    const date = `${month}-${String(d).padStart(2, '0')}`;
-    if (date > today) continue;
+    const date = `${month}-${pad2(d)}`;
+    if (date > today || date < from) continue;
     const a = att.find(x => x.work_date === date);
-    const h = hols.find(x => x.holiday_date === date);
     const lv = leaves.find(x => x.start_date <= date && x.end_date >= date);
-    const wkend = CONFIG.WEEKEND_DAYS.includes(dObj(date).getDay());
+    const off = offReason(date);
     let st;
     if (a?.check_in) {
-      present++; totalH += Number(a.hours_worked || 0);
-      st = !a.check_out && date < today ? '<span class="pill warn">Missed check-out</span>' : !a.check_out ? '<span class="pill info">Working</span>' : '<span class="pill ok">Present</span>';
+      if (isMissed(a, date)) { missed++; st = '<span class="pill bad">Leave (missed check-out)</span>'; }
+      else {
+        present++; totalH += Number(a.hours_worked || 0);
+        st = a.check_out ? '<span class="pill ok">Present</span>' : '<span class="pill info">Working</span>';
+        if (isLate(a)) { late++; st += ` <span class="pill warn">Late ${lateBy(a)} min</span>`; }
+      }
       if (lv) st += ` <span class="pill info">${lv.half_day ? 'Half-day leave' : 'Leave'}</span>`;
-    } else if (lv) { leaveDays++; st = `<span class="pill info">${esc(typeName(lv.leave_type_id))}${lv.half_day ? ' (half day)' : ''}</span>`; }
-    else if (h) st = `<span class="pill muted">${esc(h.name)}</span>`;
-    else if (wkend) st = '<span class="pill muted">Weekend</span>';
+    } else if (lv) { leaveDays += lv.half_day ? 0.5 : 1; st = `<span class="pill info">${esc(typeName(lv.leave_type_id))}${lv.half_day ? ' (half day)' : ''}</span>`; }
+    else if (off) st = `<span class="pill muted">${esc(off)}</span>`;
     else if (date === today) st = '<span class="pill warn">Not checked in</span>';
     else { absent++; st = '<span class="pill bad">Absent</span>'; }
-    rows.push(`<tr><td><b>${fmtShort(date)}</b> <span class="muted">${dayName(date)}</span></td><td>${st}</td><td class="num">${fmtTime(a?.check_in)}</td><td class="num">${fmtTime(a?.check_out)}</td><td class="num">${a?.hours_worked != null ? num(a.hours_worked) + ' h' : '—'}</td></tr>`);
+    rows.push(`<tr><td><b>${fmtShort(date)}</b> <span class="muted">${dayName(date)}</span></td><td>${st}</td><td class="num">${fmtTime(a?.check_in)}</td><td class="num">${fmtTime(a?.check_out)}</td><td class="num">${a?.hours_worked != null ? num(a.hours_worked) + ' h' : '—'}</td>${isAdmin() ? `<td style="text-align:right"><button class="btn sm" data-fix="${date}">Edit</button></td>` : ''}</tr>`);
   }
   $('#a-body').innerHTML = `<div class="stats">
       <div class="stat"><span>Days present</span><b>${present}</b></div>
       <div class="stat"><span>Hours worked</span><b>${num(totalH)}</b></div>
       <div class="stat"><span>Average per day</span><b>${present ? num(totalH / present) : 0} h</b></div>
-      <div class="stat"><span>Leave days</span><b>${leaveDays}</b></div>
+      <div class="stat"><span>Late days</span><b>${late}</b></div>
+      <div class="stat"><span>Leave days</span><b>${num(leaveDays + missed)}</b></div>
       <div class="stat"><span>Absent</span><b>${absent}</b></div>
     </div>
     <div class="card"><div class="card-h"><h2>${esc(nameOf(who))}</h2><span class="sub">${dObj(first).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</span></div>
-    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check in</th><th>Check out</th><th>Hours</th></tr></thead>
-    <tbody>${rows.join('') || '<tr><td colspan="5" class="empty">No days to show for this month yet.</td></tr>'}</tbody></table></div></div>`;
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Status</th><th>Check in</th><th>Check out</th><th>Hours</th>${isAdmin() ? '<th></th>' : ''}</tr></thead>
+    <tbody>${rows.join('') || `<tr><td colspan="6" class="empty">Attendance is counted from ${fmtDate(from)}. Nothing to show for this month.</td></tr>`}</tbody></table></div></div>`;
+  $$('[data-fix]').forEach(b => b.onclick = () => openFixAttendance(who, b.dataset.fix, att.find(x => x.work_date === b.dataset.fix)));
 };
+
+function openFixAttendance(empId, date, a) {
+  openModal({
+    title: `Edit attendance: ${nameOf(empId)}, ${fmtDate(date)}`,
+    body: `<div class="form-grid">
+      <div class="field"><label for="fx-in">Check in</label><input id="fx-in" type="time" value="${istHM(a?.check_in)}"></div>
+      <div class="field"><label for="fx-out">Check out</label><input id="fx-out" type="time" value="${istHM(a?.check_out)}"></div>
+      <div class="field full"><label for="fx-note">Reason for change</label><input id="fx-note" type="text" value="${esc(a?.notes || '')}" placeholder="e.g. Forgot to check out, confirmed by manager"></div></div>`,
+    footer: `${a ? '<button class="btn danger" id="fx-del" style="margin-right:auto">Clear this day</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="fx-save">Save attendance</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#fx-save', root).onclick = async () => {
+        const tin = $('#fx-in', root).value, tout = $('#fx-out', root).value, note = $('#fx-note', root).value.trim();
+        if (!tin) return toast('Enter a check-in time', 'bad');
+        if (tout && tout <= tin) return toast('Check-out must be after check-in', 'bad');
+        const row = { check_in: `${date}T${tin}:00+05:30`, check_out: tout ? `${date}T${tout}:00+05:30` : null, notes: note || null };
+        try {
+          if (a) await q(sb.from('attendance').update(row).eq('id', a.id));
+          else await q(sb.from('attendance').insert({ ...row, employee_id: empId, work_date: date }));
+          close(); toast('Attendance saved'); route();
+        } catch (e) { toast(e.message, 'bad'); }
+      };
+      $('#fx-del', root) && ($('#fx-del', root).onclick = async () => {
+        if (!confirm('Remove check-in and check-out for this day?')) return;
+        try { await q(sb.from('attendance').delete().eq('id', a.id)); close(); toast('Attendance cleared'); route(); }
+        catch (e) { toast(e.message, 'bad'); }
+      });
+    }
+  });
+}
 
 /* ---------- Leave ---------- */
 function openApplyLeave() {
@@ -668,7 +808,7 @@ function openApplyLeave() {
       <div class="field"><label for="lv-to">To</label><input id="lv-to" type="date" value="${today}" required></div>
       <label class="check full" id="half-wrap"><input type="checkbox" id="lv-half"> Half day</label>
       <div class="field full"><label for="lv-reason">Reason</label><textarea id="lv-reason" placeholder="Optional, but helps your manager decide faster"></textarea></div>
-      <div class="note full">Weekends and holidays aren't counted. The number of days is worked out for you when you submit.</div>
+      <div class="note full">Sundays, Saturdays off and holidays aren't counted. The number of days is worked out for you when you submit.</div>
     </form>`,
     footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="lv-submit">Submit request</button>`,
     onMount: (root, close) => {
@@ -761,27 +901,37 @@ VIEWS.approvals = async el => {
 VIEWS.team = async el => {
   const today = istDate();
   const members = teamList().filter(p => p.id !== S.me.id);
-  const [att, leaves] = await Promise.all([
+  const [att, leaves, running] = await Promise.all([
     q(sb.from('attendance').select('*').eq('work_date', today)),
-    q(sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', today).gte('end_date', today))
+    q(sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', today).gte('end_date', today)),
+    q(sb.from('time_logs').select('employee_id,started_at,task_id').is('ended_at', null)).catch(() => [])
   ]);
-  let inC = 0, outC = 0, lvC = 0;
+  const taskIds = running.map(r => r.task_id);
+  const tasks = taskIds.length ? await q(sb.from('tasks').select('id,title').in('id', taskIds)).catch(() => []) : [];
+  const off = offReason(today);
+  let inC = 0, outC = 0, lvC = 0, lateC = 0;
   const rows = members.map(p => {
-    const a = att.find(x => x.employee_id === p.id), lv = leaves.find(x => x.employee_id === p.id);
+    const a = att.find(x => x.employee_id === p.id), lv = leaves.find(x => x.employee_id === p.id), run = running.find(r => r.employee_id === p.id);
     let st;
-    if (a?.check_in) { inC++; st = a.check_out ? '<span class="pill ok">Checked out</span>' : '<span class="pill ok">Working</span>'; }
-    else if (lv) { lvC++; st = `<span class="pill info">${esc(typeName(lv.leave_type_id))}</span>`; }
+    if (a?.check_in) {
+      inC++;
+      st = isMissed(a, today) ? '<span class="pill bad">Missed check-out</span>' : a.check_out ? '<span class="pill ok">Checked out</span>' : '<span class="pill ok">Working</span>';
+      if (isLate(a)) { lateC++; st += ` <span class="pill warn">Late ${lateBy(a)} min</span>`; }
+    } else if (lv) { lvC++; st = `<span class="pill info">${esc(typeName(lv.leave_type_id))}</span>`; }
+    else if (off) st = `<span class="pill muted">${esc(off)}</span>`;
     else { outC++; st = '<span class="pill warn">Not checked in</span>'; }
     const hrs = a?.check_in ? dur((a.check_out ? new Date(a.check_out) : new Date()) - new Date(a.check_in)) : '—';
-    return `<tr><td><div class="who"><span class="avatar">${esc(initials(p.full_name || p.email))}</span><div><b>${esc(p.full_name || p.email)}</b><small>${esc(p.designation || '')}</small></div></div></td><td class="muted">${esc(p.department || '—')}</td><td>${st}</td><td class="num">${fmtTime(a?.check_in)}</td><td class="num">${fmtTime(a?.check_out)}</td><td class="num">${hrs}</td></tr>`;
+    const cur = run ? `<span class="task-title">${esc(tasks.find(t => t.id === run.task_id)?.title || 'Task')}</span><div class="task-sub">for ${hm((Date.now() - new Date(run.started_at)) / 60000)}</div>` : '<span class="muted">—</span>';
+    return `<tr><td><div class="who"><span class="avatar">${esc(initials(p.full_name || p.email))}</span><div><b>${esc(p.full_name || p.email)}</b><small>${esc(p.designation || p.department || '')}</small></div></div></td><td>${st}</td><td class="num">${fmtTime(a?.check_in)}</td><td class="num">${fmtTime(a?.check_out)}</td><td class="num">${hrs}</td><td>${cur}</td></tr>`;
   });
   el.innerHTML = `<div class="stats">
       <div class="stat"><span>Team members</span><b>${members.length}</b></div>
       <div class="stat"><span>Checked in</span><b>${inC}</b></div>
+      <div class="stat"><span>Late today</span><b>${lateC}</b></div>
       <div class="stat"><span>Not checked in</span><b>${outC}</b></div>
       <div class="stat"><span>On leave</span><b>${lvC}</b></div></div>
-    <div class="card"><div class="card-h"><h2>Today</h2><span class="sub">${fmtDate(today)}</span></div>
-    <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Department</th><th>Status</th><th>Check in</th><th>Check out</th><th>Worked</th></tr></thead>
+    <div class="card"><div class="card-h"><h2>Today</h2><span class="sub">${fmtDate(today)}${off ? ` (${esc(off)})` : ''}</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Status</th><th>Check in</th><th>Check out</th><th>Worked</th><th>Working on</th></tr></thead>
     <tbody>${rows.join('') || `<tr><td colspan="6" class="empty">No one reports to you yet. ${isAdmin() ? 'Set managers on the Employees page.' : 'Ask your HR admin to assign your team.'}</td></tr>`}</tbody></table></div></div>`;
 };
 
@@ -797,32 +947,43 @@ VIEWS.reports = async el => {
   const month = S.repMonth || istDate().slice(0, 7);
   const { first, last } = monthBounds(month);
   const people = teamList();
-  const [att, leaves] = await Promise.all([
+  const [att, leaves, logs] = await Promise.all([
     q(sb.from('attendance').select('*').gte('work_date', first).lte('work_date', last).order('work_date')),
-    q(sb.from('leave_requests').select('*').lte('start_date', last).gte('end_date', first).order('start_date'))
+    q(sb.from('leave_requests').select('*').lte('start_date', last).gte('end_date', first).order('start_date')),
+    q(sb.from('time_logs').select('*').gte('started_at', `${first}T00:00:00+05:30`).lte('started_at', `${last}T23:59:59+05:30`).order('started_at')).catch(() => [])
   ]);
+  const taskIds = [...new Set(logs.map(l => l.task_id))];
+  const tasks = taskIds.length ? await q(sb.from('tasks').select('id,title,project').in('id', taskIds)).catch(() => []) : [];
   const summary = people.map(p => {
-    const a = att.filter(x => x.employee_id === p.id);
+    const a = att.filter(x => x.employee_id === p.id && x.check_in);
+    const ok = a.filter(x => !isMissed(x, x.work_date));
     const lv = leaves.filter(x => x.employee_id === p.id && x.status === 'approved');
-    return { p, days: a.filter(x => x.check_in).length, hours: a.reduce((s, x) => s + Number(x.hours_worked || 0), 0), missed: a.filter(x => x.check_in && !x.check_out).length, leave: lv.reduce((s, x) => s + Number(x.days), 0) };
+    return { p, days: ok.length, hours: ok.reduce((s, x) => s + Number(x.hours_worked || 0), 0), late: ok.filter(isLate).length,
+      missed: a.length - ok.length, leave: lv.reduce((s, x) => s + Number(x.days), 0),
+      task: logs.filter(l => l.employee_id === p.id).reduce((s, l) => s + logMinutes(l), 0) };
   });
   el.innerHTML = `<div class="toolbar">
       <div class="field"><label for="r-month">Month</label><input id="r-month" type="month" value="${month}"></div>
       <div class="grow"></div>
       <button class="btn" id="dl-att">${icon('download')}Attendance CSV</button>
-      <button class="btn" id="dl-lv">${icon('download')}Leave CSV</button></div>
+      <button class="btn" id="dl-lv">${icon('download')}Leave CSV</button>
+      <button class="btn" id="dl-tk">${icon('download')}Task time CSV</button></div>
     <div class="card"><div class="card-h"><h2>Monthly summary</h2><span class="sub">${dObj(first).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</span></div>
-    <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Department</th><th>Days present</th><th>Hours</th><th>Avg / day</th><th>Missed check-outs</th><th>Leave days</th></tr></thead><tbody>
-    ${summary.map(s => `<tr><td><b>${esc(s.p.full_name || s.p.email)}</b></td><td class="muted">${esc(s.p.department || '—')}</td><td class="num">${s.days}</td><td class="num">${num(s.hours)}</td><td class="num">${s.days ? num(s.hours / s.days) : '0'}</td><td class="num">${s.missed ? `<span class="pill warn">${s.missed}</span>` : '0'}</td><td class="num">${num(s.leave)}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">No employees to report on.</td></tr>'}
+    <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Days present</th><th>Hours</th><th>Avg / day</th><th>Late days</th><th>Missed check-out (leave)</th><th>Approved leave</th><th>Task time</th></tr></thead><tbody>
+    ${summary.map(s => `<tr><td><b>${esc(s.p.full_name || s.p.email)}</b><div class="task-sub">${esc(s.p.designation || s.p.department || '')}</div></td><td class="num">${s.days}</td><td class="num">${num(s.hours)}</td><td class="num">${s.days ? num(s.hours / s.days) : '0'}</td><td class="num">${s.late ? `<span class="pill warn">${s.late}</span>` : '0'}</td><td class="num">${s.missed ? `<span class="pill bad">${s.missed}</span>` : '0'}</td><td class="num">${num(s.leave)}</td><td class="num">${hm(s.task)}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No employees to report on.</td></tr>'}
     </tbody></table></div></div>`;
   $('#r-month').onchange = e => { S.repMonth = e.target.value; route(); };
   $('#dl-att').onclick = () => downloadCSV(`attendance-${month}.csv`, [
-    ['Employee ID', 'Name', 'Department', 'Date', 'Check in', 'Check out', 'Hours', 'Check-in location'],
-    ...att.map(a => { const p = profileOf(a.employee_id); return [p.employee_code, p.full_name, p.department, a.work_date, fmtTime(a.check_in), fmtTime(a.check_out), a.hours_worked ?? '', a.check_in_lat ? `${a.check_in_lat},${a.check_in_lng}` : '']; })
+    ['Employee ID', 'Name', 'Department', 'Date', 'Check in', 'Check out', 'Hours', 'Status', 'Late (min)', 'Check-in location', 'Note'],
+    ...att.map(a => { const p = profileOf(a.employee_id); const miss = isMissed(a, a.work_date); return [p.employee_code, p.full_name, p.department, a.work_date, fmtTime(a.check_in), fmtTime(a.check_out), a.hours_worked ?? '', miss ? 'Leave (missed check-out)' : a.check_out ? 'Present' : 'Working', a.check_in && isLate(a) ? lateBy(a) : '', a.check_in_lat ? `${a.check_in_lat},${a.check_in_lng}` : '', a.notes]; })
   ]);
   $('#dl-lv').onclick = () => downloadCSV(`leave-${month}.csv`, [
     ['Employee ID', 'Name', 'Leave type', 'From', 'To', 'Days', 'Status', 'Reason', 'Decided by', 'Comment'],
     ...leaves.map(r => { const p = profileOf(r.employee_id); return [p.employee_code, p.full_name, typeName(r.leave_type_id), r.start_date, r.end_date, r.days, r.status, r.reason, r.approver_id ? nameOf(r.approver_id) : '', r.approver_comment]; })
+  ]);
+  $('#dl-tk').onclick = () => downloadCSV(`task-time-${month}.csv`, [
+    ['Employee ID', 'Name', 'Date', 'Project', 'Task', 'Start', 'End', 'Minutes'],
+    ...logs.map(l => { const p = profileOf(l.employee_id), t = tasks.find(x => x.id === l.task_id) || {}; return [p.employee_code, p.full_name, istDate(new Date(l.started_at)), t.project, t.title, fmtTime(l.started_at), l.ended_at ? fmtTime(l.ended_at) : 'Running', Math.round(logMinutes(l))]; })
   ]);
 };
 
@@ -884,27 +1045,48 @@ async function editEmployee(id) {
   });
 }
 
-/* ---------- Leave types, holidays, yearly allotment (admin) ---------- */
+/* ---------- Leave types, holidays, shift settings (admin) ---------- */
 VIEWS.settings = async el => {
   await loadDirectory();
-  const year = +istDate().slice(0, 4);
-  const hols = await q(sb.from('holidays').select('*').gte('holiday_date', `${year}-01-01`).order('holiday_date'));
+  const year = +istDate().slice(0, 4), st = S.settings;
+  const hols = S.holidays.filter(h => h.holiday_date >= `${year}-01-01`);
+  const t5 = t => String(t || '').slice(0, 5);
   el.innerHTML = `<div class="grid g-2">
     <div class="grid" style="align-content:start">
+      <div class="card"><div class="card-h"><h2>Shift &amp; working days</h2></div><div class="card-b">
+        <div class="form-grid">
+          <div class="field"><label for="sh-start">Shift starts</label><input id="sh-start" type="time" value="${t5(st.shift_start)}"></div>
+          <div class="field"><label for="sh-end">Shift ends</label><input id="sh-end" type="time" value="${t5(st.shift_end)}"><span class="hint">Check-in closes at this time.</span></div>
+          <div class="field"><label for="sh-open">Check-in opens</label><input id="sh-open" type="time" value="${t5(st.checkin_opens)}"></div>
+          <div class="field"><label for="sh-close">Check-out closes</label><input id="sh-close" type="time" value="${t5(st.checkout_closes)}"><span class="hint">Without a check-out by then, the day counts as leave.</span></div>
+          <div class="field"><label for="sh-grace">Late after (minutes past start)</label><input id="sh-grace" type="number" min="0" max="120" value="${st.late_grace_minutes}"></div>
+          <div class="field"><label for="sh-sat">Saturdays</label><select id="sh-sat">${[['none', 'All Saturdays working'], ['second', '2nd Saturday off'], ['second_fourth', '2nd & 4th Saturdays off'], ['all', 'All Saturdays off']].map(([v, l]) => `<option value="${v}" ${st.saturday_rule === v ? 'selected' : ''}>${l}</option>`).join('')}</select><span class="hint">Sundays are always off.</span></div>
+          <div class="field"><label for="sh-track">Count attendance from</label><input id="sh-track" type="date" value="${esc(st.tracking_start)}"><span class="hint">Earlier days aren't marked absent.</span></div>
+        </div>
+        <div style="margin-top:16px"><button class="btn primary" id="sh-save">Save shift settings</button></div>
+      </div></div>
       <div class="card"><div class="card-h"><h2>Leave types</h2><span class="sub">Days per year</span></div>
         <div class="table-wrap"><table><thead><tr><th>Name</th><th>Code</th><th>Days / year</th><th>Paid</th><th>Active</th><th></th></tr></thead><tbody>
         ${S.leaveTypes.map(t => `<tr data-lt="${t.id}"><td><input type="text" data-k="name" value="${esc(t.name)}"></td><td><input type="text" data-k="code" value="${esc(t.code)}" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="${num(t.annual_quota)}" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" ${t.is_paid ? 'checked' : ''} aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" ${t.is_active ? 'checked' : ''} aria-label="Active"></td><td><button class="btn sm" data-save-lt>Save</button></td></tr>`).join('')}
         <tr data-lt="new"><td><input type="text" data-k="name" placeholder="New leave type"></td><td><input type="text" data-k="code" placeholder="Code" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="0" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" checked aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" checked aria-label="Active"></td><td><button class="btn primary sm" data-save-lt>Add</button></td></tr>
         </tbody></table></div></div>
       <div class="card"><div class="card-h"><h2>Yearly leave allotment</h2></div><div class="card-b">
-        <p class="muted" style="margin-top:0">Gives every active employee the yearly days for each paid leave type. People who already have a balance for that year are not changed, so it's safe to run again after adding new staff.</p>
+        <p class="muted" style="margin-top:0">Gives every active employee the yearly days for each paid leave type. People who already have a balance for that year are not changed, so it's safe to run again after adding new staff. To change one person's days, use Edit on the Employees page.</p>
         <div class="toolbar" style="margin:0"><div class="field"><label for="al-year">Year</label><input id="al-year" type="number" value="${year}" style="width:110px"></div><button class="btn primary" id="al-run">Allot leave</button></div></div></div>
     </div>
     <div class="card" style="align-self:start"><div class="card-h"><h2>Holidays</h2><span class="sub">${year} onwards</span></div>
-      <div class="card-b"><form id="h-form" class="toolbar" style="margin-bottom:8px"><div class="field"><label for="h-date">Date</label><input id="h-date" type="date" required></div><div class="field grow"><label for="h-name">Name</label><input id="h-name" type="text" placeholder="e.g. Diwali" required></div><button class="btn primary" type="submit">Add</button></form>
-      ${hols.length ? hols.map(h => `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div style="flex:1"><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric' })}</div></div><button class="btn danger sm" data-del-h="${h.id}">Remove</button></div>`).join('') : '<div class="empty">No holidays added yet.</div>'}
+      <div class="card-b"><form id="h-form" class="toolbar" style="margin-bottom:8px"><div class="field"><label for="h-date">Date</label><input id="h-date" type="date" required></div><div class="field grow"><label for="h-name">Name</label><input id="h-name" type="text" placeholder="e.g. Sankranti" required></div><button class="btn primary" type="submit">Add</button></form>
+      <p class="muted" style="font-size:13px;margin:0 0 6px">Sundays and ${st.saturday_rule === 'none' ? 'no Saturdays' : st.saturday_rule === 'all' ? 'all Saturdays' : st.saturday_rule === 'second' ? '2nd Saturdays' : '2nd &amp; 4th Saturdays'} are off automatically, so you don't need to add them.</p>
+      ${hols.length ? hols.map(h => { const dow = dObj(h.holiday_date).getDay(); return `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div style="flex:1"><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric' })}${dow === 0 ? ' (already a day off)' : ''}</div></div><button class="btn danger sm" data-del-h="${h.id}">Remove</button></div>`; }).join('') : '<div class="empty">No holidays added yet.</div>'}
       </div></div></div>`;
 
+  $('#sh-save').onclick = async () => {
+    const v = id => $(id).value;
+    const row = { shift_start: v('#sh-start'), shift_end: v('#sh-end'), checkin_opens: v('#sh-open'), checkout_closes: v('#sh-close'), late_grace_minutes: +v('#sh-grace') || 0, saturday_rule: v('#sh-sat'), tracking_start: v('#sh-track'), updated_at: new Date().toISOString() };
+    if (!(row.checkin_opens <= row.shift_start && row.shift_start < row.shift_end && row.shift_end <= row.checkout_closes)) return toast('Times must go in order: check-in opens, shift starts, shift ends, check-out closes', 'bad');
+    try { await q(sb.from('settings').update(row).eq('id', 1)); toast('Shift settings saved'); route(); }
+    catch (e) { toast(e.message, 'bad'); }
+  };
   $$('[data-save-lt]', el).forEach(b => b.onclick = async () => {
     const tr = b.closest('tr'), id = tr.dataset.lt, row = {};
     $$('[data-k]', tr).forEach(i => row[i.dataset.k] = i.type === 'checkbox' ? i.checked : i.type === 'number' ? +i.value : i.value.trim());
@@ -930,6 +1112,109 @@ VIEWS.settings = async el => {
     catch (e) { toast(e.message, 'bad'); }
   });
 };
+
+/* ---------- Tasks & timer ---------- */
+const PRIORITY = { high: ['bad', 'High'], medium: ['warn', 'Medium'], low: ['muted', 'Low'] };
+const TSTATUS = { todo: 'To do', in_progress: 'In progress', done: 'Done' };
+
+VIEWS.tasks = async el => {
+  const scope = isMgr() ? S.taskScope : 'mine', filter = S.taskFilter, today = istDate();
+  let qb = sb.from('tasks').select('*').order('created_at', { ascending: false }).limit(150);
+  qb = scope === 'mine' ? qb.eq('assigned_to', S.me.id) : qb.neq('assigned_to', S.me.id);
+  if (filter === 'open') qb = qb.neq('status', 'done'); else if (filter === 'done') qb = qb.eq('status', 'done');
+  const [tasks, todayLogs] = await Promise.all([
+    q(qb),
+    q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', `${today}T00:00:00+05:30`))
+  ]);
+  const logs = tasks.length ? await q(sb.from('time_logs').select('task_id,started_at,ended_at,minutes').in('task_id', tasks.map(t => t.id))) : [];
+  const spent = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
+  const order = { in_progress: 0, todo: 1, done: 2 };
+  tasks.sort((a, b) => order[a.status] - order[b.status] || (a.due_date || '9999').localeCompare(b.due_date || '9999'));
+  const overdue = tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
+
+  el.innerHTML = `<div class="toolbar">
+      ${isMgr() ? `<div class="field"><label>View</label><div class="seg" role="tablist"><button data-scope="mine" class="${scope === 'mine' ? 'on' : ''}">My tasks</button><button data-scope="team" class="${scope === 'team' ? 'on' : ''}">Team tasks</button></div></div>` : ''}
+      <div class="field"><label for="t-filter">Show</label><select id="t-filter"><option value="open" ${filter === 'open' ? 'selected' : ''}>Open tasks</option><option value="done" ${filter === 'done' ? 'selected' : ''}>Done</option><option value="all" ${filter === 'all' ? 'selected' : ''}>All</option></select></div>
+      <div class="field grow"><label for="t-search">Search</label><input id="t-search" type="text" placeholder="Task, project or person"></div>
+      <button class="btn primary" id="t-new">${icon('plus')}New task</button>
+    </div>
+    ${S.running ? `<div class="run-banner"><span class="rec"></span><div style="min-width:0"><small>Timer running</small><b>${esc(S.running.task?.title || 'Task')}</b>${S.running.task?.project ? `<div class="task-sub">${esc(S.running.task.project)}</div>` : ''}</div><b class="num big" data-live-timer>0:00:00</b><button class="btn danger" data-stop>${icon('stop')}Stop</button></div>` : ''}
+    <div class="stats">
+      <div class="stat"><span>Tracked today (you)</span><b>${hm(todayLogs.reduce((s, l) => s + logMinutes(l), 0))}</b></div>
+      <div class="stat"><span>In progress</span><b>${tasks.filter(t => t.status === 'in_progress').length}</b></div>
+      <div class="stat"><span>To do</span><b>${tasks.filter(t => t.status === 'todo').length}</b></div>
+      <div class="stat"><span>Overdue</span><b>${overdue}</b></div>
+    </div>
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th>${scope === 'team' ? '<th>Assigned to</th>' : ''}<th>Due</th><th>Priority</th><th>Status</th><th>Time</th><th></th></tr></thead>
+    <tbody id="t-rows">${tasks.length ? tasks.map(t => {
+      const mine = t.assigned_to === S.me.id, running = S.running?.task_id === t.id;
+      const [pc, pl] = PRIORITY[t.priority] || PRIORITY.medium;
+      return `<tr data-s="${esc((t.title + ' ' + (t.project || '') + ' ' + nameOf(t.assigned_to)).toLowerCase())}">
+        <td style="white-space:normal;min-width:220px"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}</div></td>
+        ${scope === 'team' ? `<td>${esc(nameOf(t.assigned_to))}</td>` : ''}
+        <td class="num">${t.due_date ? `<span class="${t.status !== 'done' && t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '<span class="muted">—</span>'}</td>
+        <td><span class="pill ${pc}">${pl}</span></td>
+        <td><select class="mini" data-status="${t.id}" aria-label="Status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
+        <td class="num">${running ? '<b data-live-timer style="color:var(--bad)">0:00:00</b>' : hm(spent(t.id))}</td>
+        <td style="text-align:right;white-space:nowrap">${mine && t.status !== 'done' ? (running ? `<button class="btn danger sm icon-btn" data-stop>${icon('stop')}Stop</button>` : `<button class="btn sm icon-btn" data-start="${t.id}">${icon('play')}Start</button>`) : ''} <button class="btn sm" data-edit="${t.id}">Edit</button></td></tr>`; }).join('')
+      : `<tr><td colspan="7" class="empty">${filter === 'done' ? 'No finished tasks yet.' : 'No open tasks. Create one and press Start to track your time.'}</td></tr>`}</tbody></table></div></div>`;
+
+  $$('[data-scope]', el).forEach(b => b.onclick = () => { S.taskScope = b.dataset.scope; route(); });
+  $('#t-filter').onchange = e => { S.taskFilter = e.target.value; route(); };
+  $('#t-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#t-rows tr[data-s]').forEach(r => r.style.display = r.dataset.s.includes(v) ? '' : 'none'); };
+  $('#t-new').onclick = () => openTask(null);
+  $$('[data-start]', el).forEach(b => b.onclick = () => startTimer(b.dataset.start));
+  $$('[data-stop]', el).forEach(b => b.onclick = () => stopTimer());
+  $$('[data-edit]', el).forEach(b => b.onclick = () => openTask(tasks.find(t => t.id === b.dataset.edit)));
+  $$('[data-status]', el).forEach(sel => sel.onchange = async () => {
+    try { await q(sb.from('tasks').update({ status: sel.value }).eq('id', sel.dataset.status)); toast(`Marked as ${TSTATUS[sel.value].toLowerCase()}`); await refreshRunning(); route(); }
+    catch (e) { toast(e.message, 'bad'); }
+  });
+  paintTimer();
+};
+
+async function openTask(task) {
+  const isNew = !task;
+  const people = isAdmin() ? S.profiles.filter(p => p.is_active) : isMgr() ? teamList() : [S.me];
+  const logs = isNew ? [] : await q(sb.from('time_logs').select('*').eq('task_id', task.id).order('started_at', { ascending: false }).limit(50));
+  const t = task || { priority: 'medium', status: 'todo', assigned_to: S.me.id };
+  const canDelete = !isNew && (t.created_by === S.me.id || isAdmin());
+  const projects = [...new Set((await q(sb.from('tasks').select('project').not('project', 'is', null).limit(300)).catch(() => [])).map(x => x.project))];
+  openModal({
+    title: isNew ? 'New task' : 'Edit task',
+    body: `<div class="form-grid">
+      <div class="field full"><label for="tk-title">Task</label><input id="tk-title" type="text" value="${esc(t.title || '')}" placeholder="e.g. Update homepage banner for Navdrushti"></div>
+      <div class="field"><label for="tk-project">Project or client</label><input id="tk-project" type="text" list="tk-projects" value="${esc(t.project || '')}" placeholder="e.g. Navdrushti website"><datalist id="tk-projects">${projects.map(p => `<option value="${esc(p)}">`).join('')}</datalist></div>
+      <div class="field"><label for="tk-who">Assigned to</label><select id="tk-who" ${people.length < 2 ? 'disabled' : ''}>${people.map(p => `<option value="${p.id}" ${p.id === t.assigned_to ? 'selected' : ''}>${esc(p.full_name || p.email)}${p.id === S.me.id ? ' (you)' : ''}</option>`).join('')}</select></div>
+      <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
+      <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      ${isNew ? '' : `<div class="field"><label for="tk-status">Status</label><select id="tk-status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`}
+      <div class="field full"><label for="tk-desc">Details</label><textarea id="tk-desc" placeholder="Optional">${esc(t.description || '')}</textarea></div>
+      ${isNew ? '' : `<div class="full"><b>Time logged: ${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}</b>
+        ${logs.length ? `<div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="muted" style="font-size:13px">No time logged yet.</div>'}</div>`}
+    </div>`,
+    footer: `${canDelete ? '<button class="btn danger" id="tk-del" style="margin-right:auto">Delete task</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="tk-save">${isNew ? 'Create task' : 'Save task'}</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#tk-save', root).onclick = async () => {
+        const v = id => $(id, root)?.value.trim();
+        const row = { title: v('#tk-title'), project: v('#tk-project') || null, assigned_to: v('#tk-who') || S.me.id, due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: v('#tk-desc') || null };
+        if (!row.title) return toast('Enter a task name', 'bad');
+        if (!isNew) row.status = v('#tk-status');
+        try {
+          if (isNew) await q(sb.from('tasks').insert({ ...row, created_by: S.me.id }));
+          else await q(sb.from('tasks').update(row).eq('id', t.id));
+          close(); toast(isNew ? 'Task created' : 'Task saved'); await refreshRunning(); route();
+        } catch (e) { toast(e.message, 'bad'); }
+      };
+      $('#tk-del', root) && ($('#tk-del', root).onclick = async () => {
+        if (!confirm('Delete this task and its time logs?')) return;
+        try { await q(sb.from('tasks').delete().eq('id', t.id)); close(); toast('Task deleted'); await refreshRunning(); route(); }
+        catch (e) { toast(e.message, 'bad'); }
+      });
+    }
+  });
+}
 
 /* ---------- Boot ---------- */
 (async function boot() {
