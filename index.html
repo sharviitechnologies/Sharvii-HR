@@ -7,7 +7,7 @@
 <link rel="icon" href="https://sharviitechnologies.com/wp-content/uploads/2026/01/cropped-ST-logo-270x270.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Merriweather:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 <style>
 :root{
   --brand:#1E4FA3;
@@ -20,8 +20,13 @@
   --warn:#A3650E; --warn-soft:#FCF1DE;
   --bad:#B53A2B; --bad-soft:#FBE8E5;
   --muted-soft:#EEF0F3;
+  --info:#2D6CDF; --info-soft:#E7EFFC;
   --side:240px;
-  --logo-bg:#0F1E3A;
+  --navy:#131C3F;
+  --navy-2:#1C2752;
+  --green-light:#6CC17A;
+  --logo-bg:var(--navy);
+  --serif:'Merriweather',Georgia,'Times New Roman',serif;
   font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
   color:var(--ink); font-size:15px; line-height:1.5;
 }
@@ -98,7 +103,7 @@ textarea{resize:vertical;min-height:80px}
 .pill.ok{background:var(--ok-soft);color:var(--ok)}
 .pill.warn{background:var(--warn-soft);color:var(--warn)}
 .pill.bad{background:var(--bad-soft);color:var(--bad)}
-.pill.info{background:var(--brand-soft);color:var(--brand)}
+.pill.info{background:var(--info-soft);color:var(--info)}
 .pill.muted{background:var(--muted-soft);color:var(--ink-3)}
 .badge{background:var(--bad);color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;min-width:20px;text-align:center}
 .table-wrap{overflow-x:auto}
@@ -116,17 +121,18 @@ td.num,td:first-child{white-space:nowrap}
 .note{background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--ink-2)}
 
 /* ---------- Check-in panel (the signature element) ---------- */
-.punch{background:var(--brand);color:var(--brand-ink);border-radius:14px;padding:26px 28px;display:grid;grid-template-columns:1fr minmax(260px,340px);gap:28px;align-items:center;margin-bottom:20px}
+.punch{background:var(--navy);color:#fff;border-radius:14px;padding:26px 28px;display:grid;grid-template-columns:1fr minmax(260px,340px);gap:28px;align-items:center;margin-bottom:20px}
 .punch-date{font-size:14px;opacity:.85}
 .punch-clock{font-size:clamp(38px,6vw,58px);font-weight:700;letter-spacing:-.02em;line-height:1.05;margin:4px 0 8px;font-variant-numeric:tabular-nums}
 .punch-status{font-size:15px;opacity:.95}
-.punch-btn{width:100%;padding:14px;font-size:16px;border-radius:10px;background:#fff;color:var(--brand);border:none}
-.punch-btn:hover{filter:none;background:#F1F4F9}
+.punch-date{color:var(--green-light);opacity:1!important;font-weight:600}
+.punch-btn{width:100%;padding:14px;font-size:16px;border-radius:10px;background:var(--brand);color:#fff;border:none}
+.punch-btn:hover{filter:brightness(1.08)}
 .punch[data-state=in] .punch-btn{background:#fff;color:var(--bad)}
 .punch[data-state=done] .punch-btn{background:rgba(255,255,255,.18);color:#fff;cursor:default}
 .shift{margin-top:16px}
 .shift-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.22);overflow:hidden}
-.shift-bar span{display:block;height:100%;background:#fff;border-radius:99px;transition:width .6s ease}
+.shift-bar span{display:block;height:100%;background:var(--green-light);border-radius:99px;transition:width .6s ease}
 .shift-meta{display:flex;justify-content:space-between;font-size:12.5px;margin-top:8px;opacity:.9;font-variant-numeric:tabular-nums}
 .shift-meta b{font-weight:700}
 
@@ -169,6 +175,106 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .icon-btn{padding:6px 10px}
 .icon-btn .ic{width:16px;height:16px}
 
+/* ---------- People ---------- */
+.plink{color:inherit;text-decoration:none}
+.plink:hover b{color:var(--brand);text-decoration:underline}
+.avatar.lg{width:64px;height:64px;font-size:22px}
+.avatar.sm{width:24px;height:24px;font-size:10px}
+.person-head{display:flex;align-items:center;gap:18px;padding:20px 22px;flex-wrap:wrap;margin-bottom:20px}
+.person-head h2{margin:0;font-size:22px}
+.person-head .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 24px;margin:0}
+.facts dt{font-size:12.5px;color:var(--ink-3);font-weight:600}
+.facts dd{margin:3px 0 0;word-break:break-word}
+.facts a{color:var(--brand)}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--ink-2);text-decoration:none;font-weight:600;font-size:14px;margin-bottom:14px}
+.back:hover{color:var(--brand)}
+
+/* ---------- Attendance register ---------- */
+.month-nav{display:flex;align-items:center;gap:6px}
+.month-nav b{min-width:150px;text-align:center;font-size:16px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12.5px;color:var(--ink-2);padding:12px 16px;border-bottom:1px solid var(--line);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.reg{border-collapse:separate;border-spacing:0;font-size:12.5px;width:auto}
+.reg th,.reg td{padding:0;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);min-width:32px;height:36px;background:#fff}
+.reg th{font-size:11px;line-height:1.25;padding:5px 0;background:#FAFBFC;color:var(--ink-3)}
+.reg th b{display:block;color:var(--ink);font-size:12px}
+.reg .namec{position:sticky;left:0;z-index:2;text-align:left;padding:0 14px;min-width:180px;white-space:nowrap}
+.reg th.namec{z-index:3}
+.reg td.off,.reg th.off{background:#F5F6F8}
+.reg td.today,.reg th.today{box-shadow:inset 0 0 0 2px var(--brand)}
+.reg .tot{font-weight:700;min-width:52px;background:#FAFBFC;padding:0 6px}
+.code{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:22px;padding:0 3px;border-radius:5px;font-weight:700;font-size:11px}
+.c-P{background:var(--ok-soft);color:var(--ok)}
+.c-LT{background:var(--warn-soft);color:var(--warn)}
+.c-M{background:var(--bad);color:#fff}
+.c-A{background:var(--bad-soft);color:var(--bad)}
+.c-L,.c-HD{background:var(--info-soft);color:var(--info)}
+.c-H{color:#8A6D1E}
+.c-WO{color:var(--ink-3);font-weight:600}
+
+/* ---------- Projects ---------- */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.proj{display:block;background:#fff;border:1px solid var(--line);border-top:4px solid var(--pc);border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit;transition:box-shadow .15s}
+.proj:hover{box-shadow:0 8px 22px rgba(20,28,40,.09)}
+.proj-top{display:flex;align-items:center;gap:8px}
+.proj-top b{font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prog{height:6px;border-radius:99px;background:var(--muted-soft);overflow:hidden;margin:14px 0 8px}
+.prog span{display:block;height:100%;background:var(--pc,var(--brand));border-radius:99px}
+.proj-meta{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-3)}
+.avs{display:flex;margin-top:12px;min-height:26px}
+.avs .avatar{width:26px;height:26px;font-size:10px;border:2px solid #fff;margin-left:-6px}
+.avs .avatar:first-child{margin-left:0}
+.proj-head{border-left:6px solid var(--pc);padding:18px 22px;margin-bottom:20px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.proj-head h2{margin:0 0 4px;font-size:21px}
+.proj-head .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.board{display:grid;grid-template-columns:repeat(4,minmax(250px,1fr));gap:14px;overflow-x:auto;padding-bottom:8px;align-items:start}
+.col{background:#ECEFF3;border-radius:12px;padding:10px;min-height:220px;display:flex;flex-direction:column;gap:8px}
+.col.drop{outline:2px dashed var(--brand);outline-offset:-2px;background:var(--brand-soft)}
+.col-h{display:flex;align-items:center;gap:8px;padding:4px 4px 6px;font-weight:700;font-size:13px}
+.col-h .dot{width:9px;height:9px;border-radius:50%}
+.col-h .n{color:var(--ink-3);font-weight:600}
+.col-h .btn{margin-left:auto;padding:3px 8px}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer}
+.tcard:hover{border-color:var(--ink-3)}
+.tcard.dragging{opacity:.45}
+.tcard-meta{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+.tcard-meta .sp{flex:1}
+.sw{width:28px;height:28px;border-radius:50%;display:inline-block;position:relative;cursor:pointer}
+.sw input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.sw:has(input:checked){outline:3px solid var(--ink);outline-offset:2px}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;padding:4px 2px}
+
+/* ---------- Task detail, checklist, comments ---------- */
+.dialog.wide{width:min(980px,100%)}
+.task-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px}
+.task-side{border-left:1px solid var(--line);padding-left:24px;display:flex;flex-direction:column;min-height:0}
+.section-h{display:flex;align-items:baseline;gap:10px;margin:20px 0 8px}
+.ck-bar{height:5px;border-radius:99px;background:var(--muted-soft);overflow:hidden;margin-bottom:6px}
+.ck-bar span{display:block;height:100%;background:var(--brand);transition:width .3s}
+.ck-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.ck-item label{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0}
+.ck-item input{width:16px;height:16px;accent-color:var(--brand);flex:none}
+.ck-item.done span{text-decoration:line-through;color:var(--ink-3)}
+.ck-item .btn.link{font-size:12.5px;color:var(--ink-3)}
+.ck-add{display:flex;gap:8px;margin-top:8px}
+.cm-list{display:flex;flex-direction:column;gap:14px;max-height:380px;overflow-y:auto;padding-right:4px;margin-bottom:12px}
+.cm{display:flex;gap:10px}
+.cm-body{flex:1;min-width:0;background:var(--canvas);border-radius:10px;padding:8px 12px}
+.cm-h{display:flex;align-items:baseline;gap:8px;font-size:13px}
+.cm-h .muted{font-size:12px}
+.cm-del{margin-left:auto;font-size:12px;color:var(--ink-3)!important}
+.cm-text{white-space:pre-wrap;word-break:break-word;font-size:14px;margin-top:2px}
+.cm-new{display:flex;gap:8px;align-items:flex-start}
+.cm-new textarea{min-height:44px;flex:1}
+.stack{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--muted-soft);margin:10px 0 8px}
+.stack span{display:block;height:100%}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.tcard-meta .ic{width:14px;height:14px;vertical-align:-2px;margin-right:2px}
+.task-sub .ic{width:13px;height:13px;vertical-align:-2px}
+.nudge{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:14px 18px;margin-bottom:20px}
+.nudge .btn{margin-left:auto}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -195,15 +301,20 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 
 /* ---------- Login ---------- */
 .auth{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
-.auth-brand{background:var(--brand);color:var(--brand-ink);padding:48px;display:flex;flex-direction:column;justify-content:space-between}
-.auth-logo{background:var(--logo-bg);border-radius:12px;padding:12px 16px;display:inline-flex;align-self:flex-start}
-.auth-logo img{height:40px}
-.auth-brand h2{font-size:clamp(28px,3.4vw,42px);line-height:1.15;margin:0 0 14px;font-weight:700;letter-spacing:-.01em;max-width:14ch}
-.auth-brand p{opacity:.88;max-width:40ch;margin:0}
+.auth-brand{background:var(--navy);color:#fff;padding:48px;gap:40px;display:flex;flex-direction:column;justify-content:space-between}
+.auth-logo{display:inline-flex;align-self:flex-start}
+.auth-logo img{height:58px}
+.auth-brand h2{font-family:var(--serif);font-size:clamp(30px,3.6vw,48px);line-height:1.2;margin:0 0 18px;font-weight:700;max-width:16ch}
+.auth-brand h2 em{display:block;color:var(--green-light);font-style:italic}
+.quote{margin:0;border-left:3px solid var(--green-light);padding:4px 0 4px 18px;max-width:46ch}
+.quote p{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.6;opacity:.95!important}
+.quote cite{display:block;margin-top:8px;font-style:normal;font-size:13px;color:var(--green-light)}
+.stay{font-size:12.5px;color:var(--ink-3);text-align:center;margin-top:-6px}
+.auth-brand p{opacity:.8;max-width:42ch;margin:0;font-size:16px}
 .auth-brand .foot{font-size:13px;opacity:.75}
 .auth-form{display:flex;align-items:center;justify-content:center;padding:40px 24px;background:#fff}
 .auth-form form{width:min(380px,100%);display:flex;flex-direction:column;gap:16px}
-.auth-form h1{font-size:24px;margin:0}
+.auth-form h1{font-family:var(--serif);font-size:26px;margin:0;color:var(--navy)}
 .auth-form .lead{color:var(--ink-3);margin:-8px 0 6px}
 .err{color:var(--bad);font-size:13.5px;min-height:20px}
 
@@ -225,9 +336,16 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
   .req{grid-template-columns:1fr}
   .req-act{min-width:0}
   .form-grid{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .task-grid{grid-template-columns:1fr}
+  .task-side{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:16px}
+  .nudge{flex-wrap:wrap}
+  .reg .namec{min-width:120px;padding:0 8px}
   .auth{grid-template-columns:1fr}
   .auth-brand{padding:28px 24px;gap:28px}
   .auth-brand h2{font-size:26px}
+  .quote{display:none}
+  .auth-logo img{height:44px}
   .auth-brand .foot{display:none}
   th,td{padding:10px 12px}
 }
@@ -250,8 +368,9 @@ const CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6YmlhcW10b3h0Y25uZmNzYmJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzU4NDMsImV4cCI6MjEwNjk1MTg0M30.pYBwT8WC7uW2XRklTeTHfQr-qy-lOw0LcxoLge3bTMQ',
   APP_NAME: 'Sharvii People',
   COMPANY: 'Sharvii Technologies',
-  LOGO_URL: 'https://sharviitechnologies.com/wp-content/uploads/2026/04/sharvi-logo.png',
-  BRAND_COLOR: '#1E4FA3',      // change to your logo colour
+  LOGO_URL: 'sharvi-logo.png',   // logo file uploaded to the same GitHub repo
+  LOGO_BACKUP_URL: 'https://sharviitechnologies.com/wp-content/uploads/2026/04/sharvi-logo.png',
+  BRAND_COLOR: '#3A9A52',      // Sharvii green (website colour)
   TIMEZONE: 'Asia/Kolkata'
   // Shift timings and days off are set by admins in the app: Leave & holidays → Shift & working days
 };
@@ -265,7 +384,7 @@ CONFIG.SUPABASE_URL = String(CONFIG.SUPABASE_URL).replace(/[^\x21-\x7E]/g, '').r
 CONFIG.SUPABASE_ANON_KEY = String(CONFIG.SUPABASE_ANON_KEY).replace(/[^\x21-\x7E]/g, '').replace(/[‘’“”'"]/g, '');
 const configured = !CONFIG.SUPABASE_URL.includes('YOUR-PROJECT');
 const sb = configured ? supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY) : null;
-const S = { me: null, profiles: [], leaveTypes: [], holidays: [], settings: null, running: null, timerTick: null, clockTimer: null, attMonth: null, attWho: null, apprTab: 'pending', taskScope: 'mine', taskFilter: 'open' };
+const S = { me: null, profiles: [], leaveTypes: [], holidays: [], settings: null, running: null, timerTick: null, clockTimer: null, attMonth: null, attWho: null, apprTab: 'pending', taskScope: 'mine', taskFilter: 'open', projects: [], projFilter: 'active', projView: 'overview', projWho: '' };
 const TZ = CONFIG.TIMEZONE;
 
 /* ---------- Helpers ---------- */
@@ -314,6 +433,47 @@ const isLate = a => !!a?.check_in && lateBy(a) > Number(S.settings.late_grace_mi
 const isMissed = (a, date) => !!a?.check_in && !a.check_out && (date < istDate() || (date === istDate() && istMin() >= toMin(S.settings.checkout_closes)));
 const hms = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 3600)}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`; };
 const hm = mins => { const m = Math.round(mins || 0); return `${Math.floor(m / 60)}h ${pad2(m % 60)}m`; };
+async function allRows(make) { const out = []; for (let f = 0; ; f += 1000) { const d = await q(make().range(f, f + 999)); out.push(...d); if (d.length < 1000) break; } return out; }
+async function inChunks(ids, make) { const out = []; for (let i = 0; i < ids.length; i += 100) out.push(...await q(make(ids.slice(i, i + 100)))); return out; }
+const projName = t => S.projects.find(p => p.id === t.project_id)?.name || t.project || '';
+const personLink = (p, sub = '') => `<a class="plink who" href="#/person/${p.id}"><span class="avatar">${esc(initials(p.full_name || p.email))}</span><div><b>${esc(p.full_name || p.email)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div></a>`;
+function dayCode(p, date, a, lv) {
+  const today = istDate();
+  if (date > today || date < trackFrom(p)) return '';
+  if (a?.check_in) return isMissed(a, date) ? 'M' : isLate(a) ? 'LT' : 'P';
+  if (lv) return lv.half_day ? 'HD' : 'L';
+  if (offReason(date)) return S.holidays.some(h => h.holiday_date === date) ? 'H' : 'WO';
+  return date === today ? '' : 'A';
+}
+const CODES = { P: 'Present', LT: 'Late', M: 'Missed check-out (leave)', L: 'Leave', HD: 'Half-day leave', A: 'Absent', H: 'Holiday', WO: 'Weekly off' };
+function registerFor(people, dates, att, leaves) {
+  const aMap = new Map(att.map(a => [a.employee_id + '|' + a.work_date, a]));
+  return people.map(p => {
+    const myLv = leaves.filter(l => l.employee_id === p.id && l.status === 'approved');
+    const tot = { P: 0, LT: 0, M: 0, L: 0, HD: 0, A: 0, H: 0, WO: 0 }; let hours = 0, lateMin = 0;
+    const cells = dates.map(date => {
+      const a = aMap.get(p.id + '|' + date), lv = myLv.find(l => l.start_date <= date && l.end_date >= date);
+      const c = dayCode(p, date, a, lv);
+      if (c) tot[c]++;
+      if (a?.hours_worked && c !== 'M') hours += Number(a.hours_worked);
+      if (c === 'LT') lateMin += lateBy(a);
+      return { date, c, a, lv };
+    });
+    const working = cells.filter(x => x.c && x.c !== 'H' && x.c !== 'WO').length;
+    return { p, cells, tot, hours, lateMin, working, present: tot.P + tot.LT, leave: tot.L + tot.HD * 0.5 + tot.M };
+  });
+}
+async function getDetails(id) { try { return (await q(sb.from('employee_details').select('*').eq('employee_id', id).maybeSingle())) || {}; } catch { return {}; } }
+const detailFields = d => `
+  <div class="field"><label for="d-phone">Phone</label><input id="d-phone" type="tel" value="${esc(d.phone || '')}" placeholder="+91 98xxx xxxxx"></div>
+  <div class="field"><label for="d-pemail">Personal email</label><input id="d-pemail" type="email" value="${esc(d.personal_email || '')}"></div>
+  <div class="field"><label for="d-dob">Date of birth</label><input id="d-dob" type="date" value="${esc(d.date_of_birth || '')}"></div>
+  <div class="field"><label for="d-emerg">Emergency contact</label><input id="d-emerg" type="text" value="${esc(d.emergency_contact || '')}" placeholder="Name, relation, phone"></div>
+  <div class="field full"><label for="d-addr">Address</label><textarea id="d-addr" style="min-height:60px">${esc(d.address || '')}</textarea></div>`;
+async function saveDetails(id, root) {
+  const v = s => $(s, root).value.trim() || null;
+  await q(sb.from('employee_details').upsert({ employee_id: id, phone: v('#d-phone'), personal_email: v('#d-pemail'), date_of_birth: v('#d-dob'), emergency_contact: v('#d-emerg'), address: v('#d-addr'), updated_at: new Date().toISOString() }));
+}
 const logMinutes = l => l.ended_at ? Number(l.minutes || 0) : (Date.now() - new Date(l.started_at)) / 60000;
 
 function teamList() {
@@ -347,16 +507,27 @@ const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   tasks: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M3.5 6l1.5 1.5L7.5 5M3.5 12l1.5 1.5 2.5-2.5M3.5 18l1.5 1.5 2.5-2.5"/>',
   play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  back: '<path d="M15 18l-6-6 6-6"/>',
+  next: '<path d="M9 18l6-6-6-6"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
   stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>'
 };
 const icon = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
-const logoImg = (cls = '') => `<img class="${cls}" src="${esc(CONFIG.LOGO_URL)}" alt="${esc(CONFIG.COMPANY)}" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex'">`;
+// Tries the logo in the GitHub repo first, then the website copy, then shows "ST"
+function logoFail(img) {
+  if (!img.dataset.tried && CONFIG.LOGO_BACKUP_URL) { img.dataset.tried = '1'; img.src = CONFIG.LOGO_BACKUP_URL; return; }
+  img.style.display = 'none'; if (img.nextElementSibling) img.nextElementSibling.style.display = 'flex';
+}
+const logoImg = (cls = '') => `<img class="${cls}" src="${esc(CONFIG.LOGO_URL)}" alt="${esc(CONFIG.COMPANY)}" referrerpolicy="no-referrer" onerror="logoFail(this)">`;
 
 /* ---------- Modal ---------- */
-function openModal({ title, body, footer = '', onMount }) {
+function openModal({ title, body, footer = '', onMount, wide = false }) {
   const root = $('#modal-root');
   root.innerHTML = `<div class="overlay" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-    <div class="dialog"><div class="dialog-h"><h3>${esc(title)}</h3><button class="x" aria-label="Close">&times;</button></div>
+    <div class="dialog${wide ? ' wide' : ''}"><div class="dialog-h"><h3>${esc(title)}</h3><button class="x" aria-label="Close">&times;</button></div>
     <div class="dialog-b">${body}</div>${footer ? `<div class="dialog-f">${footer}</div>` : ''}</div></div>`;
   const close = () => { root.innerHTML = ''; document.removeEventListener('keydown', onKey); };
   const onKey = e => { if (e.key === 'Escape') close(); };
@@ -375,12 +546,23 @@ function renderSetup() {
     <p class="muted">Open <b>index.html</b>, find <b>CONFIG</b> at the top of the script, and paste your Supabase Project URL and anon public key (Supabase → Project Settings → API). Save, commit to GitHub, and reload this page.</p></div></div>`;
 }
 
+const QUOTES = [
+  ['Alone we can do so little; together we can do so much.', 'Helen Keller'],
+  ['The best way to find yourself is to lose yourself in the service of others.', 'Mahatma Gandhi'],
+  ['Coming together is a beginning, staying together is progress, and working together is success.', 'Henry Ford'],
+  ['Quality is not an act, it is a habit.', 'Aristotle'],
+  ['Arise, awake, and stop not till the goal is reached.', 'Swami Vivekananda'],
+  ['The secret of getting ahead is getting started.', 'Mark Twain'],
+  ['Excellence is a continuous process and not an accident.', 'A. P. J. Abdul Kalam']
+];
 function authShell(formHtml) {
+  const q = QUOTES[Math.floor(Date.now() / 864e5) % QUOTES.length];
   return `<div class="auth">
     <section class="auth-brand">
       <span class="auth-logo">${logoImg()}<span class="brand-fallback">ST</span></span>
-      <div><h2>Your workday, in one place.</h2>
-      <p>Check in and out, apply for leave and track approvals with your team at ${esc(CONFIG.COMPANY)}.</p></div>
+      <div><h2>Good work, <em>done together.</em></h2>
+      <p>Check in, track your tasks and manage leave with the ${esc(CONFIG.COMPANY)} team.</p></div>
+      <figure class="quote"><p>“${esc(q[0])}”</p><cite>${esc(q[1])}</cite></figure>
       <div class="foot">© ${new Date().getFullYear()} ${esc(CONFIG.COMPANY)}</div>
     </section>
     <section class="auth-form">${formHtml}</section></div>`;
@@ -394,6 +576,7 @@ function renderLogin() {
       <div class="field"><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required></div>
       <div class="err" id="err"></div>
       <button class="btn primary" type="submit" style="padding:11px">Sign in</button>
+      <p class="stay">You'll stay signed in on this device until you sign out.</p>
       <button class="btn link" type="button" id="forgot">Forgot password?</button>
     </form>`);
   $('#login').onsubmit = async e => {
@@ -442,6 +625,7 @@ async function loadDirectory() {
     sb.from('settings').select('*').eq('id', 1).maybeSingle()
   ]);
   S.profiles = profiles; S.leaveTypes = types; S.holidays = hols;
+  S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => []);
   S.settings = { ...DEFAULT_SETTINGS, ...(st.data || {}) };
 }
 
@@ -463,6 +647,7 @@ function navItems() {
     { id: 'attendance', label: 'Attendance', icon: 'clock' },
     { id: 'leave', label: 'Leave', icon: 'leave' },
     { id: 'tasks', label: 'Tasks', icon: 'tasks' },
+    m && { id: 'projects', label: 'Projects', icon: 'folder' },
     m && { id: 'approvals', label: 'Approvals', icon: 'check' },
     m && { id: 'team', label: 'Team', icon: 'team' },
     m && { id: 'reports', label: 'Reports', icon: 'report' },
@@ -511,21 +696,24 @@ async function route() {
   if (!S.me) return;
   clearInterval(S.clockTimer);
   const items = navItems();
-  const id = location.hash.replace('#/', '') || 'home';
-  const item = items.find(n => n.id === id) || items[0];
+  const [id, param] = (location.hash.replace('#/', '') || 'home').split('/');
+  let item = items.find(n => n.id === id);
+  if (id === 'project' && isMgr() && param) item = { id: 'project', label: 'Project', nav: 'projects' };
+  if (id === 'person' && param && (isMgr() || param === S.me.id)) item = { id: 'person', label: 'Team member', nav: isMgr() ? 'team' : 'home' };
+  item = item || items[0];
   if (!S.shell || !$('#view')) renderShell();
-  $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === item.id));
+  $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === (item.nav || item.id)));
   $('#page-title').textContent = item.id === 'home' ? `Hello, ${(S.me.full_name || '').split(' ')[0] || 'there'}` : item.label;
   const view = $('#view');
   view.innerHTML = '<div class="loading">Loading…</div>';
-  try { await VIEWS[item.id](view); }
+  try { await VIEWS[item.id](view, param); }
   catch (e) { view.innerHTML = `<div class="card empty">This page couldn't load: ${esc(e.message)}. Check your connection and try again.</div>`; }
 }
 window.addEventListener('hashchange', route);
 
 /* ---------- Profile ---------- */
-function openProfile() {
-  const me = S.me;
+async function openProfile() {
+  const me = S.me, d = await getDetails(me.id);
   openModal({
     title: 'My profile',
     body: `<div class="form-grid">
@@ -534,9 +722,10 @@ function openProfile() {
       <div class="field"><label>Employee ID</label><input type="text" value="${esc(me.employee_code || '—')}" disabled></div>
       <div class="field"><label>Department</label><input type="text" value="${esc(me.department || '—')}" disabled></div>
       <div class="field"><label>Reports to</label><input type="text" value="${esc(me.manager_id ? nameOf(me.manager_id) : '—')}" disabled></div>
+      ${detailFields(d)}
       <div class="field full"><label for="p-pw">New password</label><input id="p-pw" type="password" placeholder="Leave blank to keep your current password" autocomplete="new-password"></div>
     </div>`,
-    footer: `<button class="btn danger" id="p-out" style="margin-right:auto">Sign out</button><button class="btn" data-close>Cancel</button><button class="btn primary" id="p-save">Save changes</button>`,
+    footer: `<button class="btn danger" id="p-out" style="margin-right:auto">Sign out</button><a class="btn" href="#/person/${me.id}" data-close>My page</a><button class="btn primary" id="p-save">Save changes</button>`,
     onMount: (root, close) => {
       $('[data-close]', root).onclick = close;
       $('#p-out', root).onclick = async () => { close(); await sb.auth.signOut(); S.me = null; renderLogin(); };
@@ -544,6 +733,7 @@ function openProfile() {
         try {
           const name = $('#p-name', root).value.trim();
           if (name !== me.full_name) { await q(sb.from('profiles').update({ full_name: name }).eq('id', me.id)); me.full_name = name; }
+          await saveDetails(me.id, root);
           const pw = $('#p-pw', root).value;
           if (pw) { if (pw.length < 8) throw new Error('Password must be at least 8 characters'); const { error } = await sb.auth.updateUser({ password: pw }); if (error) throw error; }
           close(); toast('Profile saved'); S.shell = false; route();
@@ -608,13 +798,15 @@ async function stopTimer() {
 
 VIEWS.home = async el => {
   const st = S.settings, today = istDate(), year = today.slice(0, 4);
-  const [att, bals, pending, onLeave, myTasks] = await Promise.all([
+  const [att, bals, pending, onLeave, myTasks, myDetails] = await Promise.all([
     q(sb.from('attendance').select('*').eq('employee_id', S.me.id).eq('work_date', today).maybeSingle()),
     q(sb.from('leave_balances').select('*').eq('employee_id', S.me.id).eq('year', +year)),
     q(sb.from('leave_requests').select('*').eq('employee_id', S.me.id).eq('status', 'pending')),
     isMgr() ? q(sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', today).gte('end_date', today).neq('employee_id', S.me.id)) : Promise.resolve([]),
-    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).neq('status', 'done').order('due_date', { ascending: true, nullsFirst: false }).limit(5)).catch(() => [])
+    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).neq('status', 'done').order('due_date', { ascending: true, nullsFirst: false }).limit(5)).catch(() => []),
+    getDetails(S.me.id)
   ]);
+  const missing = ['phone', 'emergency_contact', 'date_of_birth'].filter(k => !myDetails[k]);
   let apprCount = 0;
   if (isMgr()) { const r = await sb.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', S.me.id); apprCount = r.count || 0; }
 
@@ -654,6 +846,8 @@ VIEWS.home = async el => {
     </div>
   </section>
 
+  ${missing.length ? `<div class="nudge"><div><b>Complete your profile</b><div class="task-sub">Add your ${missing.map(k => ({ phone: 'phone number', emergency_contact: 'emergency contact', date_of_birth: 'date of birth' })[k]).join(', ')} so the team can reach you.</div></div><button class="btn primary sm" id="nudge-btn">Add details</button></div>` : ''}
+
   ${isMgr() ? `<div class="stats">
     <a class="stat" href="#/approvals" style="text-decoration:none;color:inherit"><span>Leave requests to review</span><b>${apprCount}</b></a>
     <a class="stat" href="#/team" style="text-decoration:none;color:inherit"><span>Team on leave today</span><b>${onLeave.length}</b></a>
@@ -666,7 +860,7 @@ VIEWS.home = async el => {
         <div class="card-h"><h2>My tasks</h2><div class="right"><a class="btn sm" href="#/tasks">All tasks</a></div></div>
         <div class="card-b">${myTasks.length ? myTasks.map(t => {
           const running = S.running?.task_id === t.id;
-          return `<div class="list-row"><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}${t.due_date ? ` · due <span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : ''}</div></div>
+          return `<div class="list-row"><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(projName(t) || 'No project')}${t.due_date ? ` · due <span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : ''}</div></div>
             ${running ? `<b class="num" data-live-timer style="color:var(--bad)"></b><button class="btn danger sm icon-btn" data-stop aria-label="Stop timer">${icon('stop')}Stop</button>` : `<button class="btn sm icon-btn" data-start="${t.id}" aria-label="Start timer">${icon('play')}Start</button>`}</div>`; }).join('')
           : '<div class="empty">No open tasks. Add one on the Tasks page to track your time.</div>'}</div>
       </div>
@@ -715,6 +909,7 @@ VIEWS.home = async el => {
     } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = orig; }
   };
   $('#apply').onclick = () => openApplyLeave();
+  $('#nudge-btn') && ($('#nudge-btn').onclick = () => openProfile());
   $$('[data-start]', el).forEach(b => b.onclick = () => startTimer(b.dataset.start));
   $$('[data-stop]', el).forEach(b => b.onclick = () => stopTimer());
 };
@@ -930,7 +1125,7 @@ VIEWS.team = async el => {
     else { outC++; st = '<span class="pill warn">Not checked in</span>'; }
     const hrs = a?.check_in ? dur((a.check_out ? new Date(a.check_out) : new Date()) - new Date(a.check_in)) : '—';
     const cur = run ? `<span class="task-title">${esc(tasks.find(t => t.id === run.task_id)?.title || 'Task')}</span><div class="task-sub">for ${hm((Date.now() - new Date(run.started_at)) / 60000)}</div>` : '<span class="muted">—</span>';
-    return `<tr><td><div class="who"><span class="avatar">${esc(initials(p.full_name || p.email))}</span><div><b>${esc(p.full_name || p.email)}</b><small>${esc(p.designation || p.department || '')}</small></div></div></td><td>${st}</td><td class="num">${fmtTime(a?.check_in)}</td><td class="num">${fmtTime(a?.check_out)}</td><td class="num">${hrs}</td><td>${cur}</td></tr>`;
+    return `<tr><td>${personLink(p, p.designation || p.department || '')}</td><td>${st}</td><td class="num">${fmtTime(a?.check_in)}</td><td class="num">${fmtTime(a?.check_out)}</td><td class="num">${hrs}</td><td>${cur}</td></tr>`;
   });
   el.innerHTML = `<div class="stats">
       <div class="stat"><span>Team members</span><b>${members.length}</b></div>
@@ -951,60 +1146,444 @@ function downloadCSV(name, rows) {
   a.download = name; document.body.appendChild(a); a.click(); a.remove();
 }
 
-VIEWS.reports = async el => {
-  const month = S.repMonth || istDate().slice(0, 7);
-  const { first, last } = monthBounds(month);
-  const people = teamList();
-  const [att, leaves, logs] = await Promise.all([
-    q(sb.from('attendance').select('*').gte('work_date', first).lte('work_date', last).order('work_date')),
-    q(sb.from('leave_requests').select('*').lte('start_date', last).gte('end_date', first).order('start_date')),
-    q(sb.from('time_logs').select('*').gte('started_at', `${first}T00:00:00+05:30`).lte('started_at', `${last}T23:59:59+05:30`).order('started_at')).catch(() => [])
-  ]);
-  const taskIds = [...new Set(logs.map(l => l.task_id))];
-  const tasks = taskIds.length ? await q(sb.from('tasks').select('id,title,project').in('id', taskIds)).catch(() => []) : [];
-  const summary = people.map(p => {
-    const a = att.filter(x => x.employee_id === p.id && x.check_in);
-    const ok = a.filter(x => !isMissed(x, x.work_date));
-    const lv = leaves.filter(x => x.employee_id === p.id && x.status === 'approved');
-    return { p, days: ok.length, hours: ok.reduce((s, x) => s + Number(x.hours_worked || 0), 0), late: ok.filter(isLate).length,
-      missed: a.length - ok.length, leave: lv.reduce((s, x) => s + Number(x.days), 0),
-      task: logs.filter(l => l.employee_id === p.id).reduce((s, l) => s + logMinutes(l), 0) };
+/* ---------- Excel / CSV export (attendance only) ---------- */
+async function loadXLSX() {
+  if (window.XLSX) return;
+  await new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = res; sc.onerror = () => rej(new Error('Could not load the Excel tool. Check your internet and try again.'));
+    document.head.appendChild(sc);
   });
+}
+function xsheet(rows, widths) { const ws = XLSX.utils.aoa_to_sheet(rows); if (widths) ws['!cols'] = widths.map(w => ({ wch: w })); return ws; }
+const datesBetween = (a, b) => { const out = []; for (let d = a; d <= b; d = addDays(d, 1)) out.push(d); return out; };
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function attendanceRows(reg) {
+  const today = istDate(), rows = [];
+  const dates = reg[0]?.cells.map(c => c.date).filter(d => d <= today) || [];
+  dates.forEach(d => reg.forEach(r => {
+    const c = r.cells.find(x => x.date === d); if (!c || !c.c) return;
+    rows.push([d, dayName(d), r.p.employee_code || '', r.p.full_name || r.p.email, CODES[c.c] + (c.c === 'H' || c.c === 'WO' ? ` (${offReason(d)})` : ''),
+      c.a ? fmtTime(c.a.check_in) : '', c.a?.check_out ? fmtTime(c.a.check_out) : '', c.a?.hours_worked ?? '', c.c === 'LT' ? lateBy(c.a) : '', c.lv ? typeName(c.lv.leave_type_id) : '', c.a?.notes || '']);
+  }));
+  return [['Date', 'Day', 'Employee ID', 'Name', 'Status', 'Check in', 'Check out', 'Hours', 'Late (min)', 'Leave type', 'Note'], ...rows];
+}
+function summaryRows(reg) {
+  return [['Employee ID', 'Name', 'Designation', 'Working days', 'Present', 'Late days', 'Late minutes', 'Missed check-out (leave)', 'Leave days', 'Absent', 'Hours worked', 'Avg hours / day'],
+    ...reg.map(r => [r.p.employee_code || '', r.p.full_name || r.p.email, r.p.designation || '', r.working, r.present, r.tot.LT, r.lateMin, r.tot.M, r.leave, r.tot.A, +r.hours.toFixed(2), r.present ? +(r.hours / r.present).toFixed(2) : 0])];
+}
+
+async function exportAttendance(fmt, reg, mode, label) {
+  const name = `Sharvii-Attendance-${label.replace(/[^A-Za-z0-9]+/g, '-')}`;
+  if (fmt === 'csv') return downloadCSV(`${name}.csv`, attendanceRows(reg));
+  await loadXLSX();
+  const wb = XLSX.utils.book_new(), today = istDate();
+  XLSX.utils.book_append_sheet(wb, xsheet([[`${CONFIG.COMPANY}: attendance ${label}`], [], ...summaryRows(reg)], [12, 22, 20, 13, 9, 10, 12, 22, 11, 9, 13, 14]), 'Summary');
+  if (mode === 'month') {
+    const dates = reg[0]?.cells.map(c => c.date).filter(d => d <= today) || [];
+    XLSX.utils.book_append_sheet(wb, xsheet([
+      ['Name', ...dates.map(d => `${dObj(d).getDate()} ${dayName(d)}`), 'Present', 'Late', 'Leave', 'Absent', 'Hours'],
+      ...reg.map(r => [r.p.full_name || r.p.email, ...r.cells.filter(c => c.date <= today).map(c => c.c), r.present, r.tot.LT, r.leave, r.tot.A, +r.hours.toFixed(2)]),
+      [], ['P = Present, LT = Late, M = Missed check-out (counted as leave), L = Leave, HD = Half-day leave, A = Absent, H = Holiday, WO = Weekly off']
+    ], [22, ...dates.map(() => 7), 9, 7, 7, 8, 8]), 'Register');
+  } else {
+    XLSX.utils.book_append_sheet(wb, xsheet([
+      ['Name', ...MONTHS.map(m => `${m} present`), 'Total present', 'Late', 'Leave', 'Absent'],
+      ...reg.map(r => [r.p.full_name || r.p.email, ...MONTHS.map((_, i) => r.cells.filter(c => +c.date.slice(5, 7) === i + 1 && (c.c === 'P' || c.c === 'LT')).length), r.present, r.tot.LT, r.leave, r.tot.A])
+    ], [22, ...MONTHS.map(() => 12), 13, 7, 7, 8]), 'By month');
+  }
+  XLSX.utils.book_append_sheet(wb, xsheet(attendanceRows(reg), [11, 6, 12, 22, 26, 10, 10, 8, 10, 14, 30]), 'Daily attendance');
+  XLSX.writeFile(wb, `${name}.xlsx`);
+}
+
+/* ---------- Reports: attendance only ---------- */
+VIEWS.reports = async el => {
+  const today = istDate(), mode = S.repMode || 'month';
+  const month = S.repMonth || today.slice(0, 7), year = S.repYear || +today.slice(0, 4);
+  let first, last, label;
+  if (mode === 'month') { ({ first, last } = monthBounds(month)); label = dObj(first).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); }
+  else { first = `${year}-01-01`; last = `${year}-12-31`; label = String(year); }
+  const people = teamList();
+  const [att, leaves] = await Promise.all([
+    allRows(() => sb.from('attendance').select('*').gte('work_date', first).lte('work_date', last)),
+    allRows(() => sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', last).gte('end_date', first))
+  ]);
+  const dates = datesBetween(first, last);
+  const reg = registerFor(people, dates, att, leaves);
+  const shiftMonth = (ym, n) => { const [y, m] = ym.split('-').map(Number), d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; };
+  const atEnd = mode === 'month' ? month >= today.slice(0, 7) : year >= +today.slice(0, 4);
+  const expected = reg.reduce((s, r) => s + r.working, 0), present = reg.reduce((s, r) => s + r.present, 0);
+  const legend = ['P', 'LT', 'L', 'HD', 'M', 'A', 'H', 'WO'].map(c => `<span><span class="code c-${c}">${c === 'WO' ? '–' : c}</span>${CODES[c]}</span>`).join('');
+
+  const monthTable = () => `<div class="legend">${legend}</div>
+    <div class="table-wrap"><table class="reg"><thead><tr><th class="namec">Employee</th>
+      ${dates.map(d => `<th class="${offReason(d) ? 'off' : ''} ${d === today ? 'today' : ''}" title="${esc(offReason(d) || '')}"><b>${dObj(d).getDate()}</b>${dayName(d).slice(0, 2)}</th>`).join('')}
+      <th class="tot">Present</th><th class="tot">Late</th><th class="tot">Leave</th><th class="tot">Absent</th><th class="tot">Hours</th></tr></thead>
+    <tbody>${reg.map(r => `<tr><td class="namec"><a class="plink" href="#/person/${r.p.id}"><b>${esc(r.p.full_name || r.p.email)}</b></a></td>
+      ${r.cells.map(c => { const tip = [fmtDate(c.date), CODES[c.c] || '', c.a?.check_in ? `In ${fmtTime(c.a.check_in)}` : '', c.a?.check_out ? `Out ${fmtTime(c.a.check_out)}` : '', c.lv ? typeName(c.lv.leave_type_id) : '', (c.c === 'H' || c.c === 'WO') ? offReason(c.date) : ''].filter(Boolean).join(' · ');
+        return `<td class="${offReason(c.date) ? 'off' : ''} ${c.date === today ? 'today' : ''}" title="${esc(tip)}">${c.c ? `<span class="code c-${c.c}">${c.c === 'WO' ? '–' : c.c}</span>` : ''}</td>`; }).join('')}
+      <td class="tot">${r.present}</td><td class="tot">${r.tot.LT}</td><td class="tot">${num(r.leave)}</td><td class="tot">${r.tot.A}</td><td class="tot">${num(r.hours)}</td></tr>`).join('') || `<tr><td class="empty" colspan="${dates.length + 6}">No one to show.</td></tr>`}</tbody></table></div>`;
+
+  const yearTable = () => `<div class="table-wrap"><table class="reg"><thead><tr><th class="namec">Employee</th>
+      ${MONTHS.map((m, i) => `<th style="min-width:58px"><button class="btn link" data-goto="${year}-${pad2(i + 1)}" title="Open ${m} register"><b>${m}</b></button></th>`).join('')}
+      <th class="tot">Present</th><th class="tot">Late</th><th class="tot">Leave</th><th class="tot">Absent</th><th class="tot">Hours</th></tr></thead>
+    <tbody>${reg.map(r => `<tr><td class="namec"><a class="plink" href="#/person/${r.p.id}"><b>${esc(r.p.full_name || r.p.email)}</b></a></td>
+      ${MONTHS.map((_, i) => { const cs = r.cells.filter(c => +c.date.slice(5, 7) === i + 1), pr = cs.filter(c => c.c === 'P' || c.c === 'LT').length, ab = cs.filter(c => c.c === 'A').length, lv = cs.filter(c => ['L', 'HD', 'M'].includes(c.c)).length;
+        const any = cs.some(c => c.c);
+        return `<td title="${MONTHS[i]}: ${pr} present, ${lv} leave, ${ab} absent">${any ? `<b>${pr}</b>${ab || lv ? `<div style="font-size:10.5px;line-height:1.1"><span style="color:var(--bad)">${ab ? ab + 'A' : ''}</span> <span style="color:var(--info)">${lv ? lv + 'L' : ''}</span></div>` : ''}` : '<span class="muted">·</span>'}</td>`; }).join('')}
+      <td class="tot">${r.present}</td><td class="tot">${r.tot.LT}</td><td class="tot">${num(r.leave)}</td><td class="tot">${r.tot.A}</td><td class="tot">${num(r.hours)}</td></tr>`).join('')}</tbody></table></div>`;
+
   el.innerHTML = `<div class="toolbar">
-      <div class="field"><label for="r-month">Month</label><input id="r-month" type="month" value="${month}"></div>
+      <div class="field"><label>View</label><div class="seg"><button data-mode="month" class="${mode === 'month' ? 'on' : ''}">Month</button><button data-mode="year" class="${mode === 'year' ? 'on' : ''}">Year</button></div></div>
+      <div class="field"><label>${mode === 'month' ? 'Month' : 'Year'}</label><div class="month-nav"><button class="btn sm icon-btn" id="r-prev" aria-label="Previous">${icon('back')}</button><b>${label}</b><button class="btn sm icon-btn" id="r-next" aria-label="Next" ${atEnd ? 'disabled' : ''}>${icon('next')}</button></div></div>
       <div class="grow"></div>
-      <button class="btn" id="dl-att">${icon('download')}Attendance CSV</button>
-      <button class="btn" id="dl-lv">${icon('download')}Leave CSV</button>
-      <button class="btn" id="dl-tk">${icon('download')}Task time CSV</button></div>
-    <div class="card"><div class="card-h"><h2>Monthly summary</h2><span class="sub">${dObj(first).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</span></div>
-    <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Days present</th><th>Hours</th><th>Avg / day</th><th>Late days</th><th>Missed check-out (leave)</th><th>Approved leave</th><th>Task time</th></tr></thead><tbody>
-    ${summary.map(s => `<tr><td><b>${esc(s.p.full_name || s.p.email)}</b><div class="task-sub">${esc(s.p.designation || s.p.department || '')}</div></td><td class="num">${s.days}</td><td class="num">${num(s.hours)}</td><td class="num">${s.days ? num(s.hours / s.days) : '0'}</td><td class="num">${s.late ? `<span class="pill warn">${s.late}</span>` : '0'}</td><td class="num">${s.missed ? `<span class="pill bad">${s.missed}</span>` : '0'}</td><td class="num">${num(s.leave)}</td><td class="num">${hm(s.task)}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No employees to report on.</td></tr>'}
-    </tbody></table></div></div>`;
-  $('#r-month').onchange = e => { S.repMonth = e.target.value; route(); };
-  $('#dl-att').onclick = () => downloadCSV(`attendance-${month}.csv`, [
-    ['Employee ID', 'Name', 'Department', 'Date', 'Check in', 'Check out', 'Hours', 'Status', 'Late (min)', 'Check-in location', 'Note'],
-    ...att.map(a => { const p = profileOf(a.employee_id); const miss = isMissed(a, a.work_date); return [p.employee_code, p.full_name, p.department, a.work_date, fmtTime(a.check_in), fmtTime(a.check_out), a.hours_worked ?? '', miss ? 'Leave (missed check-out)' : a.check_out ? 'Present' : 'Working', a.check_in && isLate(a) ? lateBy(a) : '', a.check_in_lat ? `${a.check_in_lat},${a.check_in_lng}` : '', a.notes]; })
+      <div class="field"><label>Download attendance</label><div style="display:flex;gap:8px"><button class="btn primary" id="dl-xlsx">${icon('download')}Excel</button><button class="btn" id="dl-csv">${icon('download')}CSV</button></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span>Attendance rate</span><b>${expected ? Math.round(present / expected * 100) : 0}%</b></div>
+      <div class="stat"><span>Days present</span><b>${present}</b></div>
+      <div class="stat"><span>Late check-ins</span><b>${reg.reduce((s, r) => s + r.tot.LT, 0)}</b></div>
+      <div class="stat"><span>Leave days</span><b>${num(reg.reduce((s, r) => s + r.leave, 0))}</b></div>
+      <div class="stat"><span>Absent days</span><b>${reg.reduce((s, r) => s + r.tot.A, 0)}</b></div>
+    </div>
+    <div class="card"><div class="card-h"><h2>${mode === 'month' ? 'Attendance register' : 'Year at a glance'}</h2><span class="sub">${label} · ${people.length} people</span></div>
+      ${mode === 'month' ? monthTable() : yearTable()}</div>
+    <p class="muted" style="font-size:13px;margin-top:10px">${mode === 'month' ? 'Hover over a day to see check-in and check-out times.' : 'Numbers are days present. Click a month to open its register.'} Click a name to open their profile.</p>`;
+
+  $$('[data-mode]', el).forEach(b => b.onclick = () => { S.repMode = b.dataset.mode; route(); });
+  $('#r-prev').onclick = () => { mode === 'month' ? S.repMonth = shiftMonth(month, -1) : S.repYear = year - 1; route(); };
+  $('#r-next').onclick = () => { mode === 'month' ? S.repMonth = shiftMonth(month, 1) : S.repYear = year + 1; route(); };
+  $$('[data-goto]', el).forEach(b => b.onclick = () => { S.repMode = 'month'; S.repMonth = b.dataset.goto; route(); });
+  const run = async (btn, fmt) => { const html = btn.innerHTML; btn.disabled = true; btn.textContent = 'Preparing…'; try { await exportAttendance(fmt, reg, mode, label); toast('Attendance downloaded'); } catch (e) { toast(e.message, 'bad'); } btn.disabled = false; btn.innerHTML = html; };
+  $('#dl-xlsx').onclick = e => run(e.currentTarget, 'xlsx');
+  $('#dl-csv').onclick = e => run(e.currentTarget, 'csv');
+};
+
+async function downloadBackup() {
+  const tables = ['profiles', 'employee_details', 'settings', 'holidays', 'leave_types', 'leave_balances', 'leave_requests', 'attendance', 'projects', 'tasks', 'comments', 'time_logs'];
+  const data = { app: CONFIG.APP_NAME, created_at: new Date().toISOString(), tables: {} };
+  for (const t of tables) data.tables[t] = await allRows(() => sb.from(t).select('*')).catch(() => []);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
+  a.download = `sharvii-hr-backup-${istDate()}.json`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- Person profile ---------- */
+VIEWS.person = async (el, id) => {
+  const p = profileOf(id);
+  if (!p.id) { el.innerHTML = '<div class="card empty">This person was not found.</div>'; return; }
+  $('#page-title').textContent = p.full_name || p.email;
+  const today = istDate(), month = today.slice(0, 7), { first } = monthBounds(month), year = +today.slice(0, 4);
+  const [d, att, lvMonth, bals, pend, tasks] = await Promise.all([
+    getDetails(id),
+    q(sb.from('attendance').select('*').eq('employee_id', id).gte('work_date', first).lte('work_date', today)).catch(() => []),
+    q(sb.from('leave_requests').select('*').eq('employee_id', id).eq('status', 'approved').lte('start_date', today).gte('end_date', first)).catch(() => []),
+    q(sb.from('leave_balances').select('*').eq('employee_id', id).eq('year', year)).catch(() => []),
+    q(sb.from('leave_requests').select('*').eq('employee_id', id).eq('status', 'pending')).catch(() => []),
+    q(sb.from('tasks').select('*').eq('assigned_to', id).neq('status', 'done').order('due_date', { ascending: true, nullsFirst: false }).limit(20)).catch(() => [])
   ]);
-  $('#dl-lv').onclick = () => downloadCSV(`leave-${month}.csv`, [
-    ['Employee ID', 'Name', 'Leave type', 'From', 'To', 'Days', 'Status', 'Reason', 'Decided by', 'Comment'],
-    ...leaves.map(r => { const p = profileOf(r.employee_id); return [p.employee_code, p.full_name, typeName(r.leave_type_id), r.start_date, r.end_date, r.days, r.status, r.reason, r.approver_id ? nameOf(r.approver_id) : '', r.approver_comment]; })
+  const [r] = registerFor([p], datesBetween(first, today), att, lvMonth);
+  const fact = (k, v) => `<div><dt>${k}</dt><dd>${v || '<span class="muted">Not added</span>'}</dd></div>`;
+  const ago = p.date_of_joining ? (() => { const m = (dObj(today) - dObj(p.date_of_joining)) / (30.44 * 864e5); return m >= 12 ? `${Math.floor(m / 12)} yr ${Math.floor(m % 12)} mo` : `${Math.max(0, Math.floor(m))} months`; })() : '';
+  el.innerHTML = `<a class="back" href="#/${isMgr() ? 'team' : 'home'}">${icon('back')}Back</a>
+    <div class="card person-head">
+      <span class="avatar lg">${esc(initials(p.full_name || p.email))}</span>
+      <div><h2>${esc(p.full_name || p.email)}</h2><div class="muted">${esc([p.designation, p.department].filter(Boolean).join(' · ') || '—')}</div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><span class="pill info" style="text-transform:capitalize">${esc(p.role)}</span>${p.is_active ? '<span class="pill ok">Active</span>' : '<span class="pill muted">Inactive</span>'}</div></div>
+      <div class="right">
+        <a class="btn" href="mailto:${esc(p.email)}">${icon('mail')}Email</a>
+        ${d.phone ? `<a class="btn" href="tel:${esc(d.phone)}">${icon('phone')}Call</a>` : ''}
+        ${isAdmin() ? '<button class="btn primary" id="pp-edit">Edit</button>' : id === S.me.id ? '<button class="btn primary" id="pp-me">Edit my details</button>' : ''}
+      </div>
+    </div>
+    <div class="grid g-2">
+      <div class="card"><div class="card-h"><h2>Details</h2></div><div class="card-b"><dl class="facts">
+        ${fact('Employee ID', esc(p.employee_code || ''))}
+        ${fact('Work email', `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`)}
+        ${fact('Phone', d.phone ? `<a href="tel:${esc(d.phone)}">${esc(d.phone)}</a>` : '')}
+        ${fact('Joined', p.date_of_joining ? `${fmtDate(p.date_of_joining)} <span class="muted">(${ago})</span>` : '')}
+        ${fact('Reports to', p.manager_id ? `<a href="#/person/${p.manager_id}">${esc(nameOf(p.manager_id))}</a>` : '')}
+        ${fact('Department', esc(p.department || ''))}
+        ${fact('Date of birth', d.date_of_birth ? fmtDate(d.date_of_birth) : '')}
+        ${fact('Personal email', esc(d.personal_email || ''))}
+        ${fact('Emergency contact', esc(d.emergency_contact || ''))}
+        ${fact('Address', esc(d.address || ''))}
+      </dl></div></div>
+      <div class="grid" style="align-content:start">
+        <div class="card"><div class="card-h"><h2>This month</h2>${isMgr() ? '<div class="right"><button class="btn sm" id="pp-att">Full attendance</button></div>' : ''}</div><div class="card-b">
+          <div class="stats" style="margin:0;grid-template-columns:repeat(4,1fr)">
+            <div class="stat"><span>Present</span><b>${r.present}</b></div><div class="stat"><span>Late</span><b>${r.tot.LT}</b></div>
+            <div class="stat"><span>Leave</span><b>${num(r.leave)}</b></div><div class="stat"><span>Absent</span><b>${r.tot.A}</b></div></div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:14px">${r.cells.map(c => `<span class="code c-${c.c || 'WO'}" title="${esc(fmtDate(c.date) + ' · ' + (CODES[c.c] || 'Not counted'))}">${dObj(c.date).getDate()}</span>`).join('')}</div>
+        </div></div>
+        <div class="card"><div class="card-h"><h2>Leave balance ${year}</h2></div><div class="card-b">${balanceRows(bals, pend, String(year))}</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px"><div class="card-h"><h2>Open tasks</h2><span class="sub">${tasks.length}</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Task</th><th>Project</th><th>Due</th><th>Status</th></tr></thead><tbody>
+      ${tasks.map(t => `<tr><td class="task-title" style="white-space:normal">${esc(t.title)}</td><td>${t.project_id && isMgr() ? `<a class="plink" href="#/project/${t.project_id}"><b>${esc(projName(t))}</b></a>` : esc(projName(t) || '—')}</td><td class="num">${t.due_date ? `<span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '—'}</td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td></tr>`).join('') || '<tr><td colspan="4" class="empty">No open tasks.</td></tr>'}
+      </tbody></table></div></div>`;
+  $('#pp-edit') && ($('#pp-edit').onclick = () => editEmployee(id));
+  $('#pp-me') && ($('#pp-me').onclick = () => openProfile());
+  $('#pp-att') && ($('#pp-att').onclick = () => { S.attWho = id; location.hash = '#/attendance'; });
+};
+
+/* ---------- Comments (tasks and projects) ---------- */
+function timeAgo(ts) {
+  const s = (Date.now() - new Date(ts)) / 1000;
+  if (s < 60) return 'just now';
+  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
+  if (s < 7 * 86400) return `${Math.floor(s / 86400)} d ago`;
+  return fmtDate(istDate(new Date(ts)));
+}
+async function mountComments(box, ref) {
+  // ref: { taskId, projectId }  — task comments carry the projectId too, project discussion has no taskId
+  box.innerHTML = `<div class="cm-list"><div class="muted" style="font-size:13px">Loading comments…</div></div>
+    <div class="cm-new"><span class="avatar sm">${esc(initials(S.me.full_name || S.me.email))}</span>
+      <textarea placeholder="Write a comment… (Ctrl + Enter to send)" aria-label="Write a comment"></textarea>
+      <button class="btn primary sm" type="button">Comment</button></div>`;
+  const list = $('.cm-list', box), ta = $('textarea', box), btn = $('.cm-new .btn', box);
+  const load = async () => {
+    let qb = sb.from('comments').select('*').order('created_at');
+    qb = ref.taskId ? qb.eq('task_id', ref.taskId) : qb.eq('project_id', ref.projectId).is('task_id', null);
+    const rows = await q(qb).catch(() => []);
+    list.innerHTML = rows.length ? rows.map(c => `<div class="cm"><span class="avatar sm">${esc(initials(nameOf(c.author_id)))}</span><div class="cm-body">
+        <div class="cm-h"><b>${esc(nameOf(c.author_id))}</b><span class="muted" title="${esc(new Date(c.created_at).toLocaleString('en-IN', { timeZone: TZ }))}">${timeAgo(c.created_at)}</span>${c.author_id === S.me.id || isAdmin() ? `<button class="btn link cm-del" data-del="${c.id}">Delete</button>` : ''}</div>
+        <div class="cm-text">${esc(c.body)}</div></div></div>`).join('') : `<div class="muted" style="font-size:13px">No comments yet. ${ref.taskId ? 'Ask a question or share an update on this task.' : 'Post updates for everyone on this project.'}</div>`;
+    $$('[data-del]', list).forEach(b => b.onclick = async () => {
+      if (!confirm('Delete this comment?')) return;
+      try { await q(sb.from('comments').delete().eq('id', b.dataset.del)); load(); } catch (e) { toast(e.message, 'bad'); }
+    });
+    list.scrollTop = list.scrollHeight;
+    box.dispatchEvent(new CustomEvent('comments', { detail: rows.length }));
+  };
+  const send = async () => {
+    const body = ta.value.trim(); if (!body) return;
+    btn.disabled = true;
+    try {
+      await q(sb.from('comments').insert({ task_id: ref.taskId || null, project_id: ref.projectId || null, author_id: S.me.id, body }));
+      ta.value = ''; await load();
+    } catch (e) { toast(e.message, 'bad'); }
+    btn.disabled = false; ta.focus();
+  };
+  btn.onclick = send;
+  ta.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); } });
+  await load();
+}
+
+/* ---------- Projects (project managers) ---------- */
+const PSTATUS = { active: ['ok', 'Active'], on_hold: ['warn', 'On hold'], completed: ['muted', 'Completed'] };
+const PCOLORS = ['#3A9A52', '#2D6CDF', '#7C4DDB', '#D9480F', '#C2255C', '#0B7285', '#B7791F', '#131C3F'];
+
+function projectStats(pr, tasks, logs, today) {
+  const ts = tasks.filter(t => t.project_id === pr.id);
+  const by = st => ts.filter(t => t.status === st).length;
+  const done = by('done'), pct = ts.length ? Math.round(done / ts.length * 100) : 0;
+  const ids = new Set(ts.map(t => t.id));
+  const mins = logs.filter(l => ids.has(l.task_id)).reduce((s, l) => s + logMinutes(l), 0);
+  const overdue = ts.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
+  const people = [...new Set(ts.map(t => t.assigned_to))].map(profileOf).filter(p => p.id);
+  return { ts, done, pct, mins, overdue, people, todo: by('todo'), prog: by('in_progress'), review: by('review') };
+}
+const stackBar = st => { const total = st.ts.length || 1;
+  return `<div class="stack">${['done', 'review', 'in_progress', 'todo'].map(k => { const n = k === 'done' ? st.done : k === 'review' ? st.review : k === 'in_progress' ? st.prog : st.todo; return n ? `<span style="width:${n / total * 100}%;background:${TCOLOR[k]}" title="${TSTATUS[k]}: ${n}"></span>` : ''; }).join('')}</div>`; };
+
+VIEWS.projects = async el => {
+  S.projects = await q(sb.from('projects').select('*').order('name'));
+  const filter = S.projFilter, layout = S.projLayout || 'cards', today = istDate();
+  const tasks = await allRows(() => sb.from('tasks').select('id,project_id,status,assigned_to,due_date'));
+  const pIds = tasks.filter(t => t.project_id).map(t => t.id);
+  const logs = pIds.length ? await inChunks(pIds, ch => sb.from('time_logs').select('task_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
+  const list = S.projects.filter(p => filter === 'all' || p.status === filter);
+  const stats = Object.fromEntries(S.projects.map(p => [p.id, projectStats(p, tasks, logs, today)]));
+  const counts = k => S.projects.filter(p => k === 'all' || p.status === k).length;
+  const dueTxt = pr => pr.due_date ? `<span class="${pr.due_date < today && pr.status !== 'completed' ? 'overdue' : ''}">${fmtShort(pr.due_date)}</span>` : '<span class="muted">—</span>';
+
+  const card = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
+    return `<a class="proj" href="#/project/${pr.id}" style="--pc:${esc(pr.color || '#3A9A52')}" data-s="${esc((pr.name + ' ' + (pr.client || '')).toLowerCase())}">
+      <div class="proj-top"><b>${esc(pr.name)}</b><span class="pill ${pc}">${pl}</span></div>
+      <div class="task-sub" style="margin-top:4px">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><b style="font-size:24px">${st.pct}%</b><span class="task-sub">${st.done} of ${st.ts.length} tasks done</span></div>
+      ${stackBar(st)}
+      <div class="proj-meta"><span>${hm(st.mins)} logged</span><span>Due ${dueTxt(pr)}</span></div>
+      <div class="avs">${st.people.slice(0, 7).map(p => `<span class="avatar" title="${esc(p.full_name)}">${esc(initials(p.full_name || p.email))}</span>`).join('')}${st.overdue ? `<span class="pill bad" style="margin-left:auto">${st.overdue} overdue</span>` : ''}</div>
+    </a>`; };
+  const row = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
+    return `<tr data-open="${pr.id}" data-s="${esc((pr.name + ' ' + (pr.client || '')).toLowerCase())}" style="cursor:pointer">
+      <td style="white-space:normal;min-width:220px"><div style="display:flex;gap:10px;align-items:center"><span class="dot" style="background:${esc(pr.color)}"></span><div><div class="task-title">${esc(pr.name)}</div><div class="task-sub">${esc(pr.client || 'Internal')}</div></div></div></td>
+      <td>${pr.owner_id ? esc(nameOf(pr.owner_id)) : '<span class="muted">—</span>'}</td>
+      <td style="min-width:170px"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1">${stackBar(st)}</div><b class="num">${st.pct}%</b></div></td>
+      <td class="num">${st.done}/${st.ts.length}</td><td class="num">${st.overdue ? `<span class="pill bad">${st.overdue}</span>` : '0'}</td>
+      <td class="num">${hm(st.mins)}</td><td class="num">${dueTxt(pr)}</td><td><span class="pill ${pc}">${pl}</span></td></tr>`; };
+
+  el.innerHTML = `<div class="toolbar">
+      <div class="field"><label>Show</label><div class="seg">${[['active', 'Active'], ['on_hold', 'On hold'], ['completed', 'Completed'], ['all', 'All']].map(([v, l]) => `<button data-pf="${v}" class="${filter === v ? 'on' : ''}">${l} (${counts(v)})</button>`).join('')}</div></div>
+      <div class="field"><label>Layout</label><div class="seg"><button data-pl="cards" class="${layout === 'cards' ? 'on' : ''}">Cards</button><button data-pl="table" class="${layout === 'table' ? 'on' : ''}">Table</button></div></div>
+      <div class="field grow"><label for="pj-search">Search</label><input id="pj-search" type="text" placeholder="Project or client"></div>
+      <button class="btn primary" id="pj-new">${icon('plus')}New project</button></div>
+    <div class="stats">
+      <div class="stat"><span>Active projects</span><b>${counts('active')}</b></div>
+      <div class="stat"><span>Open tasks</span><b>${tasks.filter(t => t.project_id && t.status !== 'done').length}</b></div>
+      <div class="stat"><span>Waiting for review</span><b>${tasks.filter(t => t.project_id && t.status === 'review').length}</b></div>
+      <div class="stat"><span>Overdue tasks</span><b>${tasks.filter(t => t.project_id && t.status !== 'done' && t.due_date && t.due_date < today).length}</b></div>
+    </div>
+    ${!list.length ? `<div class="card empty">${S.projects.length ? 'No projects here.' : 'No projects yet. Create your first project to organise tasks by client or website.'}</div>`
+      : layout === 'cards' ? `<div class="proj-grid" id="pj-items">${list.map(card).join('')}</div>`
+      : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Project</th><th>Project manager</th><th>Progress</th><th>Tasks</th><th>Overdue</th><th>Time</th><th>Due</th><th>Status</th></tr></thead><tbody id="pj-items">${list.map(row).join('')}</tbody></table></div></div>`}`;
+  $$('[data-pf]', el).forEach(b => b.onclick = () => { S.projFilter = b.dataset.pf; route(); });
+  $$('[data-pl]', el).forEach(b => b.onclick = () => { S.projLayout = b.dataset.pl; route(); });
+  $$('#pj-items [data-open]', el).forEach(r => r.onclick = () => { location.hash = `#/project/${r.dataset.open}`; });
+  $('#pj-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#pj-items [data-s]').forEach(c => c.style.display = c.dataset.s.includes(v) ? '' : 'none'); };
+  $('#pj-new').onclick = () => openProject(null);
+};
+
+function openProject(pr) {
+  const isNew = !pr, p = pr || { status: 'active', color: PCOLORS[S.projects.length % PCOLORS.length], owner_id: S.me.id };
+  const pms = S.profiles.filter(x => x.is_active && (x.role === 'manager' || x.role === 'admin'));
+  openModal({
+    title: isNew ? 'New project' : 'Edit project',
+    body: `<div class="form-grid">
+      <div class="field full"><label for="pr-name">Project name</label><input id="pr-name" type="text" value="${esc(p.name || '')}" placeholder="e.g. Navdrushti website redesign"></div>
+      <div class="field"><label for="pr-client">Client</label><input id="pr-client" type="text" value="${esc(p.client || '')}" placeholder="e.g. Navdrushti Foundation"></div>
+      <div class="field"><label for="pr-owner">Project manager</label><select id="pr-owner"><option value="">None</option>${pms.map(m => `<option value="${m.id}" ${m.id === p.owner_id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
+      <div class="field"><label for="pr-start">Start date</label><input id="pr-start" type="date" value="${esc(p.start_date || '')}"></div>
+      <div class="field"><label for="pr-due">Due date</label><input id="pr-due" type="date" value="${esc(p.due_date || '')}"></div>
+      <div class="field"><label for="pr-status">Status</label><select id="pr-status">${Object.entries(PSTATUS).map(([v, [, l]]) => `<option value="${v}" ${p.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label>Colour</label><div class="swatches">${PCOLORS.map(c => `<label class="sw" style="background:${c}"><input type="radio" name="pr-color" value="${c}" ${c === p.color ? 'checked' : ''} aria-label="${c}"></label>`).join('')}</div></div>
+      <div class="field full"><label for="pr-desc">Description</label><textarea id="pr-desc" placeholder="Scope, links, notes">${esc(p.description || '')}</textarea></div>
+    </div>`,
+    footer: `${!isNew ? '<button class="btn danger" id="pr-del" style="margin-right:auto">Delete project</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="pr-save">${isNew ? 'Create project' : 'Save project'}</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#pr-save', root).onclick = async () => {
+        const v = s => $(s, root).value.trim() || null;
+        const row = { name: v('#pr-name'), client: v('#pr-client'), owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc') };
+        if (!row.name) return toast('Enter a project name', 'bad');
+        try {
+          if (isNew) { const created = await q(sb.from('projects').insert({ ...row, created_by: S.me.id }).select().single()); S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => S.projects); close(); toast('Project created'); location.hash = `#/project/${created.id}`; }
+          else { await q(sb.from('projects').update(row).eq('id', p.id)); await q(sb.from('tasks').update({ project: row.name }).eq('project_id', p.id)).catch(() => {}); S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => S.projects); close(); toast('Project saved'); route(); }
+        } catch (e) { toast(e.message, 'bad'); }
+      };
+      $('#pr-del', root) && ($('#pr-del', root).onclick = async () => {
+        if (!confirm('Delete this project and its discussion? Tasks and time logs are kept but will no longer belong to a project.')) return;
+        try { await q(sb.from('projects').delete().eq('id', p.id)); close(); toast('Project deleted'); location.hash = '#/projects'; }
+        catch (e) { toast(e.message, 'bad'); }
+      });
+    }
+  });
+}
+
+VIEWS.project = async (el, id) => {
+  const pr = await q(sb.from('projects').select('*').eq('id', id).maybeSingle());
+  if (!pr) { el.innerHTML = '<div class="card empty">Project not found. <a href="#/projects">Back to projects</a></div>'; return; }
+  $('#page-title').textContent = pr.name;
+  const today = istDate(), soon = addDays(today, 7);
+  const tasks = await q(sb.from('tasks').select('*').eq('project_id', id).order('created_at'));
+  const [logs, cmts] = await Promise.all([
+    tasks.length ? inChunks(tasks.map(t => t.id), ch => sb.from('time_logs').select('task_id,employee_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [],
+    q(sb.from('comments').select('task_id').eq('project_id', id).not('task_id', 'is', null)).catch(() => [])
   ]);
-  $('#dl-tk').onclick = () => downloadCSV(`task-time-${month}.csv`, [
-    ['Employee ID', 'Name', 'Date', 'Project', 'Task', 'Start', 'End', 'Minutes'],
-    ...logs.map(l => { const p = profileOf(l.employee_id), t = tasks.find(x => x.id === l.task_id) || {}; return [p.employee_code, p.full_name, istDate(new Date(l.started_at)), t.project, t.title, fmtTime(l.started_at), l.ended_at ? fmtTime(l.ended_at) : 'Running', Math.round(logMinutes(l))]; })
-  ]);
+  const spent = tid => logs.filter(l => l.task_id === tid).reduce((s, l) => s + logMinutes(l), 0);
+  const ccount = tid => cmts.filter(c => c.task_id === tid).length;
+  const st = projectStats(pr, tasks, logs, today);
+  const who = S.projWho, view = S.projView || 'overview';
+  const shown = tasks.filter(t => !who || t.assigned_to === who);
+  const [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
+  const due = t => t.due_date ? `<span class="${t.status !== 'done' && t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '';
+  const ck = t => { const c = Array.isArray(t.checklist) ? t.checklist : []; return c.length ? `<span title="Checklist">${icon('check')}${c.filter(x => x.done).length}/${c.length}</span>` : ''; };
+  const cc = t => ccount(t.id) ? `<span title="Comments">${icon('chat')}${ccount(t.id)}</span>` : '';
+  const tcard = t => { const [qc, ql] = PRIORITY[t.priority] || PRIORITY.medium, a = profileOf(t.assigned_to), m = spent(t.id);
+    return `<div class="tcard" draggable="true" data-id="${t.id}"><div class="task-title">${esc(t.title)}</div>
+      <div class="tcard-meta"><span class="pill ${qc}">${ql}</span>${due(t)}<span class="sp"></span>${ck(t)}${cc(t)}${m ? `<span>${hm(m)}</span>` : ''}<span class="avatar sm" title="${esc(a.full_name || '')}">${esc(initials(a.full_name || a.email))}</span></div></div>`; };
+  const daysLeft = pr.due_date ? Math.round((dObj(pr.due_date) - dObj(today)) / 864e5) : null;
+
+  const overview = () => {
+    const work = st.people.map(p => { const mine = tasks.filter(t => t.assigned_to === p.id);
+      return { p, open: mine.filter(t => t.status !== 'done').length, review: mine.filter(t => t.status === 'review').length, done: mine.filter(t => t.status === 'done').length, late: mine.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length, mins: mine.reduce((s, t) => s + spent(t.id), 0) }; });
+    const attention = tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date <= soon).sort((a, b) => a.due_date.localeCompare(b.due_date));
+    return `<div class="grid g-2">
+      <div class="card"><div class="card-h"><h2>Progress</h2></div><div class="card-b">
+        <div style="display:flex;align-items:baseline;gap:10px"><b style="font-size:44px;line-height:1">${st.pct}%</b><span class="muted">${st.done} of ${st.ts.length} tasks done</span></div>
+        ${stackBar(st)}
+        <div class="legend" style="border:0;padding:6px 0 0">${['todo', 'in_progress', 'review', 'done'].map(k => `<span><span class="dot" style="background:${TCOLOR[k]}"></span>${TSTATUS[k]} <b>${k === 'done' ? st.done : k === 'review' ? st.review : k === 'in_progress' ? st.prog : st.todo}</b></span>`).join('')}</div>
+        <div class="stats" style="margin:16px 0 0;grid-template-columns:repeat(3,1fr)">
+          <div class="stat"><span>${daysLeft == null ? 'Due date' : daysLeft >= 0 ? 'Days left' : 'Days overdue'}</span><b class="${daysLeft != null && daysLeft < 0 && pr.status !== 'completed' ? 'overdue' : ''}">${daysLeft == null ? '—' : Math.abs(daysLeft)}</b></div>
+          <div class="stat"><span>Overdue tasks</span><b class="${st.overdue ? 'overdue' : ''}">${st.overdue}</b></div>
+          <div class="stat"><span>Time logged</span><b>${hm(st.mins)}</b></div></div>
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Team workload</h2></div>
+        <div class="table-wrap"><table><thead><tr><th>Person</th><th>Open</th><th>Review</th><th>Done</th><th>Overdue</th><th>Time</th></tr></thead><tbody>
+        ${work.map(w => `<tr><td>${personLink(w.p)}</td><td class="num">${w.open}</td><td class="num">${w.review}</td><td class="num">${w.done}</td><td class="num">${w.late ? `<span class="pill bad">${w.late}</span>` : '0'}</td><td class="num">${hm(w.mins)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">Assign tasks to see who is working on what.</td></tr>'}
+        </tbody></table></div></div>
+    </div>
+    <div class="grid g-2" style="margin-top:20px">
+      <div class="card" style="align-self:start"><div class="card-h"><h2>Needs attention</h2><span class="sub">Overdue or due in 7 days</span></div><div class="card-b">
+        ${attention.map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="dot" style="background:${TCOLOR[t.status]}"></span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}</div></div>${due(t)}</div>`).join('') || '<div class="empty">Nothing overdue or due this week.</div>'}
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Discussion</h2><span class="sub">Updates for the whole project</span></div><div class="card-b" id="pj-comments"></div></div>
+    </div>`;
+  };
+
+  el.innerHTML = `<a class="back" href="#/projects">${icon('back')}All projects</a>
+    <div class="card proj-head" style="--pc:${esc(pr.color || '#3A9A52')}">
+      <div style="min-width:0;flex:1">
+        <h2>${esc(pr.name)}</h2>
+        <div class="muted">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}</div>
+        ${pr.description ? `<p style="margin:10px 0 0;color:var(--ink-2);white-space:pre-line">${esc(pr.description)}</p>` : ''}
+      </div>
+      <div class="right"><span class="pill ${pc}">${pl}</span><button class="btn" id="pv-edit">Edit project</button><button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
+    </div>
+    <div class="tabs" role="tablist">${[['overview', 'Overview'], ['board', 'Board'], ['list', 'List']].map(([v, l]) => `<button data-pv="${v}" class="${view === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+    ${view !== 'overview' ? `<div class="toolbar"><div class="field" style="min-width:200px"><label for="pv-who">Assignee</label><select id="pv-who"><option value="">Everyone</option>${st.people.map(p => `<option value="${p.id}" ${who === p.id ? 'selected' : ''}>${esc(p.full_name || p.email)}</option>`).join('')}</select></div></div>` : ''}
+    ${view === 'overview' ? overview()
+    : view === 'board' ? `<div class="board">${Object.entries(TSTATUS).map(([s, label]) => { const ts = shown.filter(t => t.status === s);
+        return `<div class="col" data-col="${s}"><div class="col-h"><span class="dot" style="background:${TCOLOR[s]}"></span>${label} <span class="n">${ts.length}</span><button class="btn sm" data-add="${s}" aria-label="Add task to ${label}">${icon('plus')}</button></div>${ts.map(tcard).join('')}</div>`; }).join('')}</div>
+      <p class="muted" style="font-size:13px">Drag cards between columns to change status, or click a card to open it.</p>`
+    : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assigned to</th><th>Due</th><th>Priority</th><th>Status</th><th>Checklist</th><th>Time</th></tr></thead><tbody>
+      ${Object.keys(TSTATUS).flatMap(s => shown.filter(t => t.status === s)).map(t => { const [qc, ql] = PRIORITY[t.priority] || PRIORITY.medium, c = Array.isArray(t.checklist) ? t.checklist : [];
+        return `<tr data-open="${t.id}" style="cursor:pointer"><td style="white-space:normal"><span class="task-title">${esc(t.title)}</span>${ccount(t.id) ? ` <span class="task-sub">${icon('chat')}${ccount(t.id)}</span>` : ''}</td><td>${esc(nameOf(t.assigned_to))}</td><td class="num">${due(t) || '—'}</td><td><span class="pill ${qc}">${ql}</span></td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td><td class="num">${c.length ? `${c.filter(x => x.done).length}/${c.length}` : '—'}</td><td class="num">${hm(spent(t.id))}</td></tr>`; }).join('') || '<tr><td colspan="7" class="empty">No tasks yet. Click Add task.</td></tr>'}
+      </tbody></table></div></div>`}`;
+
+  $('#pv-edit').onclick = () => openProject(pr);
+  $('#pv-add').onclick = () => openTask(null, { projectId: id });
+  $$('[data-add]', el).forEach(b => b.onclick = () => openTask(null, { projectId: id, status: b.dataset.add }));
+  $$('[data-pv]', el).forEach(b => b.onclick = () => { S.projView = b.dataset.pv; route(); });
+  $('#pv-who') && ($('#pv-who').onchange = e => { S.projWho = e.target.value; route(); });
+  $$('[data-open]', el).forEach(r => r.onclick = () => openTask(tasks.find(t => t.id === r.dataset.open)));
+  if ($('#pj-comments')) mountComments($('#pj-comments'), { projectId: id });
+  let dragged = null;
+  $$('.tcard', el).forEach(c => {
+    c.onclick = () => openTask(tasks.find(t => t.id === c.dataset.id));
+    c.addEventListener('dragstart', e => { dragged = c.dataset.id; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+  $$('[data-col]', el).forEach(col => {
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drop'); });
+    col.addEventListener('dragleave', () => col.classList.remove('drop'));
+    col.addEventListener('drop', async e => {
+      e.preventDefault(); col.classList.remove('drop');
+      const t = tasks.find(x => x.id === dragged); if (!t || t.status === col.dataset.col) return;
+      try { await q(sb.from('tasks').update({ status: col.dataset.col }).eq('id', t.id)); toast(`Moved to ${TSTATUS[col.dataset.col]}`); await refreshRunning(); route(); }
+      catch (err) { toast(err.message, 'bad'); }
+    });
+  });
 };
 
 /* ---------- Employees (admin) ---------- */
 VIEWS.employees = async el => {
   await loadDirectory();
   const list = S.profiles;
+  const details = await q(sb.from('employee_details').select('employee_id,phone')).catch(() => []);
+  const phoneOf = id => details.find(d => d.employee_id === id)?.phone;
   el.innerHTML = `<div class="note" style="margin-bottom:20px">To add someone, go to Supabase → Authentication → Users → <b>Invite user</b>. They appear here once invited; then set their department, role and manager.</div>
     <div class="toolbar"><div class="field grow"><label for="e-search">Search</label><input id="e-search" type="text" placeholder="Name, email, department"></div></div>
-    <div class="card"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>ID</th><th>Department</th><th>Role</th><th>Reports to</th><th>Status</th><th></th></tr></thead>
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>ID</th><th>Phone</th><th>Joined</th><th>Role</th><th>Reports to</th><th>Status</th><th></th></tr></thead>
     <tbody id="e-rows">${list.map(p => `<tr data-s="${esc((p.full_name + ' ' + p.email + ' ' + (p.department || '')).toLowerCase())}">
-      <td><div class="who"><span class="avatar">${esc(initials(p.full_name || p.email))}</span><div><b>${esc(p.full_name || '(no name)')}</b><small>${esc(p.email)}</small></div></div></td>
-      <td class="muted">${esc(p.employee_code || '—')}</td><td>${esc(p.department || '—')}</td>
+      <td>${personLink(p, p.email)}</td>
+      <td class="muted">${esc(p.employee_code || '—')}</td><td class="num">${phoneOf(p.id) ? `<a href="tel:${esc(phoneOf(p.id))}" style="color:inherit">${esc(phoneOf(p.id))}</a>` : '<span class="muted">—</span>'}</td><td>${p.date_of_joining ? fmtDate(p.date_of_joining) : '<span class="muted">—</span>'}</td>
       <td style="text-transform:capitalize">${esc(p.role)}</td><td>${p.manager_id ? esc(nameOf(p.manager_id)) : '<span class="muted">—</span>'}</td>
       <td>${p.is_active ? '<span class="pill ok">Active</span>' : '<span class="pill muted">Inactive</span>'}</td>
       <td style="text-align:right"><button class="btn sm" data-edit="${p.id}">Edit</button></td></tr>`).join('')}</tbody></table></div></div>`;
@@ -1028,6 +1607,7 @@ async function editEmployee(id) {
       <div class="field"><label for="f-mgr">Reports to</label><select id="f-mgr"><option value="">No manager</option>${managers.map(m => `<option value="${m.id}" ${p.manager_id === m.id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
       <div class="field"><label for="f-doj">Date of joining</label><input id="f-doj" type="date" value="${esc(p.date_of_joining || '')}"></div>
       <div class="field"><label for="f-active">Status</label><select id="f-active"><option value="1" ${p.is_active ? 'selected' : ''}>Active</option><option value="0" ${!p.is_active ? 'selected' : ''}>Inactive (can't sign in)</option></select></div>
+      <div class="full note">Phone, date of birth, emergency contact and address are added by the employee in <b>My profile</b>.</div>
       <div class="full" style="margin-top:6px"><b>Leave allotted for ${year}</b><div class="hint muted" style="font-size:12.5px">Days used so far are kept as they are.</div></div>
       ${paidTypes.map(t => { const b = bals.find(x => x.leave_type_id === t.id); return `<div class="field"><label for="f-bal-${t.id}">${esc(t.name)}${b ? ` <span class="muted">(${num(b.used)} used)</span>` : ''}</label><input id="f-bal-${t.id}" data-bal="${t.id}" type="number" min="0" step="0.5" value="${b ? num(b.allotted) : ''}" placeholder="${num(t.annual_quota)}"></div>`; }).join('')}
     </div>`,
@@ -1079,6 +1659,9 @@ VIEWS.settings = async el => {
         ${S.leaveTypes.map(t => `<tr data-lt="${t.id}"><td><input type="text" data-k="name" value="${esc(t.name)}"></td><td><input type="text" data-k="code" value="${esc(t.code)}" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="${num(t.annual_quota)}" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" ${t.is_paid ? 'checked' : ''} aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" ${t.is_active ? 'checked' : ''} aria-label="Active"></td><td><button class="btn sm" data-save-lt>Save</button></td></tr>`).join('')}
         <tr data-lt="new"><td><input type="text" data-k="name" placeholder="New leave type"></td><td><input type="text" data-k="code" placeholder="Code" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="0" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" checked aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" checked aria-label="Active"></td><td><button class="btn primary sm" data-save-lt>Add</button></td></tr>
         </tbody></table></div></div>
+      <div class="card"><div class="card-h"><h2>Data backup</h2></div><div class="card-b">
+        <p class="muted" style="margin-top:0">All data is saved in your Supabase database. On the free plan there are no automatic backups, so download a copy once a month and keep it in Google Drive.</p>
+        <button class="btn primary" id="bk-run">${icon('download')}Download backup</button></div></div>
       <div class="card"><div class="card-h"><h2>Yearly leave allotment</h2></div><div class="card-b">
         <p class="muted" style="margin-top:0">Gives every active employee the yearly days for each paid leave type. People who already have a balance for that year are not changed, so it's safe to run again after adding new staff. To change one person's days, use Edit on the Employees page.</p>
         <div class="toolbar" style="margin:0"><div class="field"><label for="al-year">Year</label><input id="al-year" type="number" value="${year}" style="width:110px"></div><button class="btn primary" id="al-run">Allot leave</button></div></div></div>
@@ -1089,6 +1672,7 @@ VIEWS.settings = async el => {
       ${hols.length ? hols.map(h => { const dow = dObj(h.holiday_date).getDay(); return `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div style="flex:1"><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric' })}${dow === 0 ? ' (already a day off)' : ''}</div></div><button class="btn danger sm" data-del-h="${h.id}">Remove</button></div>`; }).join('') : '<div class="empty">No holidays added yet.</div>'}
       </div></div></div>`;
 
+  $('#bk-run').onclick = async e => { const b = e.currentTarget, h = b.innerHTML; b.disabled = true; b.textContent = 'Preparing…'; try { await downloadBackup(); toast('Backup downloaded. Keep it in Google Drive.'); } catch (err) { toast(err.message, 'bad'); } b.disabled = false; b.innerHTML = h; };
   $('#sh-save').onclick = async () => {
     const v = id => $(id).value;
     const row = { shift_start: v('#sh-start'), shift_end: v('#sh-end'), checkin_opens: v('#sh-open'), checkin_closes: v('#sh-cclose'), checkout_closes: v('#sh-close'), late_grace_minutes: +v('#sh-grace') || 0, saturday_rule: v('#sh-sat'), tracking_start: v('#sh-track'), updated_at: new Date().toISOString() };
@@ -1124,7 +1708,8 @@ VIEWS.settings = async el => {
 
 /* ---------- Tasks & timer ---------- */
 const PRIORITY = { high: ['bad', 'High'], medium: ['warn', 'Medium'], low: ['muted', 'Low'] };
-const TSTATUS = { todo: 'To do', in_progress: 'In progress', done: 'Done' };
+const TSTATUS = { todo: 'To do', in_progress: 'In progress', review: 'Review', done: 'Done' };
+const TCOLOR = { todo: '#8A94A6', in_progress: '#2D6CDF', review: '#B7791F', done: '#1E8A5A' };
 
 VIEWS.tasks = async el => {
   const scope = isMgr() ? S.taskScope : 'mine', filter = S.taskFilter, today = istDate();
@@ -1137,7 +1722,7 @@ VIEWS.tasks = async el => {
   ]);
   const logs = tasks.length ? await q(sb.from('time_logs').select('task_id,started_at,ended_at,minutes').in('task_id', tasks.map(t => t.id))) : [];
   const spent = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
-  const order = { in_progress: 0, todo: 1, done: 2 };
+  const order = { in_progress: 0, review: 1, todo: 2, done: 3 };
   tasks.sort((a, b) => order[a.status] - order[b.status] || (a.due_date || '9999').localeCompare(b.due_date || '9999'));
   const overdue = tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
 
@@ -1158,8 +1743,8 @@ VIEWS.tasks = async el => {
     <tbody id="t-rows">${tasks.length ? tasks.map(t => {
       const mine = t.assigned_to === S.me.id, running = S.running?.task_id === t.id;
       const [pc, pl] = PRIORITY[t.priority] || PRIORITY.medium;
-      return `<tr data-s="${esc((t.title + ' ' + (t.project || '') + ' ' + nameOf(t.assigned_to)).toLowerCase())}">
-        <td style="white-space:normal;min-width:220px"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}</div></td>
+      return `<tr data-s="${esc((t.title + ' ' + projName(t) + ' ' + nameOf(t.assigned_to)).toLowerCase())}">
+        <td style="white-space:normal;min-width:220px"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(projName(t) || 'No project')}</div></td>
         ${scope === 'team' ? `<td>${esc(nameOf(t.assigned_to))}</td>` : ''}
         <td class="num">${t.due_date ? `<span class="${t.status !== 'done' && t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '<span class="muted">—</span>'}</td>
         <td><span class="pill ${pc}">${pl}</span></td>
@@ -1182,34 +1767,69 @@ VIEWS.tasks = async el => {
   paintTimer();
 };
 
-async function openTask(task) {
+async function openTask(task, opts = {}) {
   const isNew = !task;
-  const people = isAdmin() ? S.profiles.filter(p => p.is_active) : isMgr() ? teamList() : [S.me];
-  const logs = isNew ? [] : await q(sb.from('time_logs').select('*').eq('task_id', task.id).order('started_at', { ascending: false }).limit(50));
-  const t = task || { priority: 'medium', status: 'todo', assigned_to: S.me.id };
-  const canDelete = !isNew && (t.created_by === S.me.id || isAdmin());
-  const projects = [...new Set((await q(sb.from('tasks').select('project').not('project', 'is', null).limit(300)).catch(() => [])).map(x => x.project))];
+  const people = isMgr() ? S.profiles.filter(p => p.is_active) : [S.me];
+  const t = task || { priority: 'medium', status: opts.status || 'todo', assigned_to: S.me.id, project_id: opts.projectId || null, checklist: [] };
+  const canDelete = !isNew && (t.created_by === S.me.id || isMgr());
+  const projects = S.projects.filter(p => p.status !== 'completed' || p.id === t.project_id);
+  const logs = isNew ? [] : await q(sb.from('time_logs').select('*').eq('task_id', t.id).order('started_at', { ascending: false }).limit(50)).catch(() => []);
+  let checklist = Array.isArray(t.checklist) ? t.checklist.map(x => ({ ...x })) : [];
   openModal({
-    title: isNew ? 'New task' : 'Edit task',
-    body: `<div class="form-grid">
-      <div class="field full"><label for="tk-title">Task</label><input id="tk-title" type="text" value="${esc(t.title || '')}" placeholder="e.g. Update homepage banner for Navdrushti"></div>
-      <div class="field"><label for="tk-project">Project or client</label><input id="tk-project" type="text" list="tk-projects" value="${esc(t.project || '')}" placeholder="e.g. Navdrushti website"><datalist id="tk-projects">${projects.map(p => `<option value="${esc(p)}">`).join('')}</datalist></div>
-      <div class="field"><label for="tk-who">Assigned to</label><select id="tk-who" ${people.length < 2 ? 'disabled' : ''}>${people.map(p => `<option value="${p.id}" ${p.id === t.assigned_to ? 'selected' : ''}>${esc(p.full_name || p.email)}${p.id === S.me.id ? ' (you)' : ''}</option>`).join('')}</select></div>
-      <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
-      <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
-      ${isNew ? '' : `<div class="field"><label for="tk-status">Status</label><select id="tk-status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`}
-      <div class="field full"><label for="tk-desc">Details</label><textarea id="tk-desc" placeholder="Optional">${esc(t.description || '')}</textarea></div>
-      ${isNew ? '' : `<div class="full"><b>Time logged: ${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}</b>
-        ${logs.length ? `<div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="muted" style="font-size:13px">No time logged yet.</div>'}</div>`}
+    title: isNew ? 'New task' : 'Task',
+    wide: true,
+    body: `<div class="task-grid">
+      <div>
+        <div class="form-grid">
+          <div class="field full"><label for="tk-title">Task</label><input id="tk-title" type="text" value="${esc(t.title || '')}" placeholder="e.g. Update homepage banner"></div>
+          <div class="field"><label for="tk-project">Project</label><select id="tk-project"><option value="">No project</option>${projects.map(p => `<option value="${p.id}" ${p.id === t.project_id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>
+          <div class="field"><label for="tk-who">Assigned to</label><select id="tk-who" ${people.length < 2 ? 'disabled' : ''}>${people.map(p => `<option value="${p.id}" ${p.id === t.assigned_to ? 'selected' : ''}>${esc(p.full_name || p.email)}${p.id === S.me.id ? ' (you)' : ''}</option>`).join('')}</select></div>
+          <div class="field"><label for="tk-status">Status</label><select id="tk-status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+          <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+          <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
+          <div class="field">${isNew ? '' : `<label>Time logged</label><div style="padding:9px 0;font-weight:600">${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}</div>`}</div>
+          <div class="field full"><label for="tk-desc">Description</label><textarea id="tk-desc" placeholder="What needs to be done? Links, notes…">${esc(t.description || '')}</textarea></div>
+        </div>
+        <div class="section-h"><b>Checklist</b><span class="task-sub" id="ck-count"></span></div>
+        <div class="ck-bar"><span id="ck-fill"></span></div>
+        <div id="ck-list"></div>
+        <div class="ck-add"><input id="ck-new" type="text" placeholder="Add an item and press Enter"><button class="btn sm" id="ck-add" type="button">${icon('plus')}Add</button></div>
+        ${logs.length ? `<details style="margin-top:16px"><summary class="task-sub" style="cursor:pointer">Time log (${logs.length})</summary><div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
+      </div>
+      <div class="task-side">
+        <div class="section-h" style="margin-top:0"><b>Comments</b></div>
+        ${isNew ? '<div class="muted" style="font-size:13px">Create the task first, then you can add comments.</div>' : '<div id="tk-comments"></div>'}
+      </div>
     </div>`,
-    footer: `${canDelete ? '<button class="btn danger" id="tk-del" style="margin-right:auto">Delete task</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="tk-save">${isNew ? 'Create task' : 'Save task'}</button>`,
+    footer: `${canDelete ? '<button class="btn danger" id="tk-del" style="margin-right:auto">Delete task</button>' : ''}<button class="btn" data-close>${isNew ? 'Cancel' : 'Close'}</button><button class="btn primary" id="tk-save">${isNew ? 'Create task' : 'Save changes'}</button>`,
     onMount: (root, close) => {
-      $('[data-close]', root).onclick = close;
+      let changed = false;
+      const renderCk = () => {
+        const done = checklist.filter(x => x.done).length;
+        $('#ck-count', root).textContent = checklist.length ? `${done} of ${checklist.length} done` : 'Break the task into small steps';
+        $('#ck-fill', root).style.width = checklist.length ? `${done / checklist.length * 100}%` : '0';
+        $('#ck-list', root).innerHTML = checklist.map((x, i) => `<div class="ck-item ${x.done ? 'done' : ''}"><label><input type="checkbox" data-ck="${i}" ${x.done ? 'checked' : ''}><span>${esc(x.text)}</span></label><button class="btn link" data-ckdel="${i}" aria-label="Remove item">Remove</button></div>`).join('');
+        $$('[data-ck]', root).forEach(c => c.onchange = () => { checklist[+c.dataset.ck].done = c.checked; renderCk(); saveCk(); });
+        $$('[data-ckdel]', root).forEach(b => b.onclick = () => { checklist.splice(+b.dataset.ckdel, 1); renderCk(); saveCk(); });
+      };
+      const saveCk = async () => {
+        if (isNew) return;
+        try { await q(sb.from('tasks').update({ checklist }).eq('id', t.id)); t.checklist = checklist.map(x => ({ ...x })); changed = true; }
+        catch (e) { toast(e.message, 'bad'); }
+      };
+      const addCk = () => { const inp = $('#ck-new', root), v = inp.value.trim(); if (!v) return; checklist.push({ text: v, done: false }); inp.value = ''; renderCk(); saveCk(); inp.focus(); };
+      $('#ck-add', root).onclick = addCk;
+      $('#ck-new', root).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCk(); } });
+      renderCk();
+      if (!isNew) mountComments($('#tk-comments', root), { taskId: t.id, projectId: t.project_id || null });
+
+      const finish = () => { close(); if (changed) route(); };
+      $('[data-close]', root).onclick = finish;
       $('#tk-save', root).onclick = async () => {
         const v = id => $(id, root)?.value.trim();
-        const row = { title: v('#tk-title'), project: v('#tk-project') || null, assigned_to: v('#tk-who') || S.me.id, due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: v('#tk-desc') || null };
+        const pid = v('#tk-project') || null;
+        const row = { title: v('#tk-title'), project_id: pid, project: S.projects.find(p => p.id === pid)?.name || null, assigned_to: v('#tk-who') || S.me.id, status: v('#tk-status'), due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: v('#tk-desc') || null, checklist };
         if (!row.title) return toast('Enter a task name', 'bad');
-        if (!isNew) row.status = v('#tk-status');
         try {
           if (isNew) await q(sb.from('tasks').insert({ ...row, created_by: S.me.id }));
           else await q(sb.from('tasks').update(row).eq('id', t.id));
@@ -1217,7 +1837,7 @@ async function openTask(task) {
         } catch (e) { toast(e.message, 'bad'); }
       };
       $('#tk-del', root) && ($('#tk-del', root).onclick = async () => {
-        if (!confirm('Delete this task and its time logs?')) return;
+        if (!confirm('Delete this task, its comments and time logs?')) return;
         try { await q(sb.from('tasks').delete().eq('id', t.id)); close(); toast('Task deleted'); await refreshRunning(); route(); }
         catch (e) { toast(e.message, 'bad'); }
       });
