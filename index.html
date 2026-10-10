@@ -92,7 +92,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field label{font-size:13px;font-weight:600;color:var(--ink-2)}
 .field .hint{font-size:12px;color:var(--ink-3)}
-input[type=text],input[type=email],input[type=password],input[type=date],input[type=month],input[type=number],select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;width:100%;min-width:0}
+input[type=text],input[type=email],input[type=tel],input[type=time],input[type=password],input[type=date],input[type=month],input[type=number],select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;width:100%;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-soft)}
 textarea{resize:vertical;min-height:80px}
 .check{display:flex;align-items:center;gap:8px;font-size:14px}
@@ -274,6 +274,56 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .task-sub .ic{width:13px;height:13px;vertical-align:-2px}
 .nudge{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:14px 18px;margin-bottom:20px}
 .nudge .btn{margin-left:auto}
+
+/* ---------- EOD, members ---------- */
+.eod-task{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.eod-task input{width:17px;height:17px;accent-color:var(--brand);flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--canvas);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px;font-weight:500}
+.x-btn{border:none;background:none;cursor:pointer;color:var(--ink-3);font-size:16px;line-height:1;padding:0 4px}
+.x-btn:hover{color:var(--bad)}
+
+/* ---------- Knowledge base, documents, insights ---------- */
+.kb-hero{background:var(--navy);color:#fff;border-radius:14px;padding:28px}
+.kb-hero h2{font-family:var(--serif);margin:0 0 14px;font-size:26px}
+.kb-search input{width:100%;padding:14px 16px;font-size:16px;border-radius:10px;border:0;color:var(--ink);background:#fff}
+.kb-cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.kb-cats button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.kb-cats button.on{background:var(--brand);border-color:var(--brand)}
+.kb-list{display:grid;gap:12px}
+.kb-item{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit}
+.kb-item:hover{border-color:var(--brand);box-shadow:0 6px 18px rgba(20,28,40,.06)}
+.kb-item-h{display:flex;gap:10px;align-items:center;font-size:16px;margin-bottom:4px}
+.kb-meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--ink-3);margin-top:10px}
+.kb-meta .sp{flex:1}
+.tag{color:var(--info);font-weight:600}
+.kb-article h1{font-family:var(--serif);font-size:28px;line-height:1.3;margin:6px 0 6px;color:var(--navy)}
+.md{line-height:1.65}
+.md h2{font-size:19px;margin:22px 0 8px}
+.md h3{font-size:16px;margin:18px 0 6px}
+.md h4{font-size:15px;margin:14px 0 6px}
+.md p{margin:0 0 10px}
+.md ul,.md ol{margin:0 0 12px;padding-left:22px}
+.md li{margin:4px 0}
+.md blockquote{margin:12px 0;padding:10px 14px;border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 8px 8px 0}
+.md code{background:var(--canvas);padding:1px 6px;border-radius:5px;font-size:.92em}
+.md a{color:var(--info)}
+.doc-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.doc{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.doc-ic{font-size:20px;flex:none}
+.doc-open{flex:1;min-width:0;text-align:left;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;padding:0;overflow:hidden}
+.doc-open b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-open:hover b{color:var(--brand);text-decoration:underline}
+.doc-add{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ai-card{margin-bottom:20px;border-color:color-mix(in srgb,var(--brand) 35%,var(--line))}
+.ai-card .card-h{background:linear-gradient(90deg,var(--brand-soft),#fff)}
+.rank{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:12px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+
+/* ---------- SOP ---------- */
+.sop{display:inline-flex;align-items:center;font-size:11px;font-weight:700;border-radius:5px;padding:1px 6px;vertical-align:1px;white-space:nowrap}
+.sop.ok{background:var(--ok-soft);color:var(--ok)}
+.sop.need{background:var(--warn-soft);color:var(--warn)}
+.sop-box{background:var(--canvas);border-radius:10px;padding:12px 14px;gap:4px}
+.sop-box .check{font-size:14px}
 
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
@@ -507,6 +557,10 @@ const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   tasks: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M3.5 6l1.5 1.5L7.5 5M3.5 12l1.5 1.5 2.5-2.5M3.5 18l1.5 1.5 2.5-2.5"/>',
   play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+  eod: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/>',
+  leads: '<path d="M3 5h18l-7 8v6l-4-2v-4z"/>',
+  spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   back: '<path d="M15 18l-6-6 6-6"/>',
@@ -644,10 +698,14 @@ function navItems() {
   const m = isMgr(), a = isAdmin();
   return [
     { id: 'home', label: 'Home', icon: 'home' },
+    { id: 'insights', label: 'Insights', icon: 'spark' },
     { id: 'attendance', label: 'Attendance', icon: 'clock' },
     { id: 'leave', label: 'Leave', icon: 'leave' },
     { id: 'tasks', label: 'Tasks', icon: 'tasks' },
-    m && { id: 'projects', label: 'Projects', icon: 'folder' },
+    { id: 'projects', label: m ? 'Projects' : 'My projects', icon: 'folder' },
+    { id: 'eod', label: 'EOD report', icon: 'eod' },
+    { id: 'leads', label: 'Leads', icon: 'leads' },
+    { id: 'kb', label: 'Knowledge base', icon: 'book' },
     m && { id: 'approvals', label: 'Approvals', icon: 'check' },
     m && { id: 'team', label: 'Team', icon: 'team' },
     m && { id: 'reports', label: 'Reports', icon: 'report' },
@@ -658,7 +716,7 @@ function navItems() {
 
 function renderShell() {
   const items = navItems();
-  const link = n => `<a href="#/${n.id}" data-nav="${n.id}">${icon(n.icon)}<span>${n.label}</span>${n.id === 'approvals' ? '<span class="badge" data-badge hidden></span>' : ''}</a>`;
+  const link = n => `<a href="#/${n.id}" data-nav="${n.id}">${icon(n.icon)}<span>${n.label}</span>${n.id === 'approvals' ? '<span class="badge" data-badge hidden></span>' : n.id === 'leads' ? '<span class="badge" data-badge-leads hidden></span>' : ''}</a>`;
   $('#app').innerHTML = `<div class="layout">
     <aside class="side">
       <div class="brand">${logoImg()}<span class="brand-fallback">ST</span></div>
@@ -688,6 +746,7 @@ function renderShell() {
 
 async function refreshBadge() {
   if (!isMgr()) return;
+  sb.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new').then(({ count }) => $$('[data-badge-leads]').forEach(b => { b.hidden = !count; b.textContent = count || ''; }), () => {});
   const { count } = await sb.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', S.me.id);
   $$('[data-badge]').forEach(b => { b.hidden = !count; b.textContent = count || ''; });
 }
@@ -698,7 +757,7 @@ async function route() {
   const items = navItems();
   const [id, param] = (location.hash.replace('#/', '') || 'home').split('/');
   let item = items.find(n => n.id === id);
-  if (id === 'project' && isMgr() && param) item = { id: 'project', label: 'Project', nav: 'projects' };
+  if (id === 'project' && param) item = { id: 'project', label: 'Project', nav: 'projects' };
   if (id === 'person' && param && (isMgr() || param === S.me.id)) item = { id: 'person', label: 'Team member', nav: isMgr() ? 'team' : 'home' };
   item = item || items[0];
   if (!S.shell || !$('#view')) renderShell();
@@ -804,8 +863,9 @@ VIEWS.home = async el => {
     q(sb.from('leave_requests').select('*').eq('employee_id', S.me.id).eq('status', 'pending')),
     isMgr() ? q(sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', today).gte('end_date', today).neq('employee_id', S.me.id)) : Promise.resolve([]),
     q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).neq('status', 'done').order('due_date', { ascending: true, nullsFirst: false }).limit(5)).catch(() => []),
-    getDetails(S.me.id)
-  ]);
+    getDetails(S.me.id),
+    q(sb.from('eod_reports').select('id').eq('employee_id', S.me.id).eq('report_date', istDate()).maybeSingle()).catch(() => ({}))
+  ]).then(r => { S._eodDone = !!r[6]; return r; });
   const missing = ['phone', 'emergency_contact', 'date_of_birth'].filter(k => !myDetails[k]);
   let apprCount = 0;
   if (isMgr()) { const r = await sb.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', S.me.id); apprCount = r.count || 0; }
@@ -846,6 +906,7 @@ VIEWS.home = async el => {
     </div>
   </section>
 
+  ${!S._eodDone && !off && istMin() >= toMin(st.shift_end) - 60 ? `<div class="nudge"><div><b>Time for your EOD report</b><div class="task-sub">Your tasks for today are already filled in. It takes a minute and is emailed automatically.</div></div><a class="btn primary sm" href="#/eod">Write EOD report</a></div>` : ''}
   ${missing.length ? `<div class="nudge"><div><b>Complete your profile</b><div class="task-sub">Add your ${missing.map(k => ({ phone: 'phone number', emergency_contact: 'emergency contact', date_of_birth: 'date of birth' })[k]).join(', ')} so the team can reach you.</div></div><button class="btn primary sm" id="nudge-btn">Add details</button></div>` : ''}
 
   ${isMgr() ? `<div class="stats">
@@ -1262,7 +1323,7 @@ VIEWS.reports = async el => {
 };
 
 async function downloadBackup() {
-  const tables = ['profiles', 'employee_details', 'settings', 'holidays', 'leave_types', 'leave_balances', 'leave_requests', 'attendance', 'projects', 'tasks', 'comments', 'time_logs'];
+  const tables = ['profiles', 'employee_details', 'settings', 'holidays', 'leave_types', 'leave_balances', 'leave_requests', 'attendance', 'projects', 'project_members', 'tasks', 'comments', 'time_logs', 'eod_reports', 'leads', 'lead_notes', 'kb_articles', 'documents', 'ai_insights'];
   const data = { app: CONFIG.APP_NAME, created_at: new Date().toISOString(), tables: {} };
   for (const t of tables) data.tables[t] = await allRows(() => sb.from(t).select('*')).catch(() => []);
   const a = document.createElement('a');
@@ -1423,7 +1484,7 @@ VIEWS.projects = async el => {
       <div class="field"><label>Show</label><div class="seg">${[['active', 'Active'], ['on_hold', 'On hold'], ['completed', 'Completed'], ['all', 'All']].map(([v, l]) => `<button data-pf="${v}" class="${filter === v ? 'on' : ''}">${l} (${counts(v)})</button>`).join('')}</div></div>
       <div class="field"><label>Layout</label><div class="seg"><button data-pl="cards" class="${layout === 'cards' ? 'on' : ''}">Cards</button><button data-pl="table" class="${layout === 'table' ? 'on' : ''}">Table</button></div></div>
       <div class="field grow"><label for="pj-search">Search</label><input id="pj-search" type="text" placeholder="Project or client"></div>
-      <button class="btn primary" id="pj-new">${icon('plus')}New project</button></div>
+      ${isMgr() ? `<button class="btn primary" id="pj-new">${icon('plus')}New project</button>` : ''}</div>
     <div class="stats">
       <div class="stat"><span>Active projects</span><b>${counts('active')}</b></div>
       <div class="stat"><span>Open tasks</span><b>${tasks.filter(t => t.project_id && t.status !== 'done').length}</b></div>
@@ -1437,11 +1498,11 @@ VIEWS.projects = async el => {
   $$('[data-pl]', el).forEach(b => b.onclick = () => { S.projLayout = b.dataset.pl; route(); });
   $$('#pj-items [data-open]', el).forEach(r => r.onclick = () => { location.hash = `#/project/${r.dataset.open}`; });
   $('#pj-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#pj-items [data-s]').forEach(c => c.style.display = c.dataset.s.includes(v) ? '' : 'none'); };
-  $('#pj-new').onclick = () => openProject(null);
+  $('#pj-new') && ($('#pj-new').onclick = () => openProject(null));
 };
 
-function openProject(pr) {
-  const isNew = !pr, p = pr || { status: 'active', color: PCOLORS[S.projects.length % PCOLORS.length], owner_id: S.me.id };
+function openProject(pr, prefill = {}) {
+  const isNew = !pr, p = pr || { status: 'active', color: PCOLORS[S.projects.length % PCOLORS.length], owner_id: S.me.id, ...prefill };
   const pms = S.profiles.filter(x => x.is_active && (x.role === 'manager' || x.role === 'admin'));
   openModal({
     title: isNew ? 'New project' : 'Edit project',
@@ -1453,6 +1514,7 @@ function openProject(pr) {
       <div class="field"><label for="pr-due">Due date</label><input id="pr-due" type="date" value="${esc(p.due_date || '')}"></div>
       <div class="field"><label for="pr-status">Status</label><select id="pr-status">${Object.entries(PSTATUS).map(([v, [, l]]) => `<option value="${v}" ${p.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       <div class="field"><label>Colour</label><div class="swatches">${PCOLORS.map(c => `<label class="sw" style="background:${c}"><input type="radio" name="pr-color" value="${c}" ${c === p.color ? 'checked' : ''} aria-label="${c}"></label>`).join('')}</div></div>
+      <div class="field full"><label for="pr-drive">Google Drive folder</label><input id="pr-drive" type="url" value="${esc(p.drive_url || '')}" placeholder="https://drive.google.com/drive/folders/…"><span class="hint">Shared drive → 01 Clients → Client → Project. Paste the folder link.</span></div>
       <div class="field full"><label for="pr-desc">Description</label><textarea id="pr-desc" placeholder="Scope, links, notes">${esc(p.description || '')}</textarea></div>
     </div>`,
     footer: `${!isNew ? '<button class="btn danger" id="pr-del" style="margin-right:auto">Delete project</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="pr-save">${isNew ? 'Create project' : 'Save project'}</button>`,
@@ -1460,7 +1522,9 @@ function openProject(pr) {
       $('[data-close]', root).onclick = close;
       $('#pr-save', root).onclick = async () => {
         const v = s => $(s, root).value.trim() || null;
-        const row = { name: v('#pr-name'), client: v('#pr-client'), owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc') };
+        const drive = v('#pr-drive');
+        if (drive && !/^https?:\/\//i.test(drive)) return toast('The Drive link must start with https://', 'bad');
+        const row = { drive_url: drive, name: v('#pr-name'), client: v('#pr-client'), owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc') };
         if (!row.name) return toast('Enter a project name', 'bad');
         try {
           if (isNew) { const created = await q(sb.from('projects').insert({ ...row, created_by: S.me.id }).select().single()); S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => S.projects); close(); toast('Project created'); location.hash = `#/project/${created.id}`; }
@@ -1482,6 +1546,7 @@ VIEWS.project = async (el, id) => {
   $('#page-title').textContent = pr.name;
   const today = istDate(), soon = addDays(today, 7);
   const tasks = await q(sb.from('tasks').select('*').eq('project_id', id).order('created_at'));
+  const members = (await q(sb.from('project_members').select('employee_id').eq('project_id', id)).catch(() => [])).map(m => profileOf(m.employee_id)).filter(p => p.id);
   const [logs, cmts] = await Promise.all([
     tasks.length ? inChunks(tasks.map(t => t.id), ch => sb.from('time_logs').select('task_id,employee_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [],
     q(sb.from('comments').select('task_id').eq('project_id', id).not('task_id', 'is', null)).catch(() => [])
@@ -1497,7 +1562,7 @@ VIEWS.project = async (el, id) => {
   const cc = t => ccount(t.id) ? `<span title="Comments">${icon('chat')}${ccount(t.id)}</span>` : '';
   const tcard = t => { const [qc, ql] = PRIORITY[t.priority] || PRIORITY.medium, a = profileOf(t.assigned_to), m = spent(t.id);
     return `<div class="tcard" draggable="true" data-id="${t.id}"><div class="task-title">${esc(t.title)}</div>
-      <div class="tcard-meta"><span class="pill ${qc}">${ql}</span>${due(t)}<span class="sp"></span>${ck(t)}${cc(t)}${m ? `<span>${hm(m)}</span>` : ''}<span class="avatar sm" title="${esc(a.full_name || '')}">${esc(initials(a.full_name || a.email))}</span></div></div>`; };
+      <div class="tcard-meta"><span class="pill ${qc}">${ql}</span>${due(t)}${sopBadge(t)}<span class="sp"></span>${ck(t)}${cc(t)}${m ? `<span>${hm(m)}</span>` : ''}<span class="avatar sm" title="${esc(a.full_name || '')}">${esc(initials(a.full_name || a.email))}</span></div></div>`; };
   const daysLeft = pr.due_date ? Math.round((dObj(pr.due_date) - dObj(today)) / 864e5) : null;
 
   const overview = () => {
@@ -1520,10 +1585,18 @@ VIEWS.project = async (el, id) => {
         </tbody></table></div></div>
     </div>
     <div class="grid g-2" style="margin-top:20px">
-      <div class="card" style="align-self:start"><div class="card-h"><h2>Needs attention</h2><span class="sub">Overdue or due in 7 days</span></div><div class="card-b">
-        ${attention.map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="dot" style="background:${TCOLOR[t.status]}"></span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}</div></div>${due(t)}</div>`).join('') || '<div class="empty">Nothing overdue or due this week.</div>'}
+      <div class="grid" style="align-content:start">
+      <div class="card"><div class="card-h"><h2>Members</h2><span class="sub">${members.length}</span></div><div class="card-b">
+        <div style="display:flex;flex-wrap:wrap;gap:8px">${members.map(m => `<span class="chip">${esc(m.full_name || m.email)}${isMgr() ? `<button class="x-btn" data-unmember="${m.id}" aria-label="Remove ${esc(m.full_name)}">&times;</button>` : ''}</span>`).join('') || '<span class="muted">No members yet.</span>'}</div>
+        ${isMgr() ? `<div class="ck-add" style="margin-top:12px"><select id="mb-add"><option value="">Add a team member…</option>${S.profiles.filter(x => x.is_active && !members.some(m => m.id === x.id)).map(x => `<option value="${x.id}">${esc(x.full_name || x.email)}</option>`).join('')}</select></div>` : ''}
+        <div class="task-sub" style="margin-top:8px">Members can see this project. Anyone given a task here is added automatically.</div>
       </div></div>
-      <div class="card"><div class="card-h"><h2>Discussion</h2><span class="sub">Updates for the whole project</span></div><div class="card-b" id="pj-comments"></div></div>
+      <div class="card" style="align-self:start"><div class="card-h"><h2>Needs attention</h2><span class="sub">Overdue or due in 7 days</span></div><div class="card-b">
+        ${attention.filter(t => isMgr() || t.assigned_to === S.me.id || t.created_by === S.me.id).map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="dot" style="background:${TCOLOR[t.status]}"></span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}</div></div>${due(t)}</div>`).join('') || '<div class="empty">Nothing overdue or due this week.</div>'}
+      </div></div></div>
+      <div class="grid" style="align-content:start">
+      <div class="card"><div class="card-h"><h2>Documents</h2><span class="sub">Briefs, proposals, designs, credentials</span></div><div class="card-b" id="pj-docs"></div></div>
+      <div class="card"><div class="card-h"><h2>Discussion</h2><span class="sub">Updates for the whole project</span></div><div class="card-b" id="pj-comments"></div></div></div>
     </div>`;
   };
 
@@ -1534,7 +1607,7 @@ VIEWS.project = async (el, id) => {
         <div class="muted">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}</div>
         ${pr.description ? `<p style="margin:10px 0 0;color:var(--ink-2);white-space:pre-line">${esc(pr.description)}</p>` : ''}
       </div>
-      <div class="right"><span class="pill ${pc}">${pl}</span><button class="btn" id="pv-edit">Edit project</button><button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
+      <div class="right"><span class="pill ${pc}">${pl}</span>${pr.drive_url ? `<a class="btn" href="${esc(pr.drive_url)}" target="_blank" rel="noopener">📁 Drive folder</a>` : ''}${isMgr() ? '<button class="btn" id="pv-edit">Edit project</button>' : ''}<button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
     </div>
     <div class="tabs" role="tablist">${[['overview', 'Overview'], ['board', 'Board'], ['list', 'List']].map(([v, l]) => `<button data-pv="${v}" class="${view === v ? 'on' : ''}">${l}</button>`).join('')}</div>
     ${view !== 'overview' ? `<div class="toolbar"><div class="field" style="min-width:200px"><label for="pv-who">Assignee</label><select id="pv-who"><option value="">Everyone</option>${st.people.map(p => `<option value="${p.id}" ${who === p.id ? 'selected' : ''}>${esc(p.full_name || p.email)}</option>`).join('')}</select></div></div>` : ''}
@@ -1547,13 +1620,16 @@ VIEWS.project = async (el, id) => {
         return `<tr data-open="${t.id}" style="cursor:pointer"><td style="white-space:normal"><span class="task-title">${esc(t.title)}</span>${ccount(t.id) ? ` <span class="task-sub">${icon('chat')}${ccount(t.id)}</span>` : ''}</td><td>${esc(nameOf(t.assigned_to))}</td><td class="num">${due(t) || '—'}</td><td><span class="pill ${qc}">${ql}</span></td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td><td class="num">${c.length ? `${c.filter(x => x.done).length}/${c.length}` : '—'}</td><td class="num">${hm(spent(t.id))}</td></tr>`; }).join('') || '<tr><td colspan="7" class="empty">No tasks yet. Click Add task.</td></tr>'}
       </tbody></table></div></div>`}`;
 
-  $('#pv-edit').onclick = () => openProject(pr);
+  $('#pv-edit') && ($('#pv-edit').onclick = () => openProject(pr));
   $('#pv-add').onclick = () => openTask(null, { projectId: id });
   $$('[data-add]', el).forEach(b => b.onclick = () => openTask(null, { projectId: id, status: b.dataset.add }));
   $$('[data-pv]', el).forEach(b => b.onclick = () => { S.projView = b.dataset.pv; route(); });
   $('#pv-who') && ($('#pv-who').onchange = e => { S.projWho = e.target.value; route(); });
   $$('[data-open]', el).forEach(r => r.onclick = () => openTask(tasks.find(t => t.id === r.dataset.open)));
   if ($('#pj-comments')) mountComments($('#pj-comments'), { projectId: id });
+  if ($('#pj-docs')) mountDocs($('#pj-docs'), { projectId: id }, { empty: 'No documents yet. Upload the brief, proposal or designs.' });
+  $('#mb-add') && ($('#mb-add').onchange = async e => { if (!e.target.value) return; try { await q(sb.from('project_members').insert({ project_id: id, employee_id: e.target.value })); toast('Member added'); route(); } catch (err) { toast(err.message, 'bad'); } });
+  $$('[data-unmember]', el).forEach(b => b.onclick = async () => { if (!confirm('Remove this member from the project? Their tasks stay.')) return; try { await q(sb.from('project_members').delete().eq('project_id', id).eq('employee_id', b.dataset.unmember)); toast('Member removed'); route(); } catch (err) { toast(err.message, 'bad'); } });
   let dragged = null;
   $$('.tcard', el).forEach(c => {
     c.onclick = () => openTask(tasks.find(t => t.id === c.dataset.id));
@@ -1566,10 +1642,575 @@ VIEWS.project = async (el, id) => {
     col.addEventListener('drop', async e => {
       e.preventDefault(); col.classList.remove('drop');
       const t = tasks.find(x => x.id === dragged); if (!t || t.status === col.dataset.col) return;
-      try { await q(sb.from('tasks').update({ status: col.dataset.col }).eq('id', t.id)); toast(`Moved to ${TSTATUS[col.dataset.col]}`); await refreshRunning(); route(); }
+      setTaskStatus(t, col.dataset.col);
+    });
+  });
+};
+
+/* ---------- EOD report ---------- */
+async function eodTodayData() {
+  const today = istDate(), from = `${today}T00:00:00+05:30`;
+  const [att, logs, doneToday, open] = await Promise.all([
+    q(sb.from('attendance').select('*').eq('employee_id', S.me.id).eq('work_date', today).maybeSingle()).catch(() => null),
+    q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', from)).catch(() => []),
+    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).eq('status', 'done').gte('completed_at', from)).catch(() => []),
+    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).in('status', ['in_progress', 'review'])).catch(() => [])
+  ]);
+  const loggedIds = [...new Set(logs.map(l => l.task_id))];
+  const known = [...doneToday, ...open];
+  const missing = loggedIds.filter(id => !known.some(t => t.id === id));
+  const extra = missing.length ? await inChunks(missing, ch => sb.from('tasks').select('*').in('id', ch)).catch(() => []) : [];
+  const all = [...new Map([...doneToday, ...extra, ...open].map(t => [t.id, t])).values()];
+  const mins = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
+  const items = all.map(t => ({ task_id: t.id, title: t.title, project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)),
+    auto: doneToday.some(x => x.id === t.id) || loggedIds.includes(t.id) }));
+  items.sort((a, b) => b.auto - a.auto || b.minutes - a.minutes);
+  return { att, items };
+}
+
+function eodView(r) {
+  const tasks = Array.isArray(r.tasks) ? r.tasks : [];
+  return `<div class="eod-read">
+    <div class="task-sub">${fmtDate(r.report_date)} · submitted ${fmtTime(r.submitted_at)}${r.hours ? ` · ${r.hours} h at work` : ''} · ${r.emailed_at ? `<span style="color:var(--ok)">emailed ${fmtTime(r.emailed_at)}</span>` : '<span class="muted">not emailed</span>'}</div>
+    <div class="section-h"><b>Tasks (${tasks.length})</b></div>
+    ${tasks.length ? `<div class="table-wrap" style="border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Task</th><th>Project</th><th>Status</th><th>Time</th></tr></thead><tbody>${tasks.map(t => `<tr><td style="white-space:normal">${esc(t.title)}</td><td>${esc(t.project || '—')}</td><td>${esc(t.status_label || t.status || '')}</td><td class="num">${t.minutes ? hm(t.minutes) : '—'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="muted">No tasks listed.</div>'}
+    <div class="section-h"><b>Summary</b></div><div class="cm-text">${esc(r.summary || '—')}</div>
+    <div class="section-h"><b>Blockers / help needed</b></div><div class="cm-text">${esc(r.blockers || '—')}</div>
+    <div class="section-h"><b>Plan for tomorrow</b></div><div class="cm-text">${esc(r.tomorrow || '—')}</div></div>`;
+}
+
+VIEWS.eod = async el => {
+  const tab = S.eodTab || 'today', today = istDate();
+  el.innerHTML = `<div class="tabs" role="tablist">
+      <button data-et="today" class="${tab === 'today' ? 'on' : ''}">Today's report</button>
+      <button data-et="mine" class="${tab === 'mine' ? 'on' : ''}">My reports</button>
+      ${isMgr() ? `<button data-et="team" class="${tab === 'team' ? 'on' : ''}">Team reports</button>` : ''}</div><div id="eod-body"><div class="loading">Loading…</div></div>`;
+  $$('[data-et]', el).forEach(b => b.onclick = () => { S.eodTab = b.dataset.et; route(); });
+  const body = $('#eod-body');
+
+  if (tab === 'mine') {
+    const rows = await q(sb.from('eod_reports').select('*').eq('employee_id', S.me.id).order('report_date', { ascending: false }).limit(60));
+    body.innerHTML = `<div class="card"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Tasks</th><th>Summary</th><th>Email</th></tr></thead><tbody>
+      ${rows.map(r => `<tr data-r="${r.id}" style="cursor:pointer"><td class="num"><b>${fmtShort(r.report_date)}</b> <span class="muted">${dayName(r.report_date)}</span></td><td class="num">${(r.tasks || []).length}</td><td style="white-space:normal">${esc((r.summary || '').slice(0, 120))}${(r.summary || '').length > 120 ? '…' : ''}</td><td>${r.emailed_at ? '<span class="pill ok">Sent</span>' : '<span class="pill muted">Saved</span>'}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">No reports yet.</td></tr>'}
+      </tbody></table></div></div>`;
+    $$('[data-r]', body).forEach(tr => tr.onclick = () => { const r = rows.find(x => x.id === tr.dataset.r); openModal({ title: `EOD report · ${fmtDate(r.report_date)}`, wide: true, body: eodView(r) }); });
+    return;
+  }
+
+  if (tab === 'team') {
+    const date = S.eodDate || today;
+    const people = S.profiles.filter(p => p.is_active);
+    const rows = await q(sb.from('eod_reports').select('*').eq('report_date', date));
+    const off = offReason(date);
+    body.innerHTML = `<div class="toolbar"><div class="field"><label for="eod-date">Date</label><input id="eod-date" type="date" value="${date}" max="${today}"></div>
+        <div class="field"><label>&nbsp;</label><div class="task-sub" style="padding:10px 0">${rows.length} of ${people.length} submitted${off ? ` · ${esc(off)}` : ''}</div></div></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Person</th><th>Status</th><th>Tasks</th><th>Blockers</th><th>Email</th></tr></thead><tbody>
+      ${people.map(p => { const r = rows.find(x => x.employee_id === p.id);
+        return `<tr ${r ? `data-r="${r.id}" style="cursor:pointer"` : ''}><td>${personLink(p, p.designation || '')}</td><td>${r ? `<span class="pill ok">Submitted ${fmtTime(r.submitted_at)}</span>` : '<span class="pill warn">Not submitted</span>'}</td><td class="num">${r ? (r.tasks || []).length : '—'}</td><td style="white-space:normal;max-width:320px">${r?.blockers ? `<span style="color:var(--bad)">${esc(r.blockers.slice(0, 90))}</span>` : '<span class="muted">—</span>'}</td><td>${r ? (r.emailed_at ? '<span class="pill ok">Sent</span>' : '<span class="pill muted">Saved</span>') : ''}</td></tr>`; }).join('')}
+      </tbody></table></div></div>`;
+    $('#eod-date').onchange = e => { S.eodDate = e.target.value; route(); };
+    $$('[data-r]', body).forEach(tr => tr.onclick = e => { if (e.target.closest('a')) return; const r = rows.find(x => x.id === tr.dataset.r); openModal({ title: `EOD · ${nameOf(r.employee_id)} · ${fmtDate(r.report_date)}`, wide: true, body: eodView(r) }); });
+    return;
+  }
+
+  // Today
+  const existing = await q(sb.from('eod_reports').select('*').eq('employee_id', S.me.id).eq('report_date', today).maybeSingle());
+  if (existing && !S.eodEdit) {
+    body.innerHTML = `<div class="card"><div class="card-h"><h2>Today's report is submitted</h2><div class="right"><button class="btn" id="eod-edit">Edit and resend</button></div></div><div class="card-b">${eodView(existing)}</div></div>`;
+    $('#eod-edit').onclick = () => { S.eodEdit = true; route(); };
+    return;
+  }
+  const { att, items } = await eodTodayData();
+  const prevIds = new Set((existing?.tasks || []).map(t => t.task_id));
+  const worked = att?.check_in ? ((att.check_out ? new Date(att.check_out) : new Date()) - new Date(att.check_in)) / 36e5 : null;
+  body.innerHTML = `<div class="grid g-2">
+    <div class="card"><div class="card-h"><h2>Tasks today</h2><span class="sub">Picked up automatically from your timer and finished tasks</span></div><div class="card-b">
+      ${items.length ? items.map((t, i) => `<label class="eod-task"><input type="checkbox" data-i="${i}" ${(existing ? prevIds.has(t.task_id) : t.auto) ? 'checked' : ''}>
+          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}</div></div>
+          <span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span><span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
+        : '<div class="empty">No tasks tracked today. Use the timer on the Tasks page tomorrow, and it fills this in for you. For today, describe your work in the summary.</div>'}
+      <div class="task-sub" style="margin-top:10px">${att?.check_in ? `Checked in ${fmtTime(att.check_in)}${att.check_out ? ` · out ${fmtTime(att.check_out)}` : ''} · ${worked.toFixed(1)} h` : 'Not checked in today'}</div>
+    </div></div>
+    <div class="card"><div class="card-h"><h2>${fmtDate(today)}</h2></div><div class="card-b"><div class="form-grid" style="grid-template-columns:1fr">
+      <div class="field"><label for="eod-sum">What did you get done today?</label><textarea id="eod-sum" rows="5" placeholder="Key work, results, meetings…">${esc(existing?.summary || '')}</textarea></div>
+      <div class="field"><label for="eod-block">Blockers or help needed</label><textarea id="eod-block" rows="2" placeholder="Anything stopping you? Leave empty if none.">${esc(existing?.blockers || '')}</textarea></div>
+      <div class="field"><label for="eod-next">Plan for tomorrow</label><textarea id="eod-next" rows="3">${esc(existing?.tomorrow || '')}</textarea></div>
+      <button class="btn primary" id="eod-send" style="padding:12px">Submit and email report</button>
+      <div class="task-sub">Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you.</div>
+    </div></div></div></div>`;
+  $('#eod-send').onclick = async e => {
+    const b = e.currentTarget, summary = $('#eod-sum').value.trim();
+    if (!summary) return toast('Write a short summary of your day', 'bad');
+    const picked = $$('[data-i]', body).filter(c => c.checked).map(c => { const t = items[+c.dataset.i]; return { task_id: t.task_id, title: t.title, project: t.project, status: t.status, status_label: t.status_label, minutes: t.minutes }; });
+    const row = { employee_id: S.me.id, report_date: today, tasks: picked, summary, blockers: $('#eod-block').value.trim() || null, tomorrow: $('#eod-next').value.trim() || null, hours: worked ? +worked.toFixed(2) : null, submitted_at: new Date().toISOString() };
+    b.disabled = true; b.textContent = 'Submitting…';
+    try {
+      const saved = existing ? await q(sb.from('eod_reports').update(row).eq('id', existing.id).select().single()) : await q(sb.from('eod_reports').insert(row).select().single());
+      b.textContent = 'Sending email…';
+      let sent = false;
+      try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; } catch { }
+      S.eodEdit = false;
+      toast(sent ? 'EOD report submitted and emailed' : 'EOD report saved. Email is not set up yet; managers can read it in the app.', sent ? 'ok' : 'bad');
+      route();
+    } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = 'Submit and email report'; }
+  };
+};
+
+/* ---------- Leads (simple CRM) ---------- */
+const LSTATUS = { new: ['New', '#2D6CDF'], contacted: ['Contacted', '#7C4DDB'], qualified: ['Qualified', '#0B7285'], proposal: ['Proposal sent', '#B7791F'], won: ['Won', '#1E8A5A'], lost: ['Lost', '#8A94A6'] };
+const LSOURCES = { website: 'Website', referral: 'Referral', linkedin: 'LinkedIn', email: 'Email', call: 'Phone call', event: 'Event', manual: 'Added by team', other: 'Other' };
+const money = v => v == null || v === '' ? '' : '₹' + Number(v).toLocaleString('en-IN');
+const lpill = s => `<span class="pill" style="background:${LSTATUS[s][1]}1f;color:${LSTATUS[s][1]}">${LSTATUS[s][0]}</span>`;
+
+VIEWS.leads = async el => {
+  const view = S.leadView || 'pipeline', today = istDate(), owner = S.leadOwner || '';
+  let leads = await allRows(() => sb.from('leads').select('*').order('created_at', { ascending: false }));
+  if (owner) leads = leads.filter(l => owner === 'none' ? !l.owner_id : l.owner_id === owner);
+  const open = leads.filter(l => !['won', 'lost'].includes(l.status));
+  const due = open.filter(l => l.next_follow_up && l.next_follow_up <= today);
+  const month = today.slice(0, 7);
+  const owners = S.profiles.filter(p => p.is_active);
+  const lcard = l => `<div class="tcard" draggable="true" data-id="${l.id}"><div class="task-title">${esc(l.organisation || l.name)}</div>
+      <div class="task-sub">${esc(l.organisation ? l.name : (l.email || ''))}${l.service ? ` · ${esc(l.service)}` : ''}</div>
+      <div class="tcard-meta"><span class="pill muted">${esc(LSOURCES[l.source] || l.source)}</span>${l.value ? `<b>${money(l.value)}</b>` : ''}<span class="sp"></span>${l.next_follow_up ? `<span class="${l.next_follow_up <= today && !['won', 'lost'].includes(l.status) ? 'overdue' : ''}">${fmtShort(l.next_follow_up)}</span>` : ''}${l.owner_id ? `<span class="avatar sm" title="${esc(nameOf(l.owner_id))}">${esc(initials(nameOf(l.owner_id)))}</span>` : ''}</div></div>`;
+  el.innerHTML = `<div class="toolbar">
+      <div class="field"><label>View</label><div class="seg"><button data-lv="pipeline" class="${view === 'pipeline' ? 'on' : ''}">Pipeline</button><button data-lv="list" class="${view === 'list' ? 'on' : ''}">List</button><button data-lv="follow" class="${view === 'follow' ? 'on' : ''}">Follow-ups (${due.length})</button></div></div>
+      ${isMgr() ? `<div class="field" style="min-width:180px"><label for="ld-owner">Owner</label><select id="ld-owner"><option value="">Everyone</option><option value="none" ${owner === 'none' ? 'selected' : ''}>Unassigned</option>${owners.map(p => `<option value="${p.id}" ${owner === p.id ? 'selected' : ''}>${esc(p.full_name || p.email)}</option>`).join('')}</select></div>` : ''}
+      <div class="field grow"><label for="ld-search">Search</label><input id="ld-search" type="text" placeholder="Name, organisation, email, phone"></div>
+      <button class="btn primary" id="ld-new">${icon('plus')}Add lead</button></div>
+    <div class="stats">
+      <div class="stat"><span>New this month</span><b>${leads.filter(l => l.created_at.slice(0, 7) === month).length}</b></div>
+      <div class="stat"><span>Open leads</span><b>${open.length}</b></div>
+      <div class="stat"><span>Open value</span><b>${money(open.reduce((s, l) => s + Number(l.value || 0), 0)) || '₹0'}</b></div>
+      <div class="stat"><span>Follow-ups due</span><b class="${due.length ? 'overdue' : ''}">${due.length}</b></div>
+      <div class="stat"><span>Won this month</span><b>${leads.filter(l => l.status === 'won' && l.updated_at.slice(0, 7) === month).length}</b></div>
+    </div>
+    ${view === 'pipeline' ? `<div class="board" style="grid-template-columns:repeat(6,minmax(220px,1fr))" id="ld-items">${Object.entries(LSTATUS).map(([s, [label, color]]) => { const ls = leads.filter(l => l.status === s);
+        return `<div class="col" data-col="${s}"><div class="col-h"><span class="dot" style="background:${color}"></span>${label} <span class="n">${ls.length}</span></div>${ls.map(lcard).join('')}</div>`; }).join('')}</div>`
+    : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Lead</th><th>Service</th><th>Source</th><th>Status</th><th>Value</th><th>Owner</th><th>Follow-up</th><th>Added</th></tr></thead><tbody id="ld-items">
+      ${(view === 'follow' ? due.sort((a, b) => a.next_follow_up.localeCompare(b.next_follow_up)) : leads).map(l => `<tr data-id="${l.id}" data-s="${esc([l.name, l.organisation, l.email, l.phone].join(' ').toLowerCase())}" style="cursor:pointer">
+        <td style="white-space:normal"><div class="task-title">${esc(l.organisation || l.name)}</div><div class="task-sub">${esc(l.organisation ? l.name : '')} ${esc(l.email || '')}</div></td>
+        <td>${esc(l.service || '—')}</td><td>${esc(LSOURCES[l.source] || l.source)}</td><td>${lpill(l.status)}</td><td class="num">${money(l.value) || '—'}</td>
+        <td>${l.owner_id ? esc(nameOf(l.owner_id)) : '<span class="pill warn">Unassigned</span>'}</td>
+        <td class="num">${l.next_follow_up ? `<span class="${l.next_follow_up <= today && !['won', 'lost'].includes(l.status) ? 'overdue' : ''}">${fmtShort(l.next_follow_up)}</span>` : '—'}</td><td class="num">${fmtShort(istDate(new Date(l.created_at)))}</td></tr>`).join('') || `<tr><td colspan="8" class="empty">${view === 'follow' ? 'No follow-ups due. Nice work.' : 'No leads yet.'}</td></tr>`}
+      </tbody></table></div></div>`}`;
+  if (view === 'pipeline') $$('#ld-items .tcard').forEach(c => c.dataset.s = (() => { const l = leads.find(x => x.id === c.dataset.id); return [l.name, l.organisation, l.email, l.phone].join(' ').toLowerCase(); })());
+  $$('[data-lv]', el).forEach(b => b.onclick = () => { S.leadView = b.dataset.lv; route(); });
+  $('#ld-owner') && ($('#ld-owner').onchange = e => { S.leadOwner = e.target.value; route(); });
+  $('#ld-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#ld-items [data-s]').forEach(c => c.style.display = c.dataset.s.includes(v) ? '' : 'none'); };
+  $('#ld-new').onclick = () => openLead(null);
+  $$('#ld-items [data-id]').forEach(c => c.onclick = () => openLead(leads.find(l => l.id === c.dataset.id)));
+  let dragged = null;
+  $$('#ld-items .tcard').forEach(c => { c.addEventListener('dragstart', () => { dragged = c.dataset.id; c.classList.add('dragging'); }); c.addEventListener('dragend', () => c.classList.remove('dragging')); });
+  $$('#ld-items [data-col]').forEach(col => {
+    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drop'); });
+    col.addEventListener('dragleave', () => col.classList.remove('drop'));
+    col.addEventListener('drop', async e => {
+      e.preventDefault(); col.classList.remove('drop');
+      const l = leads.find(x => x.id === dragged); if (!l || l.status === col.dataset.col) return;
+      try { await q(sb.from('leads').update({ status: col.dataset.col }).eq('id', l.id)); toast(`Moved to ${LSTATUS[col.dataset.col][0]}`); refreshBadge(); route(); }
       catch (err) { toast(err.message, 'bad'); }
     });
   });
+};
+
+async function openLead(lead) {
+  const isNew = !lead, l = lead || { status: 'new', source: 'manual', owner_id: S.me.id };
+  const notes = isNew ? [] : await q(sb.from('lead_notes').select('*').eq('lead_id', l.id).order('created_at')).catch(() => []);
+  const owners = S.profiles.filter(p => p.is_active);
+  const digits = String(l.phone || '').replace(/\D/g, '');
+  openModal({
+    title: isNew ? 'Add lead' : (l.organisation || l.name),
+    wide: true,
+    body: `<div class="task-grid"><div><div class="form-grid">
+        <div class="field"><label for="ld-name">Contact name</label><input id="ld-name" type="text" value="${esc(l.name || '')}"></div>
+        <div class="field"><label for="ld-org">Organisation</label><input id="ld-org" type="text" value="${esc(l.organisation || '')}"></div>
+        <div class="field"><label for="ld-email">Email</label><input id="ld-email" type="email" value="${esc(l.email || '')}"></div>
+        <div class="field"><label for="ld-phone">Phone / WhatsApp</label><input id="ld-phone" type="tel" value="${esc(l.phone || '')}"></div>
+        <div class="field"><label for="ld-service">Service</label><input id="ld-service" type="text" list="ld-services" value="${esc(l.service || '')}"><datalist id="ld-services"><option value="Website design & development"><option value="Donor / fundraising platform"><option value="CRM & automation"><option value="SEO & digital marketing"></datalist></div>
+        <div class="field"><label for="ld-country">Country</label><input id="ld-country" type="text" value="${esc(l.country || '')}"></div>
+        <div class="field"><label for="ld-source">Source</label><select id="ld-source">${Object.entries(LSOURCES).map(([v, n]) => `<option value="${v}" ${l.source === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+        <div class="field"><label for="ld-status">Stage</label><select id="ld-status">${Object.entries(LSTATUS).map(([v, [n]]) => `<option value="${v}" ${l.status === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+        <div class="field"><label for="ld-value">Estimated value (₹)</label><input id="ld-value" type="number" min="0" step="1000" value="${esc(l.value ?? '')}"></div>
+        <div class="field"><label for="ld-owner2">Owner</label><select id="ld-owner2"><option value="">Unassigned</option>${owners.map(p => `<option value="${p.id}" ${p.id === l.owner_id ? 'selected' : ''}>${esc(p.full_name || p.email)}</option>`).join('')}</select></div>
+        <div class="field"><label for="ld-follow">Next follow-up</label><input id="ld-follow" type="date" value="${esc(l.next_follow_up || '')}"></div>
+        <div class="field" id="ld-lost-wrap"><label for="ld-lost">Reason lost</label><input id="ld-lost" type="text" value="${esc(l.lost_reason || '')}"></div>
+        <div class="field full"><label for="ld-msg">Requirement / message</label><textarea id="ld-msg">${esc(l.message || '')}</textarea></div>
+      </div>
+      ${isNew ? '' : `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        ${l.email ? `<a class="btn sm" href="mailto:${esc(l.email)}">${icon('mail')}Email</a>` : ''}
+        ${digits ? `<a class="btn sm" href="tel:${esc(l.phone)}">${icon('phone')}Call</a><a class="btn sm" href="https://wa.me/${digits.length === 10 ? '91' + digits : digits}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+        ${l.status === 'won' && isMgr() ? `<button class="btn primary sm" id="ld-proj">${icon('folder')}Create project</button>` : ''}</div>`}
+      </div>
+      <div class="task-side"><div class="section-h" style="margin-top:0"><b>Notes and activity</b></div>
+        ${isNew ? '<div class="muted" style="font-size:13px">Save the lead first, then log calls, meetings and notes here.</div>' : `<div class="cm-list" id="ln-list">${notes.map(n => `<div class="cm"><span class="avatar sm">${esc(initials(nameOf(n.author_id)))}</span><div class="cm-body"><div class="cm-h"><b>${esc(nameOf(n.author_id))}</b><span class="muted">${timeAgo(n.created_at)}</span></div><div class="cm-text">${esc(n.body)}</div></div></div>`).join('') || '<div class="muted" style="font-size:13px">No notes yet. Log every call or meeting so anyone can pick up the conversation.</div>'}</div>
+          <div class="cm-new"><textarea id="ln-new" placeholder="e.g. Called, interested in donor CRM, send proposal by Friday"></textarea><button class="btn primary sm" id="ln-add" type="button">Add note</button></div>
+          <div class="task-sub" style="margin-top:10px">Added ${fmtDate(istDate(new Date(l.created_at)))}${l.created_by ? ` by ${esc(nameOf(l.created_by))}` : ' from the website'}</div>`}
+      </div></div>`,
+    footer: `${!isNew && isAdmin() ? '<button class="btn danger" id="ld-del" style="margin-right:auto">Delete</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="ld-save">${isNew ? 'Add lead' : 'Save lead'}</button>`,
+    onMount: (root, close) => {
+      const sync = () => $('#ld-lost-wrap', root).style.display = $('#ld-status', root).value === 'lost' ? '' : 'none';
+      $('#ld-status', root).onchange = sync; sync();
+      $('[data-close]', root).onclick = close;
+      $('#ld-save', root).onclick = async () => {
+        const v = s => $(s, root).value.trim() || null;
+        const row = { name: v('#ld-name') || v('#ld-org'), organisation: v('#ld-org'), email: v('#ld-email'), phone: v('#ld-phone'), service: v('#ld-service'), country: v('#ld-country'), source: v('#ld-source'), status: v('#ld-status'), value: v('#ld-value') ? +v('#ld-value') : null, owner_id: v('#ld-owner2'), next_follow_up: v('#ld-follow'), lost_reason: v('#ld-lost'), message: v('#ld-msg') };
+        if (!row.name) return toast('Enter a contact name or organisation', 'bad');
+        try {
+          if (isNew) await q(sb.from('leads').insert({ ...row, created_by: S.me.id }));
+          else await q(sb.from('leads').update(row).eq('id', l.id));
+          close(); toast(isNew ? 'Lead added' : 'Lead saved'); refreshBadge(); route();
+        } catch (e) { toast(e.message, 'bad'); }
+      };
+      $('#ln-add', root) && ($('#ln-add', root).onclick = async () => {
+        const body = $('#ln-new', root).value.trim(); if (!body) return;
+        try { await q(sb.from('lead_notes').insert({ lead_id: l.id, author_id: S.me.id, body })); close(); openLead(l); }
+        catch (e) { toast(e.message, 'bad'); }
+      });
+      $('#ld-del', root) && ($('#ld-del', root).onclick = async () => {
+        if (!confirm('Delete this lead and its notes?')) return;
+        try { await q(sb.from('leads').delete().eq('id', l.id)); close(); toast('Lead deleted'); route(); } catch (e) { toast(e.message, 'bad'); }
+      });
+      $('#ld-proj', root) && ($('#ld-proj', root).onclick = () => { close(); openProject(null, { name: (l.organisation || l.name) + (l.service ? ` – ${l.service}` : ''), client: l.organisation || l.name, description: l.message || '' }); });
+    }
+  });
+}
+
+/* ---------- Safe mini-markdown (## headings, lists, **bold**, links, > tips) ---------- */
+function md(src) {
+  const inline = s => s.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|[\s(])\*(?!\s)(.+?)\*(?=[\s).,!?]|$)/g, '$1<i>$2</i>').replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/(^|\s)(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+  let html = '', list = null;
+  const close = () => { if (list) { html += `</${list}>`; list = null; } };
+  for (const raw of esc(src || '').split('\n')) {
+    const l = raw.trimEnd(); let m;
+    if ((m = l.match(/^(#{1,3})\s+(.*)/))) { close(); const n = m[1].length + 1; html += `<h${n}>${inline(m[2])}</h${n}>`; }
+    else if ((m = l.match(/^\s*[-*•]\s+(.*)/))) { if (list !== 'ul') { close(); html += '<ul>'; list = 'ul'; } html += `<li>${inline(m[1])}</li>`; }
+    else if ((m = l.match(/^\s*\d+[.)]\s+(.*)/))) { if (list !== 'ol') { close(); html += '<ol>'; list = 'ol'; } html += `<li>${inline(m[1])}</li>`; }
+    else if ((m = l.match(/^&gt;\s?(.*)/))) { close(); html += `<blockquote>${inline(m[1])}</blockquote>`; }
+    else if (!l.trim()) close();
+    else { close(); html += `<p>${inline(l)}</p>`; }
+  }
+  close(); return html;
+}
+
+/* ---------- Documents (files and links) ---------- */
+const fileSize = b => !b ? '' : b < 1048576 ? `${Math.round(b / 1024)} KB` : `${(b / 1048576).toFixed(1)} MB`;
+const fileIcon = d => d.kind === 'link' ? '🔗' : /pdf/.test(d.mime || '') ? '📕' : /sheet|excel|csv/.test(d.mime || '') ? '📊' : /presentation|powerpoint/.test(d.mime || '') ? '📙' : /image/.test(d.mime || '') ? '🖼️' : /word|document/.test(d.mime || '') ? '📘' : '📄';
+async function openDoc(d) {
+  if (d.kind === 'link') return window.open(d.url, '_blank', 'noopener');
+  const { data, error } = await sb.storage.from('documents').createSignedUrl(d.storage_path, 3600);
+  if (error) return toast(error.message, 'bad');
+  window.open(data.signedUrl, '_blank', 'noopener');
+}
+async function mountDocs(box, ref, opts = {}) {
+  // ref: { projectId } | { taskId } | { articleId } | {} (company-wide)
+  const col = ref.taskId ? 'task_id' : ref.articleId ? 'article_id' : ref.projectId ? 'project_id' : null;
+  const val = ref.taskId || ref.articleId || ref.projectId;
+  box.innerHTML = `<div class="doc-list"><div class="muted" style="font-size:13px">Loading…</div></div>
+    <div class="doc-add"><label class="btn sm">${icon('plus')}Upload file<input type="file" hidden multiple></label><button class="btn sm" type="button" data-link>${icon('plus')}Add link</button>
+    <span class="task-sub">Google Docs, Drive, Figma links or files up to 50 MB</span></div>`;
+  const list = $('.doc-list', box);
+  const load = async () => {
+    let qb = sb.from('documents').select('*').order('created_at', { ascending: false });
+    if (col) qb = qb.eq(col, val);
+    else qb = qb.is('project_id', null).is('task_id', null).is('article_id', null);
+    const docs = await q(qb).catch(() => []);
+    list.innerHTML = docs.length ? docs.map(d => `<div class="doc"><span class="doc-ic">${fileIcon(d)}</span><button class="doc-open" data-open="${d.id}"><b>${esc(d.title)}</b><span class="task-sub">${d.kind === 'link' ? esc(d.url.replace(/^https?:\/\//, '').slice(0, 50)) : fileSize(d.size_bytes)} · ${esc(nameOf(d.uploaded_by))} · ${fmtShort(istDate(new Date(d.created_at)))}</span></button>${d.uploaded_by === S.me.id || isMgr() ? `<button class="x-btn" data-deldoc="${d.id}" aria-label="Remove">&times;</button>` : ''}</div>`).join('')
+      : `<div class="muted" style="font-size:13px">${opts.empty || 'No documents yet.'}</div>`;
+    $$('[data-open]', list).forEach(b => b.onclick = () => openDoc(docs.find(d => d.id === b.dataset.open)));
+    $$('[data-deldoc]', list).forEach(b => b.onclick = async () => {
+      const d = docs.find(x => x.id === b.dataset.deldoc);
+      if (!confirm(`Remove "${d.title}"?`)) return;
+      try { if (d.storage_path) await sb.storage.from('documents').remove([d.storage_path]); await q(sb.from('documents').delete().eq('id', d.id)); load(); } catch (e) { toast(e.message, 'bad'); }
+    });
+  };
+  const base = col ? { [col]: val } : {};
+  $('input[type=file]', box).onchange = async e => {
+    for (const f of e.target.files) {
+      if (f.size > 52428800) { toast(`${f.name} is larger than 50 MB`, 'bad'); continue; }
+      const path = `${col || 'company'}/${val || 'all'}/${crypto.randomUUID()}-${f.name.replace(/[^\w.\-]+/g, '_')}`;
+      toast(`Uploading ${f.name}…`);
+      const { error } = await sb.storage.from('documents').upload(path, f, { contentType: f.type || 'application/octet-stream' });
+      if (error) { toast(error.message, 'bad'); continue; }
+      try { await q(sb.from('documents').insert({ ...base, title: f.name, kind: 'file', storage_path: path, mime: f.type, size_bytes: f.size, uploaded_by: S.me.id })); }
+      catch (err) { toast(err.message, 'bad'); }
+    }
+    e.target.value = ''; load();
+  };
+  $('[data-link]', box).onclick = async () => {
+    const url = prompt('Paste the link (Google Doc, Drive, Figma…)'); if (!url) return;
+    if (!/^https?:\/\//i.test(url.trim())) return toast('Links must start with https://', 'bad');
+    const title = prompt('Name for this link', '') || url.replace(/^https?:\/\//, '').slice(0, 60);
+    try { await q(sb.from('documents').insert({ ...base, title: title.trim(), kind: 'link', url: url.trim(), uploaded_by: S.me.id })); load(); } catch (e) { toast(e.message, 'bad'); }
+  };
+  await load();
+}
+
+/* ---------- Knowledge base ---------- */
+const KB_TEMPLATE = `## When to use this
+Describe the situation in one or two lines.
+
+## Before you start
+- Access or tools you need
+
+## Steps
+1. First step
+2. Second step
+3. Third step
+
+## Check your work
+- How to know it is done right
+
+> Tip: add screenshots or files below after saving.`;
+
+VIEWS.kb = async (el, param) => {
+  if (param) return kbArticle(el, param);
+  const tab = S.kbTab || 'articles';
+  if (tab === 'files') {
+    el.innerHTML = `<div class="tabs"><button data-kt="articles">Articles</button><button data-kt="files" class="on">Company files</button></div>
+      ${S.settings.drive_url ? `<div class="nudge"><div><b>📁 Sharvii shared Google Drive</b><div class="task-sub">All client, sales, HR and brand files live here. Read “Where to keep files” in the Knowledge base for folders and naming.</div></div><a class="btn primary sm" href="${esc(S.settings.drive_url)}" target="_blank" rel="noopener">Open Drive</a></div>` : ''}
+      <div class="card"><div class="card-h"><h2>Company files</h2><span class="sub">Templates, policies, brand assets and anything the whole team needs</span></div><div class="card-b" id="kb-files"></div></div>`;
+    $$('[data-kt]', el).forEach(b => b.onclick = () => { S.kbTab = b.dataset.kt; route(); });
+    return mountDocs($('#kb-files'), {}, { empty: 'No company files yet. Upload templates, policies or brand assets here.' });
+  }
+  const arts = await q(sb.from('kb_articles').select('*').order('updated_at', { ascending: false }));
+  const cats = [...new Set(arts.map(a => a.category))].sort();
+  const cat = S.kbCat || '';
+  const qv = S.kbQuery || '';
+  el.innerHTML = `<div class="tabs"><button data-kt="articles" class="on">Articles</button><button data-kt="files">Company files</button></div>
+    <div class="kb-hero"><h2>How can we help?</h2><div class="kb-search"><input id="kb-q" type="search" placeholder="Search how-tos, SOPs and guides… e.g. publish blog, invoice, donor CRM" value="${esc(qv)}" autocomplete="off"></div>
+      <div class="kb-cats"><button data-cat="" class="${!cat ? 'on' : ''}">All (${arts.length})</button>${cats.map(c => `<button data-cat="${esc(c)}" class="${cat === c ? 'on' : ''}">${esc(c)} (${arts.filter(a => a.category === c).length})</button>`).join('')}</div></div>
+    ${isMgr() && arts.some(a => a.status === 'review') ? `<div class="nudge" style="margin:16px 0 0"><div><b>${arts.filter(a => a.status === 'review').length} SOP${arts.filter(a => a.status === 'review').length > 1 ? 's' : ''} waiting for your review</b><div class="task-sub">${arts.filter(a => a.status === 'review').slice(0, 3).map(a => esc(a.title)).join(' · ')}</div></div><a class="btn primary sm" href="#/kb/${arts.find(a => a.status === 'review').id}">Review now</a></div>` : ''}
+    <div class="toolbar" style="margin-top:16px"><div class="grow task-sub" id="kb-count"></div><button class="btn primary" id="kb-new">${icon('plus')}Write an article</button></div>
+    <div id="kb-results"></div>`;
+  const words = s => s.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+  const render = () => {
+    const ws = words($('#kb-q').value);
+    let res = arts.filter(a => !cat || a.category === cat).map(a => {
+      if (!ws.length) return { a, score: 1 };
+      const t = a.title.toLowerCase(), tg = a.tags.join(' ').toLowerCase(), b = a.body.toLowerCase();
+      let score = 0; for (const w of ws) { if (t.includes(w)) score += 6; if (tg.includes(w)) score += 4; if (a.category.toLowerCase().includes(w)) score += 2; if (b.includes(w)) score += 1; else if (!t.includes(w) && !tg.includes(w)) score -= 3; }
+      return { a, score };
+    }).filter(x => x.score > 0).sort((x, y) => y.score - x.score || y.a.updated_at.localeCompare(x.a.updated_at));
+    const snippet = a => { const plain = a.body.replace(/[#>*`]/g, '').replace(/\s+/g, ' '); const w = ws.find(x => plain.toLowerCase().includes(x)); const i = w ? Math.max(0, plain.toLowerCase().indexOf(w) - 50) : 0; return (i ? '…' : '') + plain.slice(i, i + 170) + '…'; };
+    $('#kb-count').textContent = ws.length ? `${res.length} result${res.length === 1 ? '' : 's'} for “${$('#kb-q').value.trim()}”` : `${res.length} articles`;
+    $('#kb-results').innerHTML = res.length ? `<div class="kb-list">${res.map(({ a }) => `<a class="kb-item" href="#/kb/${a.id}"><div class="kb-item-h"><b>${esc(a.title)}</b>${a.status === 'draft' ? '<span class="pill muted">Draft</span>' : a.status === 'review' ? '<span class="pill warn">Waiting for review</span>' : ''}</div><div class="task-sub">${esc(snippet(a))}</div><div class="kb-meta"><span class="pill muted">${esc(a.category)}</span>${a.tags.slice(0, 4).map(t => `<span class="tag">#${esc(t)}</span>`).join('')}<span class="sp"></span>Updated ${fmtShort(istDate(new Date(a.updated_at)))}${a.views ? ` · ${a.views} views` : ''}</div></a>`).join('')}</div>`
+      : `<div class="card empty">No articles found. ${ws.length ? 'Try other words, or ' : ''}<button class="btn link" id="kb-new2">write one</button> so the next person finds it.</div>`;
+    $('#kb-new2') && ($('#kb-new2').onclick = () => openArticle(null, { title: $('#kb-q').value.trim() }));
+  };
+  render();
+  $('#kb-q').oninput = e => { S.kbQuery = e.target.value; render(); };
+  $('#kb-q').focus();
+  $$('[data-kt]', el).forEach(b => b.onclick = () => { S.kbTab = b.dataset.kt; route(); });
+  $$('[data-cat]', el).forEach(b => b.onclick = () => { S.kbCat = b.dataset.cat; route(); });
+  $('#kb-new').onclick = () => openArticle(null);
+};
+
+async function kbArticle(el, id) {
+  const a = await q(sb.from('kb_articles').select('*').eq('id', id).maybeSingle());
+  if (!a) { el.innerHTML = '<div class="card empty">Article not found. <a href="#/kb">Back to knowledge base</a></div>'; return; }
+  sb.rpc('kb_view', { aid: id }).then(() => {}, () => {});
+  $('#page-title').textContent = 'Knowledge base';
+  const related = (await q(sb.from('kb_articles').select('id,title').eq('category', a.category).neq('id', id).limit(6)).catch(() => []));
+  const canEdit = a.author_id === S.me.id || isMgr();
+  el.innerHTML = `<a class="back" href="#/kb">${icon('back')}Knowledge base</a>
+    <div class="grid g-2" style="grid-template-columns:minmax(0,2.2fr) minmax(0,1fr)">
+      <article class="card kb-article"><div class="card-b">
+        <div class="kb-meta" style="margin:0 0 6px"><span class="pill muted">${esc(a.category)}</span>${a.status === 'draft' ? '<span class="pill muted">Draft (only you and managers can see it)</span>' : a.status === 'review' ? '<span class="pill warn">Waiting for a manager to review</span>' : ''}</div>
+        <h1>${esc(a.title)}</h1>
+        <div class="task-sub">By ${esc(a.author_id ? nameOf(a.author_id) : CONFIG.COMPANY)} · updated ${fmtDate(istDate(new Date(a.updated_at)))}${a.updated_by && a.updated_by !== a.author_id ? ` by ${esc(nameOf(a.updated_by))}` : ''}</div>
+        <div class="md">${md(a.body)}</div>
+        ${a.tags.length ? `<div class="kb-meta">${a.tags.map(t => `<span class="tag">#${esc(t)}</span>`).join('')}</div>` : ''}
+      </div></article>
+      <div class="grid" style="align-content:start">
+        ${isMgr() && a.status === 'review' ? `<div class="card" style="border-color:var(--warn)"><div class="card-b"><b>Review this SOP</b><p class="task-sub" style="margin:4px 0 10px">Check the steps are clear and complete. Edit it if needed, then publish it for the whole team.</p><button class="btn primary" id="ka-approve">Approve and publish</button></div></div>` : ''}
+        ${canEdit ? `<div class="card"><div class="card-b" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn${isMgr() && a.status === 'review' ? '' : ' primary'}" id="ka-edit">Edit article</button>${a.author_id === S.me.id || isAdmin() ? '<button class="btn danger" id="ka-del">Delete</button>' : ''}</div></div>` : ''}
+        <div class="card"><div class="card-h"><h2>Files and links</h2></div><div class="card-b" id="ka-docs"></div></div>
+        ${related.length ? `<div class="card"><div class="card-h"><h2>More in ${esc(a.category)}</h2></div><div class="card-b">${related.map(r => `<a class="list-row plink" href="#/kb/${r.id}"><b>${esc(r.title)}</b></a>`).join('')}</div></div>` : ''}
+      </div>
+    </div>`;
+  mountDocs($('#ka-docs'), { articleId: id }, { empty: 'No attachments.' });
+  $('#ka-edit') && ($('#ka-edit').onclick = () => openArticle(a));
+  $('#ka-approve') && ($('#ka-approve').onclick = async () => { try { await q(sb.from('kb_articles').update({ status: 'published' }).eq('id', id)); toast('SOP published for the whole team'); route(); } catch (e) { toast(e.message, 'bad'); } });
+  $('#ka-del') && ($('#ka-del').onclick = async () => { if (!confirm('Delete this article?')) return; try { await q(sb.from('kb_articles').delete().eq('id', id)); toast('Article deleted'); location.hash = '#/kb'; } catch (e) { toast(e.message, 'bad'); } });
+}
+
+async function openArticle(a, prefill = {}) {
+  const isNew = !a, x = a || { title: prefill.title || '', category: prefill.category || S.kbCat || 'General', tags: [], body: prefill.body || '', status: 'published' };
+  const cats = [...new Set(((await q(sb.from('kb_articles').select('category')).catch(() => [])) || []).map(r => r.category).concat(['General', 'Using Sharvii People', 'Web development', 'SEO', 'CRM', 'Clients', 'HR & policies']))].sort();
+  openModal({
+    title: isNew ? (prefill.onSaved ? 'Write the SOP: edit the title and steps' : 'Write an article') : 'Edit article', wide: true,
+    body: `<div class="form-grid">
+      <div class="field full"><label for="ar-title">Title</label><input id="ar-title" type="text" value="${esc(x.title)}" placeholder="Start with “How to…”, e.g. How to publish a blog post in WordPress"></div>
+      <div class="field"><label for="ar-cat">Category</label><input id="ar-cat" type="text" list="ar-cats" value="${esc(x.category)}"><datalist id="ar-cats">${cats.map(c => `<option value="${esc(c)}">`).join('')}</datalist></div>
+      <div class="field"><label for="ar-tags">Tags</label><input id="ar-tags" type="text" value="${esc(x.tags.join(', '))}" placeholder="wordpress, blog, seo"></div>
+      <div class="field full"><div style="display:flex;align-items:end;gap:8px"><label for="ar-body" style="flex:1">Content</label>${isNew ? '<button class="btn sm" id="ar-tpl" type="button">Use step-by-step template</button>' : ''}<button class="btn sm" id="ar-prev" type="button">Preview</button></div>
+        <textarea id="ar-body" rows="16" style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px">${esc(x.body)}</textarea>
+        <div class="md card-b" id="ar-preview" hidden style="border:1px solid var(--line);border-radius:8px;max-height:420px;overflow:auto"></div>
+        <span class="hint">Formatting: ## Heading · 1. numbered step · - bullet · **bold** · [link text](https://…) · > tip. Add files after saving.</span></div>
+      <label class="check full"><input type="checkbox" id="ar-draft" ${x.status === 'draft' ? 'checked' : ''}> Save as draft (only you and managers can see it)</label>
+      ${!isMgr() && x.status !== 'published' ? '<div class="note full">When you publish, a manager reviews it first. Until then only you and managers can see it.</div>' : ''}
+    </div>`,
+    footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="ar-save">${isNew ? (isMgr() ? 'Publish' : 'Send for review') : 'Save'}</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#ar-tpl', root) && ($('#ar-tpl', root).onclick = () => { const b = $('#ar-body', root); if (!b.value.trim() || confirm('Replace the content with the template?')) b.value = KB_TEMPLATE; });
+      $('#ar-prev', root).onclick = e => { const p = $('#ar-preview', root), b = $('#ar-body', root), on = p.hidden; p.innerHTML = md(b.value); p.hidden = !on; b.hidden = on; e.target.textContent = on ? 'Edit' : 'Preview'; };
+      $('#ar-save', root).onclick = async () => {
+        const row = { title: $('#ar-title', root).value.trim(), category: $('#ar-cat', root).value.trim() || 'General', tags: $('#ar-tags', root).value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean).slice(0, 12), body: $('#ar-body', root).value, status: $('#ar-draft', root).checked ? 'draft' : (x.status === 'review' && !isMgr() ? 'review' : 'published') };
+        if (row.title.length < 3) return toast('Give the article a title', 'bad');
+        try {
+          if (isNew) {
+            const c = await q(sb.from('kb_articles').insert({ ...row, author_id: S.me.id }).select().single()); close();
+            toast(c.status === 'review' ? 'Sent to managers for review' : c.status === 'draft' ? 'Draft saved' : 'Article published');
+            if (prefill.onSaved) { await prefill.onSaved(c); route(); } else location.hash = `#/kb/${c.id}`;
+          }
+          else { await q(sb.from('kb_articles').update(row).eq('id', x.id)); close(); toast('Article saved'); route(); }
+        } catch (e) { toast(e.message, 'bad'); }
+      };
+    }
+  });
+}
+
+/* ---------- Insights (instant checks + AI summary) ---------- */
+function lastWorkingDays(n) { const out = []; let d = addDays(istDate(), -1); while (out.length < n) { if (!offReason(d)) out.push(d); d = addDays(d, -1); } return out; }
+function taskScore(t, today) {
+  let s = 0; const d = t.due_date;
+  if (d && d < today) s += 100 + Math.min(30, (dObj(today) - dObj(d)) / 864e5);
+  else if (d === today) s += 80; else if (d && d <= addDays(today, 3)) s += 40;
+  s += t.priority === 'high' ? 35 : t.priority === 'medium' ? 10 : 0;
+  if (t.status === 'in_progress') s += 8;
+  return s;
+}
+const why = (t, today) => [t.due_date && t.due_date < today ? `${Math.round((dObj(today) - dObj(t.due_date)) / 864e5)} d overdue` : t.due_date === today ? 'due today' : t.due_date && t.due_date <= addDays(today, 3) ? `due ${fmtShort(t.due_date)}` : '', t.priority === 'high' ? 'high priority' : ''].filter(Boolean).join(' · ');
+
+async function aiCard(box, scope) {
+  const last = await q(sb.from('ai_insights').select('*').eq('scope', scope).eq(scope === 'me' ? 'user_id' : 'scope', scope === 'me' ? S.me.id : 'team').order('created_at', { ascending: false }).limit(1).maybeSingle()).catch(() => null);
+  box.innerHTML = `<div class="card ai-card"><div class="card-h"><h2>✨ AI summary</h2><span class="sub">${last ? `Generated ${timeAgo(last.created_at)}${scope === 'team' && last.user_id !== S.me.id ? ` by ${esc(nameOf(last.user_id))}` : ''}` : 'Reads tasks, projects, EOD reports, attendance' + (scope === 'team' ? ' and leads' : '')}</span>
+      <div class="right"><button class="btn primary sm" id="ai-run">${last ? 'Refresh' : 'Generate'}</button></div></div>
+      <div class="card-b md" id="ai-body">${last ? md(last.content) : `<p class="muted">Press <b>Generate</b> for a short briefing on ${scope === 'team' ? 'what is critical, what is lagging, who is doing well and who needs support' : 'what to do first and where you are falling behind'}.</p>`}</div></div>`;
+  $('#ai-run', box).onclick = async e => {
+    const b = e.currentTarget; b.disabled = true; b.textContent = 'Thinking…';
+    $('#ai-body', box).innerHTML = '<p class="muted">Reading your data and writing the summary. This takes 10–30 seconds…</p>';
+    try {
+      const { data, error } = await sb.functions.invoke('ai-insights', { body: { scope } });
+      if (error || !data?.ok) throw new Error(data?.error || 'AI insights are not set up yet. Ask your admin to deploy the ai-insights function.');
+      $('#ai-body', box).innerHTML = md(data.content);
+      $('.sub', box).textContent = 'Generated just now'; b.textContent = 'Refresh';
+    } catch (err) { $('#ai-body', box).innerHTML = `<p class="muted">${esc(err.message)}</p>`; b.textContent = 'Try again'; }
+    b.disabled = false;
+  };
+}
+
+VIEWS.insights = async el => {
+  const tab = isMgr() ? (S.insTab || 'team') : 'me', today = istDate();
+  el.innerHTML = `${isMgr() ? `<div class="tabs"><button data-it="team" class="${tab === 'team' ? 'on' : ''}">Team</button><button data-it="me" class="${tab === 'me' ? 'on' : ''}">My focus</button></div>` : ''}<div id="ai-box"></div><div id="ins-body"><div class="loading">Checking…</div></div>`;
+  $$('[data-it]', el).forEach(b => b.onclick = () => { S.insTab = b.dataset.it; route(); });
+  aiCard($('#ai-box'), tab);
+  const body = $('#ins-body');
+  const days5 = lastWorkingDays(5);
+
+  if (tab === 'me') {
+    const [mine, byMe, eods, att] = await Promise.all([
+      q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).neq('status', 'done')),
+      q(sb.from('tasks').select('*').eq('created_by', S.me.id).neq('assigned_to', S.me.id).neq('status', 'done')),
+      q(sb.from('eod_reports').select('report_date').eq('employee_id', S.me.id).gte('report_date', days5[days5.length - 1])).catch(() => []),
+      q(sb.from('attendance').select('*').eq('employee_id', S.me.id).gte('work_date', today.slice(0, 7) + '-01'))
+    ]);
+    const focus = mine.filter(t => t.status !== 'review').sort((a, b) => taskScore(b, today) - taskScore(a, today)).slice(0, 6);
+    const eodDone = days5.filter(d => eods.some(e => e.report_date === d)).length;
+    const late = att.filter(a => a.check_in && isLate(a)).length, missed = att.filter(a => isMissed(a, a.work_date)).length;
+    body.innerHTML = `<div class="stats">
+        <div class="stat"><span>Open tasks</span><b>${mine.length}</b></div>
+        <div class="stat"><span>Overdue</span><b class="${mine.some(t => t.due_date && t.due_date < today) ? 'overdue' : ''}">${mine.filter(t => t.due_date && t.due_date < today).length}</b></div>
+        <div class="stat"><span>EOD reports (last 5 days)</span><b>${eodDone}/5</b></div>
+        <div class="stat"><span>Late this month</span><b>${late}</b></div></div>
+      <div class="grid g-2">
+        <div class="card"><div class="card-h"><h2>Do first</h2><span class="sub">Overdue, due soon and high priority</span></div><div class="card-b">
+          ${focus.map((t, i) => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="rank">${i + 1}</span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(projName(t) || 'No project')}${why(t, today) ? ` · <span class="${t.due_date && t.due_date < today ? 'overdue' : ''}">${why(t, today)}</span>` : ''}</div></div><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></div>`).join('') || '<div class="empty">Nothing urgent. Great job!</div>'}
+        </div></div>
+        <div class="grid" style="align-content:start">
+          <div class="card"><div class="card-h"><h2>Waiting for review</h2></div><div class="card-b">${mine.filter(t => t.status === 'review').map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><div style="flex:1"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(projName(t) || 'No project')} · ask your manager to review</div></div></div>`).join('') || '<div class="muted">Nothing waiting.</div>'}</div></div>
+          <div class="card"><div class="card-h"><h2>You assigned, still open</h2></div><div class="card-b">${byMe.sort((a, b) => (a.due_date || '9').localeCompare(b.due_date || '9')).slice(0, 8).map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><div style="flex:1"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}${t.due_date ? ` · <span class="${t.due_date < today ? 'overdue' : ''}">due ${fmtShort(t.due_date)}</span>` : ''}</div></div></div>`).join('') || '<div class="muted">Nothing to follow up.</div>'}</div></div>
+          ${eodDone < 5 || missed ? `<div class="card"><div class="card-h"><h2>Habits</h2></div><div class="card-b"><ul class="md" style="margin:0">${eodDone < 5 ? `<li>EOD report missing on ${5 - eodDone} of the last 5 working days.</li>` : ''}${missed ? `<li>${missed} missed check-out${missed > 1 ? 's' : ''} this month (counted as leave).</li>` : ''}</ul></div></div>` : ''}
+        </div></div>`;
+    const all = [...mine, ...byMe];
+    $$('[data-open]', body).forEach(r => r.onclick = () => openTask(all.find(t => t.id === r.dataset.open)));
+    return;
+  }
+
+  // Team view
+  const since = addDays(today, -7);
+  const [tasks, projects, eods, att, logs, leads] = await Promise.all([
+    allRows(() => sb.from('tasks').select('*')),
+    q(sb.from('projects').select('*').neq('status', 'completed')),
+    q(sb.from('eod_reports').select('*').gte('report_date', days5[days5.length - 1])).catch(() => []),
+    allRows(() => sb.from('attendance').select('*').gte('work_date', today.slice(0, 7) + '-01')),
+    allRows(() => sb.from('time_logs').select('task_id,started_at,ended_at,minutes').gte('started_at', `${addDays(today, -5)}T00:00:00+05:30`)).catch(() => []),
+    q(sb.from('leads').select('*').not('status', 'in', '(won,lost)')).catch(() => [])
+  ]);
+  const open = tasks.filter(t => t.status !== 'done');
+  const people = S.profiles.filter(p => p.is_active);
+  const risk = projects.map(p => {
+    const ts = tasks.filter(t => t.project_id === p.id), done = ts.filter(t => t.status === 'done').length, pct = ts.length ? done / ts.length * 100 : 0;
+    const overdue = ts.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
+    let elapsed = null; if (p.start_date && p.due_date) elapsed = Math.min(100, Math.max(0, (dObj(today) - dObj(p.start_date)) / Math.max(1, dObj(p.due_date) - dObj(p.start_date)) * 100));
+    const reasons = [];
+    if (p.due_date && p.due_date < today) reasons.push(`past due date (${fmtShort(p.due_date)})`);
+    if (overdue) reasons.push(`${overdue} overdue task${overdue > 1 ? 's' : ''}`);
+    if (elapsed != null && elapsed - pct > 25) reasons.push(`${Math.round(elapsed)}% of time used, ${Math.round(pct)}% done`);
+    if (!ts.length) reasons.push('no tasks yet');
+    return { p, pct, reasons };
+  }).filter(r => r.reasons.length).sort((a, b) => b.reasons.length - a.reasons.length);
+  const recentLog = id => logs.some(l => l.task_id === id);
+  const stalled = open.filter(t => t.status === 'in_progress' && !recentLog(t.id)).slice(0, 10);
+  const blockers = eods.filter(e => e.blockers && e.report_date >= days5[2]).sort((a, b) => b.report_date.localeCompare(a.report_date));
+  const eodStart = eods.reduce((m, e) => e.report_date < m ? e.report_date : m, '9999');
+  const eodDays = days5.filter(d => d >= eodStart);   // only count days since the team started EOD reports
+  const ppl = people.map(p => {
+    const mine = tasks.filter(t => t.assigned_to === p.id), od = mine.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
+    const doneWeek = mine.filter(t => t.status === 'done' && t.completed_at && t.completed_at >= `${since}T00:00:00+05:30`).length;
+    const eodN = eodDays.filter(d => eods.some(e => e.employee_id === p.id && e.report_date === d)).length, eodMiss = eodDays.length - eodN;
+    const a = att.filter(x => x.employee_id === p.id), late = a.filter(x => x.check_in && isLate(x)).length;
+    const block = eods.some(e => e.employee_id === p.id && e.blockers && e.report_date >= days5[2]);
+    const flag = od >= 2 || eodMiss >= 3 || block ? 'support' : od === 0 && eodMiss <= 1 && doneWeek >= 2 ? 'good' : 'ok';
+    return { p, open: mine.filter(t => t.status !== 'done').length, od, doneWeek, eodN, late, flag, block };
+  }).sort((a, b) => ({ support: 0, ok: 1, good: 2 }[a.flag] - { support: 0, ok: 1, good: 2 }[b.flag]) || b.od - a.od);
+  const unassigned = leads.filter(l => !l.owner_id), followDue = leads.filter(l => l.next_follow_up && l.next_follow_up <= today);
+  const review = open.filter(t => t.status === 'review');
+  const sopReview = (await q(sb.from('kb_articles').select('id', { count: 'exact' }).eq('status', 'review')).catch(() => [])).length;
+
+  body.innerHTML = `<div class="stats">
+      <div class="stat"><span>Projects at risk</span><b class="${risk.length ? 'overdue' : ''}">${risk.length}</b></div>
+      <div class="stat"><span>Overdue tasks</span><b class="${open.some(t => t.due_date && t.due_date < today) ? 'overdue' : ''}">${open.filter(t => t.due_date && t.due_date < today).length}</b></div>
+      <div class="stat"><span>Waiting for review</span><b>${review.length}</b></div>
+      <div class="stat"><span>Blockers reported</span><b>${blockers.length}</b></div>
+      <div class="stat"><span>Leads needing action</span><b>${new Set([...unassigned, ...followDue].map(l => l.id)).size}</b></div>
+      <a class="stat" href="#/kb" style="text-decoration:none;color:inherit"><span>SOPs to write / review</span><b>${open.filter(t => t.sop_needed && !t.sop_article_id).length} / ${sopReview}</b></a></div>
+    <div class="grid g-2">
+      <div class="card"><div class="card-h"><h2>Projects at risk</h2></div><div class="card-b">
+        ${risk.map(r => `<a class="list-row plink" href="#/project/${r.p.id}"><span class="dot" style="background:${esc(r.p.color)}"></span><div style="flex:1;min-width:0"><b>${esc(r.p.name)}</b><div class="task-sub overdue">${esc(r.reasons.join(' · '))}</div></div><b class="num">${Math.round(r.pct)}%</b></a>`).join('') || '<div class="empty">All active projects are on track.</div>'}
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Blockers from EOD reports</h2><span class="sub">Last 3 working days</span></div><div class="card-b">
+        ${blockers.map(e => `<div class="list-row"><span class="avatar sm">${esc(initials(nameOf(e.employee_id)))}</span><div style="flex:1;min-width:0"><b>${esc(nameOf(e.employee_id))}</b> <span class="task-sub">${fmtShort(e.report_date)}</span><div class="cm-text" style="color:var(--bad)">${esc(e.blockers)}</div></div></div>`).join('') || '<div class="empty">No blockers reported.</div>'}
+      </div></div>
+    </div>
+    <div class="card" style="margin-top:20px"><div class="card-h"><h2>People</h2><span class="sub">Overdue tasks, finished work this week, EOD discipline and punctuality</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Person</th><th>Signal</th><th>Open tasks</th><th>Overdue</th><th>Done (7 days)</th><th>EOD (last 5)</th><th>Late this month</th></tr></thead><tbody>
+      ${ppl.map(x => `<tr><td>${personLink(x.p, x.p.designation || '')}</td><td>${x.flag === 'support' ? '<span class="pill bad">Needs support</span>' : x.flag === 'good' ? '<span class="pill ok">Doing well</span>' : '<span class="pill muted">On track</span>'}</td><td class="num">${x.open}</td><td class="num">${x.od ? `<span class="overdue">${x.od}</span>` : 0}</td><td class="num">${x.doneWeek}</td><td class="num">${eodDays.length ? `${x.eodN}/${eodDays.length}` : '—'}</td><td class="num">${x.late}</td></tr>`).join('')}
+      </tbody></table></div></div>
+    <div class="grid g-2" style="margin-top:20px">
+      <div class="card"><div class="card-h"><h2>Stalled work</h2><span class="sub">In progress, no time logged for 5 days</span></div><div class="card-b">
+        ${stalled.map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${esc(projName(t) || 'No project')}</div></div></div>`).join('') || '<div class="empty">Nothing stalled.</div>'}
+        ${review.length ? `<div class="section-h"><b>Waiting for review (${review.length})</b></div>${review.slice(0, 8).map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${esc(projName(t) || 'No project')}</div></div></div>`).join('')}` : ''}
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Leads needing action</h2></div><div class="card-b">
+        ${[...new Map([...followDue, ...unassigned].map(l => [l.id, l])).values()].slice(0, 10).map(l => `<a class="list-row plink" href="#/leads"><div style="flex:1;min-width:0"><b>${esc(l.organisation || l.name)}</b><div class="task-sub">${!l.owner_id ? '<span class="overdue">Unassigned</span>' : esc(nameOf(l.owner_id))}${l.next_follow_up ? ` · follow-up <span class="${l.next_follow_up <= today ? 'overdue' : ''}">${fmtShort(l.next_follow_up)}</span>` : ''}</div></div>${lpill(l.status)}</a>`).join('') || '<div class="empty">All leads are owned and followed up.</div>'}
+      </div></div>
+    </div>`;
+  $$('[data-open]', body).forEach(r => r.onclick = () => openTask(tasks.find(t => t.id === r.dataset.open)));
 };
 
 /* ---------- Employees (admin) ---------- */
@@ -1659,6 +2300,12 @@ VIEWS.settings = async el => {
         ${S.leaveTypes.map(t => `<tr data-lt="${t.id}"><td><input type="text" data-k="name" value="${esc(t.name)}"></td><td><input type="text" data-k="code" value="${esc(t.code)}" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="${num(t.annual_quota)}" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" ${t.is_paid ? 'checked' : ''} aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" ${t.is_active ? 'checked' : ''} aria-label="Active"></td><td><button class="btn sm" data-save-lt>Save</button></td></tr>`).join('')}
         <tr data-lt="new"><td><input type="text" data-k="name" placeholder="New leave type"></td><td><input type="text" data-k="code" placeholder="Code" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="0" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" checked aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" checked aria-label="Active"></td><td><button class="btn primary sm" data-save-lt>Add</button></td></tr>
         </tbody></table></div></div>
+      <div class="card"><div class="card-h"><h2>Company Google Drive</h2></div><div class="card-b">
+        <div class="field"><label for="st-drive">Shared drive link</label><input id="st-drive" type="url" value="${esc(st.drive_url || '')}" placeholder="https://drive.google.com/drive/folders/…"><span class="hint">Shown to everyone in Knowledge base → Company files.</span></div>
+        <button class="btn primary" id="st-drive-save" style="margin-top:12px">Save link</button></div></div>
+      <div class="card"><div class="card-h"><h2>EOD report email</h2></div><div class="card-b">
+        <div class="field"><label for="eod-to">Send every EOD report to</label><textarea id="eod-to" rows="2" placeholder="support@sharvii.com, mounika@sharvii.com">${esc(st.eod_recipients || '')}</textarea><span class="hint">Separate emails with commas. The person's manager is added automatically and they get a copy.</span></div>
+        <button class="btn primary" id="eod-to-save" style="margin-top:12px">Save recipients</button></div></div>
       <div class="card"><div class="card-h"><h2>Data backup</h2></div><div class="card-b">
         <p class="muted" style="margin-top:0">All data is saved in your Supabase database. On the free plan there are no automatic backups, so download a copy once a month and keep it in Google Drive.</p>
         <button class="btn primary" id="bk-run">${icon('download')}Download backup</button></div></div>
@@ -1672,6 +2319,8 @@ VIEWS.settings = async el => {
       ${hols.length ? hols.map(h => { const dow = dObj(h.holiday_date).getDay(); return `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div style="flex:1"><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric' })}${dow === 0 ? ' (already a day off)' : ''}</div></div><button class="btn danger sm" data-del-h="${h.id}">Remove</button></div>`; }).join('') : '<div class="empty">No holidays added yet.</div>'}
       </div></div></div>`;
 
+  $('#st-drive-save').onclick = async () => { const u = $('#st-drive').value.trim(); if (u && !/^https?:\/\//i.test(u)) return toast('The link must start with https://', 'bad'); try { await q(sb.from('settings').update({ drive_url: u || null }).eq('id', 1)); toast('Drive link saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
+  $('#eod-to-save').onclick = async () => { try { await q(sb.from('settings').update({ eod_recipients: $('#eod-to').value.trim() }).eq('id', 1)); toast('EOD recipients saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
   $('#bk-run').onclick = async e => { const b = e.currentTarget, h = b.innerHTML; b.disabled = true; b.textContent = 'Preparing…'; try { await downloadBackup(); toast('Backup downloaded. Keep it in Google Drive.'); } catch (err) { toast(err.message, 'bad'); } b.disabled = false; b.innerHTML = h; };
   $('#sh-save').onclick = async () => {
     const v = id => $(id).value;
@@ -1712,9 +2361,9 @@ const TSTATUS = { todo: 'To do', in_progress: 'In progress', review: 'Review', d
 const TCOLOR = { todo: '#8A94A6', in_progress: '#2D6CDF', review: '#B7791F', done: '#1E8A5A' };
 
 VIEWS.tasks = async el => {
-  const scope = isMgr() ? S.taskScope : 'mine', filter = S.taskFilter, today = istDate();
+  const scope = S.taskScope === 'team' && !isMgr() ? 'mine' : S.taskScope, filter = S.taskFilter, today = istDate();
   let qb = sb.from('tasks').select('*').order('created_at', { ascending: false }).limit(150);
-  qb = scope === 'mine' ? qb.eq('assigned_to', S.me.id) : qb.neq('assigned_to', S.me.id);
+  qb = scope === 'mine' ? qb.eq('assigned_to', S.me.id) : scope === 'byme' ? qb.eq('created_by', S.me.id).neq('assigned_to', S.me.id) : qb.neq('assigned_to', S.me.id);
   if (filter === 'open') qb = qb.neq('status', 'done'); else if (filter === 'done') qb = qb.eq('status', 'done');
   const [tasks, todayLogs] = await Promise.all([
     q(qb),
@@ -1727,7 +2376,7 @@ VIEWS.tasks = async el => {
   const overdue = tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
 
   el.innerHTML = `<div class="toolbar">
-      ${isMgr() ? `<div class="field"><label>View</label><div class="seg" role="tablist"><button data-scope="mine" class="${scope === 'mine' ? 'on' : ''}">My tasks</button><button data-scope="team" class="${scope === 'team' ? 'on' : ''}">Team tasks</button></div></div>` : ''}
+      <div class="field"><label>View</label><div class="seg" role="tablist"><button data-scope="mine" class="${scope === 'mine' ? 'on' : ''}">My tasks</button><button data-scope="byme" class="${scope === 'byme' ? 'on' : ''}">Assigned by me</button>${isMgr() ? `<button data-scope="team" class="${scope === 'team' ? 'on' : ''}">Team tasks</button>` : ''}</div></div>
       <div class="field"><label for="t-filter">Show</label><select id="t-filter"><option value="open" ${filter === 'open' ? 'selected' : ''}>Open tasks</option><option value="done" ${filter === 'done' ? 'selected' : ''}>Done</option><option value="all" ${filter === 'all' ? 'selected' : ''}>All</option></select></div>
       <div class="field grow"><label for="t-search">Search</label><input id="t-search" type="text" placeholder="Task, project or person"></div>
       <button class="btn primary" id="t-new">${icon('plus')}New task</button>
@@ -1739,13 +2388,13 @@ VIEWS.tasks = async el => {
       <div class="stat"><span>To do</span><b>${tasks.filter(t => t.status === 'todo').length}</b></div>
       <div class="stat"><span>Overdue</span><b>${overdue}</b></div>
     </div>
-    <div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th>${scope === 'team' ? '<th>Assigned to</th>' : ''}<th>Due</th><th>Priority</th><th>Status</th><th>Time</th><th></th></tr></thead>
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th>${scope !== 'mine' ? '<th>Assigned to</th>' : ''}<th>Due</th><th>Priority</th><th>Status</th><th>Time</th><th></th></tr></thead>
     <tbody id="t-rows">${tasks.length ? tasks.map(t => {
       const mine = t.assigned_to === S.me.id, running = S.running?.task_id === t.id;
       const [pc, pl] = PRIORITY[t.priority] || PRIORITY.medium;
       return `<tr data-s="${esc((t.title + ' ' + projName(t) + ' ' + nameOf(t.assigned_to)).toLowerCase())}">
-        <td style="white-space:normal;min-width:220px"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(projName(t) || 'No project')}</div></td>
-        ${scope === 'team' ? `<td>${esc(nameOf(t.assigned_to))}</td>` : ''}
+        <td style="white-space:normal;min-width:220px"><div class="task-title">${esc(t.title)} ${sopBadge(t)}</div><div class="task-sub">${esc(projName(t) || 'No project')}</div></td>
+        ${scope !== 'mine' ? `<td>${esc(nameOf(t.assigned_to))}</td>` : ''}
         <td class="num">${t.due_date ? `<span class="${t.status !== 'done' && t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '<span class="muted">—</span>'}</td>
         <td><span class="pill ${pc}">${pl}</span></td>
         <td><select class="mini" data-status="${t.id}" aria-label="Status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
@@ -1761,20 +2410,64 @@ VIEWS.tasks = async el => {
   $$('[data-stop]', el).forEach(b => b.onclick = () => stopTimer());
   $$('[data-edit]', el).forEach(b => b.onclick = () => openTask(tasks.find(t => t.id === b.dataset.edit)));
   $$('[data-status]', el).forEach(sel => sel.onchange = async () => {
-    try { await q(sb.from('tasks').update({ status: sel.value }).eq('id', sel.dataset.status)); toast(`Marked as ${TSTATUS[sel.value].toLowerCase()}`); await refreshRunning(); route(); }
-    catch (e) { toast(e.message, 'bad'); }
+    const t = tasks.find(x => x.id === sel.dataset.status);
+    await setTaskStatus(t, sel.value);
+    sel.value = t.status;
   });
   paintTimer();
 };
 
+/* ---------- SOP flow: every task follows an SOP, or produces one ---------- */
+async function kbOptions() { return (await q(sb.from('kb_articles').select('id,title,status,category').order('title')).catch(() => [])) || []; }
+const sopBadge = t => t.sop_article_id ? '<span class="sop ok" title="Has an SOP">SOP ✓</span>' : t.sop_needed && t.status !== 'done' ? '<span class="sop need" title="SOP to be written before Done">SOP needed</span>' : '';
+async function setTaskStatus(t, status) {
+  try { await q(sb.from('tasks').update({ status }).eq('id', t.id)); toast(`Moved to ${TSTATUS[status]}`); await refreshRunning(); route(); }
+  catch (e) { if (/SOP_REQUIRED/.test(e.message)) sopPrompt(t, status); else toast(e.message, 'bad'); }
+}
+async function sopPrompt(t, status) {
+  const arts = (await kbOptions()).filter(a => a.status !== 'draft');
+  openModal({
+    title: 'Write the SOP before finishing',
+    body: `<p style="margin-top:0">“<b>${esc(t.title)}</b>” is new work. Before it is marked <b>${esc(TSTATUS[status])}</b>, write a short SOP so anyone in the team can repeat it. It takes about 10 minutes.</p>
+      <div class="note">The app opens a step-by-step template with the task already filled in. Your SOP goes to a manager for review.</div>
+      ${arts.length ? `<div class="field" style="margin-top:16px"><label for="sp-link">Or, if an SOP already covers this, link it</label><select id="sp-link"><option value="">Choose an existing SOP…</option>${arts.map(a => `<option value="${a.id}">${esc(a.title)}${a.status === 'review' ? ' (in review)' : ''}</option>`).join('')}</select></div>` : ''}`,
+    footer: `<button class="btn" data-close>Not now</button>${arts.length ? '<button class="btn" id="sp-use">Link selected SOP</button>' : ''}<button class="btn primary" id="sp-write">Write SOP now</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#sp-write', root).onclick = () => { close(); writeSopFor(t, status); };
+      $('#sp-use', root) && ($('#sp-use', root).onclick = async () => {
+        const id = $('#sp-link', root).value; if (!id) return toast('Choose an SOP first', 'bad');
+        try { await q(sb.from('tasks').update({ sop_article_id: id, status }).eq('id', t.id)); close(); toast(`SOP linked and moved to ${TSTATUS[status]}`); await refreshRunning(); route(); }
+        catch (e) { toast(e.message, 'bad'); }
+      });
+    }
+  });
+}
+function writeSopFor(t, status) {
+  const title = /^how to/i.test(t.title) ? t.title : `How to ${t.title.charAt(0).toLowerCase()}${t.title.slice(1)}`;
+  openArticle(null, {
+    title, category: S.projects.find(p => p.id === t.project_id)?.client ? 'Clients' : 'General',
+    body: `${KB_TEMPLATE}
+
+---
+Written while doing the task: ${t.title}${projName(t) ? ` (${projName(t)})` : ''}`,
+    onSaved: async art => {
+      try { await q(sb.from('tasks').update({ sop_article_id: art.id, ...(status ? { status } : {}) }).eq('id', t.id)); toast(status ? `SOP saved and task moved to ${TSTATUS[status]}` : 'SOP saved and linked to the task'); await refreshRunning(); }
+      catch (e) { toast(e.message, 'bad'); }
+    }
+  });
+}
+
 async function openTask(task, opts = {}) {
   const isNew = !task;
-  const people = isMgr() ? S.profiles.filter(p => p.is_active) : [S.me];
+  const people = S.profiles.filter(p => p.is_active);
   const t = task || { priority: 'medium', status: opts.status || 'todo', assigned_to: S.me.id, project_id: opts.projectId || null, checklist: [] };
   const canDelete = !isNew && (t.created_by === S.me.id || isMgr());
   const projects = S.projects.filter(p => p.status !== 'completed' || p.id === t.project_id);
   const logs = isNew ? [] : await q(sb.from('time_logs').select('*').eq('task_id', t.id).order('started_at', { ascending: false }).limit(50)).catch(() => []);
   let checklist = Array.isArray(t.checklist) ? t.checklist.map(x => ({ ...x })) : [];
+  const arts = (await kbOptions()).filter(a => a.status !== 'draft' || a.id === t.sop_article_id);
+  const sopMode = t.sop_article_id ? 'existing' : (isNew || t.sop_needed) ? 'needed' : 'none';
   openModal({
     title: isNew ? 'New task' : 'Task',
     wide: true,
@@ -1788,12 +2481,20 @@ async function openTask(task, opts = {}) {
           <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
           <div class="field">${isNew ? '' : `<label>Time logged</label><div style="padding:9px 0;font-weight:600">${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}</div>`}</div>
+          <div class="field full sop-box"><label>SOP <span class="task-sub" style="font-weight:400">· how this work is done, so anyone can repeat it</span></label>
+            <label class="check"><input type="radio" name="tk-sop" value="existing" ${sopMode === 'existing' ? 'checked' : ''}> Follow an existing SOP</label>
+            <div class="sop-pick" style="display:flex;gap:8px;margin:2px 0 6px 26px"><select id="tk-sopid" style="flex:1"><option value="">Choose an SOP…</option>${arts.map(a => `<option value="${a.id}" ${a.id === t.sop_article_id ? 'selected' : ''}>${esc(a.title)}${a.status !== 'published' ? ` (${a.status === 'review' ? 'in review' : 'draft'})` : ''}</option>`).join('')}</select>${t.sop_article_id ? `<a class="btn sm" href="#/kb/${t.sop_article_id}" target="_blank" rel="noopener">Open SOP</a>` : ''}</div>
+            <label class="check"><input type="radio" name="tk-sop" value="needed" ${sopMode === 'needed' ? 'checked' : ''}> New kind of work: write an SOP before Done</label>
+            ${!isNew && sopMode === 'needed' ? '<button class="btn sm" type="button" id="tk-writesop" style="margin:2px 0 6px 26px;align-self:flex-start">Write the SOP now</button>' : ''}
+            <label class="check"><input type="radio" name="tk-sop" value="none" ${sopMode === 'none' ? 'checked' : ''}> One-off, no SOP needed</label>
+          </div>
           <div class="field full"><label for="tk-desc">Description</label><textarea id="tk-desc" placeholder="What needs to be done? Links, notes…">${esc(t.description || '')}</textarea></div>
         </div>
         <div class="section-h"><b>Checklist</b><span class="task-sub" id="ck-count"></span></div>
         <div class="ck-bar"><span id="ck-fill"></span></div>
         <div id="ck-list"></div>
         <div class="ck-add"><input id="ck-new" type="text" placeholder="Add an item and press Enter"><button class="btn sm" id="ck-add" type="button">${icon('plus')}Add</button></div>
+        ${isNew ? '' : '<div class="section-h"><b>Attachments</b></div><div id="tk-docs"></div>'}
         ${logs.length ? `<details style="margin-top:16px"><summary class="task-sub" style="cursor:pointer">Time log (${logs.length})</summary><div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
       </div>
       <div class="task-side">
@@ -1821,20 +2522,33 @@ async function openTask(task, opts = {}) {
       $('#ck-add', root).onclick = addCk;
       $('#ck-new', root).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCk(); } });
       renderCk();
-      if (!isNew) mountComments($('#tk-comments', root), { taskId: t.id, projectId: t.project_id || null });
+      const syncSop = () => { const m = $('input[name=tk-sop]:checked', root)?.value; $('.sop-pick', root).style.opacity = m === 'existing' ? '1' : '.5'; $('#tk-sopid', root).disabled = m !== 'existing'; };
+      $$('input[name=tk-sop]', root).forEach(r => r.onchange = syncSop); syncSop();
+      $('#tk-sopid', root).onchange = () => { if ($('#tk-sopid', root).value) { $('input[name=tk-sop][value=existing]', root).checked = true; syncSop(); } };
+      $('#tk-writesop', root) && ($('#tk-writesop', root).onclick = () => { close(); writeSopFor(t, null); });
+      if (!isNew) { mountComments($('#tk-comments', root), { taskId: t.id, projectId: t.project_id || null }); mountDocs($('#tk-docs', root), { taskId: t.id }, { empty: 'No files yet.' }); }
 
       const finish = () => { close(); if (changed) route(); };
       $('[data-close]', root).onclick = finish;
       $('#tk-save', root).onclick = async () => {
         const v = id => $(id, root)?.value.trim();
         const pid = v('#tk-project') || null;
-        const row = { title: v('#tk-title'), project_id: pid, project: S.projects.find(p => p.id === pid)?.name || null, assigned_to: v('#tk-who') || S.me.id, status: v('#tk-status'), due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: v('#tk-desc') || null, checklist };
+        const mode = $('input[name=tk-sop]:checked', root)?.value || 'needed', sopId = $('#tk-sopid', root).value || null;
+        if (mode === 'existing' && !sopId) return toast('Choose the SOP to follow, or pick another SOP option', 'bad');
+        const row = { title: v('#tk-title'), project_id: pid, project: S.projects.find(p => p.id === pid)?.name || null, assigned_to: v('#tk-who') || S.me.id, status: v('#tk-status'), due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: v('#tk-desc') || null, checklist,
+          sop_needed: mode !== 'none', sop_article_id: mode === 'existing' ? sopId : mode === 'needed' ? (t.sop_article_id || null) : null };
         if (!row.title) return toast('Enter a task name', 'bad');
         try {
           if (isNew) await q(sb.from('tasks').insert({ ...row, created_by: S.me.id }));
           else await q(sb.from('tasks').update(row).eq('id', t.id));
           close(); toast(isNew ? 'Task created' : 'Task saved'); await refreshRunning(); route();
-        } catch (e) { toast(e.message, 'bad'); }
+        } catch (e) {
+          if (!isNew && /SOP_REQUIRED/.test(e.message)) {   // save everything else, then ask for the SOP
+            const { status, ...rest } = row;
+            try { await q(sb.from('tasks').update(rest).eq('id', t.id)); } catch { }
+            close(); sopPrompt({ ...t, ...rest }, status);
+          } else toast(e.message, 'bad');
+        }
       };
       $('#tk-del', root) && ($('#tk-del', root).onclick = async () => {
         if (!confirm('Delete this task, its comments and time logs?')) return;
