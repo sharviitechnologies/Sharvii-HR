@@ -1656,20 +1656,23 @@ VIEWS.project = async (el, id) => {
 /* ---------- EOD report ---------- */
 async function eodTodayData() {
   const today = istDate(), from = `${today}T00:00:00+05:30`;
-  const [att, logs, doneToday, open] = await Promise.all([
+  const mine = () => sb.from('tasks').select('*').eq('assigned_to', S.me.id);
+  const [att, logs, doneToday, touched, createdToday, open] = await Promise.all([
     q(sb.from('attendance').select('*').eq('employee_id', S.me.id).eq('work_date', today).maybeSingle()).catch(() => null),
     q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', from)).catch(() => []),
-    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).eq('status', 'done').gte('completed_at', from)).catch(() => []),
-    q(sb.from('tasks').select('*').eq('assigned_to', S.me.id).in('status', ['in_progress', 'review'])).catch(() => [])
+    q(mine().eq('status', 'done').gte('completed_at', from)).catch(() => []),
+    q(mine().gte('updated_at', from)).catch(() => []),          // edited or moved today
+    q(mine().gte('created_at', from)).catch(() => []),          // added today
+    q(mine().in('status', ['in_progress', 'review'])).catch(() => [])
   ]);
   const loggedIds = [...new Set(logs.map(l => l.task_id))];
-  const known = [...doneToday, ...open];
+  const known = [...doneToday, ...touched, ...createdToday, ...open];
   const missing = loggedIds.filter(id => !known.some(t => t.id === id));
   const extra = missing.length ? await inChunks(missing, ch => sb.from('tasks').select('*').in('id', ch)).catch(() => []) : [];
-  const all = [...new Map([...doneToday, ...extra, ...open].map(t => [t.id, t])).values()];
+  const all = [...new Map([...doneToday, ...extra, ...touched, ...createdToday, ...open].map(t => [t.id, t])).values()];
   const mins = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
-  const items = all.map(t => ({ task_id: t.id, title: t.title, project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)),
-    auto: doneToday.some(x => x.id === t.id) || loggedIds.includes(t.id) }));
+  const worked = t => doneToday.some(x => x.id === t.id) || loggedIds.includes(t.id) || touched.some(x => x.id === t.id) || createdToday.some(x => x.id === t.id);
+  const items = all.map(t => ({ task_id: t.id, title: t.title, project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)), auto: worked(t) }));
   items.sort((a, b) => b.auto - a.auto || b.minutes - a.minutes);
   return { att, items };
 }
@@ -1730,7 +1733,7 @@ VIEWS.eod = async el => {
   const prevIds = new Set((existing?.tasks || []).map(t => t.task_id));
   const worked = att?.check_in ? ((att.check_out ? new Date(att.check_out) : new Date()) - new Date(att.check_in)) / 36e5 : null;
   body.innerHTML = `<div class="grid g-2">
-    <div class="card"><div class="card-h"><h2>Tasks today</h2><span class="sub">Picked up automatically from your timer and finished tasks</span></div><div class="card-b">
+    <div class="card"><div class="card-h"><h2>Tasks today</h2><span class="sub">Tasks you finished, timed, added or updated today are ticked. Untick anything that isn't today's work.</span></div><div class="card-b">
       ${items.length ? items.map((t, i) => `<label class="eod-task"><input type="checkbox" data-i="${i}" ${(existing ? prevIds.has(t.task_id) : t.auto) ? 'checked' : ''}>
           <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}</div></div>
           <span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span><span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
