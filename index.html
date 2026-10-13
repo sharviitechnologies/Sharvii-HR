@@ -1754,7 +1754,8 @@ VIEWS.eod = async el => {
       const saved = existing ? await q(sb.from('eod_reports').update(row).eq('id', existing.id).select().single()) : await q(sb.from('eod_reports').insert(row).select().single());
       b.textContent = 'Sending email…';
       let sent = false;
-      try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; } catch { }
+      let why = ''; try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; if (!sent) why = await fnError(error, data, 'send-eod'); } catch (e) { why = e.message; }
+      if (!sent && isAdmin() && why) console.warn('EOD email:', why);
       S.eodEdit = false;
       toast(sent ? 'EOD report submitted and emailed' : 'EOD report saved. Email is not set up yet; managers can read it in the app.', sent ? 'ok' : 'bad');
       route();
@@ -2092,6 +2093,18 @@ function taskScore(t, today) {
 }
 const why = (t, today) => [t.due_date && t.due_date < today ? `${Math.round((dObj(today) - dObj(t.due_date)) / 864e5)} d overdue` : t.due_date === today ? 'due today' : t.due_date && t.due_date <= addDays(today, 3) ? `due ${fmtShort(t.due_date)}` : '', t.priority === 'high' ? 'high priority' : ''].filter(Boolean).join(' · ');
 
+async function fnError(error, data, name) {
+  if (data?.error) return data.error;
+  const res = error?.context;
+  if (res && typeof res.status === 'number') {
+    let msg = ''; try { const j = await res.clone().json(); msg = j.error || j.message || j.msg || ''; } catch { try { msg = (await res.text()).slice(0, 200); } catch { } }
+    if (res.status === 404) return `The "${name}" function was not found. In Supabase → Edge Functions, check it is deployed with exactly this name.`;
+    if (res.status === 401) return `Sign-in check failed (401). Sign out and in again. ${msg}`;
+    return `Error ${res.status}: ${msg || 'the function failed. Open Supabase → Edge Functions → ' + name + ' → Logs.'}`;
+  }
+  if (error?.name === 'FunctionsFetchError' || /fetch/i.test(error?.message || '')) return `Could not reach the "${name}" function. It is probably not deployed yet (Supabase → Edge Functions), or the name is different.`;
+  return error?.message || 'Unknown error';
+}
 async function aiCard(box, scope) {
   if (!CONFIG.AI_ENABLED && !S.settings.ai_enabled) { box.innerHTML = ''; return; }
   const last = await q(sb.from('ai_insights').select('*').eq('scope', scope).eq(scope === 'me' ? 'user_id' : 'scope', scope === 'me' ? S.me.id : 'team').order('created_at', { ascending: false }).limit(1).maybeSingle()).catch(() => null);
@@ -2103,7 +2116,7 @@ async function aiCard(box, scope) {
     $('#ai-body', box).innerHTML = '<p class="muted">Reading your data and writing the summary. This takes 10–30 seconds…</p>';
     try {
       const { data, error } = await sb.functions.invoke('ai-insights', { body: { scope } });
-      if (error || !data?.ok) throw new Error(data?.error || 'AI insights are not set up yet. Ask your admin to deploy the ai-insights function.');
+      if (error || !data?.ok) throw new Error(await fnError(error, data, 'ai-insights'));
       $('#ai-body', box).innerHTML = md(data.content);
       $('.sub', box).textContent = 'Generated just now'; b.textContent = 'Refresh';
     } catch (err) { $('#ai-body', box).innerHTML = `<p class="muted">${esc(err.message)}</p>`; b.textContent = 'Try again'; }
