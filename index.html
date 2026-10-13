@@ -45,7 +45,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .side{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .brand{display:flex;align-items:center;gap:10px;padding:18px 20px;background:var(--logo-bg)}
 .brand img{height:38px;max-width:170px;object-fit:contain}
-.brand-fallback{display:none;width:34px;height:34px;border-radius:8px;background:var(--brand);color:var(--brand-ink);font-weight:700;align-items:center;justify-content:center}
+.brand-fallback{display:none;align-items:center}
+.brand-fallback svg{height:42px;width:auto}
+.auth-logo .brand-fallback svg{height:62px}
 .brand-name{font-weight:700;font-size:14px;line-height:1.2}
 .brand-name small{display:block;font-weight:500;color:var(--ink-3);font-size:12px}
 .nav{padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;flex:1}
@@ -418,10 +420,11 @@ const CONFIG = {
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6YmlhcW10b3h0Y25uZmNzYmJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzU4NDMsImV4cCI6MjEwNjk1MTg0M30.pYBwT8WC7uW2XRklTeTHfQr-qy-lOw0LcxoLge3bTMQ',
   APP_NAME: 'Sharvii People',
   COMPANY: 'Sharvii Technologies',
-  LOGO_URL: 'sharvi-logo.png',   // logo file uploaded to the same GitHub repo
-  LOGO_BACKUP_URL: 'https://sharviitechnologies.com/wp-content/uploads/2026/04/sharvi-logo.png',
+  LOGO_URL: 'https://sharviitechnologies.com/wp-content/uploads/2026/04/sharvi-logo.png',
+  LOGO_BACKUP_URL: 'sharvi-logo.png',   // optional copy in the GitHub repo, used if the website link fails
   BRAND_COLOR: '#3A9A52',      // Sharvii green (website colour)
-  TIMEZONE: 'Asia/Kolkata'
+  TIMEZONE: 'Asia/Kolkata',
+  AI_ENABLED: false            // or switch on in the app: Leave & holidays → AI insights
   // Shift timings and days off are set by admins in the app: Leave & holidays → Shift & working days
 };
 /* ====================================================================== */
@@ -571,8 +574,11 @@ const ICONS = {
 };
 const icon = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
 // Tries the logo in the GitHub repo first, then the website copy, then shows "ST"
+const LOGO_SOURCES = () => [CONFIG.LOGO_URL, 'logo.png', 'Sharvi-logo.png', 'sharvii-logo.png', CONFIG.LOGO_BACKUP_URL].filter((v, i, a) => v && a.indexOf(v) === i);
+const LOGO_SVG = `<svg viewBox="0 0 232 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sharvii Technologies"><defs><linearGradient id="svg-s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3AA0E8"/><stop offset="1" stop-color="#6CC17A"/></linearGradient></defs><path d="M47 15c-7-7-33-6-33 6 0 13 33 8 33 21 0 13-28 14-37 5" fill="none" stroke="url(#svg-s)" stroke-width="8.5" stroke-linecap="round"/><circle cx="51" cy="9" r="3" fill="#6CC17A"/><circle cx="58" cy="5" r="2" fill="#3AA0E8"/><text x="70" y="37" font-family="Figtree,Arial,sans-serif" font-weight="700" font-size="25" fill="#fff" letter-spacing="1.5">SHARVII</text><text x="72" y="54" font-family="Figtree,Arial,sans-serif" font-weight="600" font-size="9.5" fill="#C9D3E8" letter-spacing="3">TECHNOLOGIES</text></svg>`;
 function logoFail(img) {
-  if (!img.dataset.tried && CONFIG.LOGO_BACKUP_URL) { img.dataset.tried = '1'; img.src = CONFIG.LOGO_BACKUP_URL; return; }
+  const list = LOGO_SOURCES(), i = +(img.dataset.step || 0) + 1;
+  if (i < list.length) { img.dataset.step = i; img.src = list[i]; return; }
   img.style.display = 'none'; if (img.nextElementSibling) img.nextElementSibling.style.display = 'flex';
 }
 const logoImg = (cls = '') => `<img class="${cls}" src="${esc(CONFIG.LOGO_URL)}" alt="${esc(CONFIG.COMPANY)}" referrerpolicy="no-referrer" onerror="logoFail(this)">`;
@@ -613,7 +619,7 @@ function authShell(formHtml) {
   const q = QUOTES[Math.floor(Date.now() / 864e5) % QUOTES.length];
   return `<div class="auth">
     <section class="auth-brand">
-      <span class="auth-logo">${logoImg()}<span class="brand-fallback">ST</span></span>
+      <span class="auth-logo">${logoImg()}<span class="brand-fallback">${LOGO_SVG}</span></span>
       <div><h2>Good work, <em>done together.</em></h2>
       <p>Check in, track your tasks and manage leave with the ${esc(CONFIG.COMPANY)} team.</p></div>
       <figure class="quote"><p>“${esc(q[0])}”</p><cite>${esc(q[1])}</cite></figure>
@@ -719,7 +725,7 @@ function renderShell() {
   const link = n => `<a href="#/${n.id}" data-nav="${n.id}">${icon(n.icon)}<span>${n.label}</span>${n.id === 'approvals' ? '<span class="badge" data-badge hidden></span>' : n.id === 'leads' ? '<span class="badge" data-badge-leads hidden></span>' : ''}</a>`;
   $('#app').innerHTML = `<div class="layout">
     <aside class="side">
-      <div class="brand">${logoImg()}<span class="brand-fallback">ST</span></div>
+      <div class="brand">${logoImg()}<span class="brand-fallback">${LOGO_SVG}</span></div>
       <nav class="nav" aria-label="Main">${items.map(link).join('')}</nav>
       <div class="side-foot">${esc(CONFIG.APP_NAME)}</div>
     </aside>
@@ -2087,6 +2093,7 @@ function taskScore(t, today) {
 const why = (t, today) => [t.due_date && t.due_date < today ? `${Math.round((dObj(today) - dObj(t.due_date)) / 864e5)} d overdue` : t.due_date === today ? 'due today' : t.due_date && t.due_date <= addDays(today, 3) ? `due ${fmtShort(t.due_date)}` : '', t.priority === 'high' ? 'high priority' : ''].filter(Boolean).join(' · ');
 
 async function aiCard(box, scope) {
+  if (!CONFIG.AI_ENABLED && !S.settings.ai_enabled) { box.innerHTML = ''; return; }
   const last = await q(sb.from('ai_insights').select('*').eq('scope', scope).eq(scope === 'me' ? 'user_id' : 'scope', scope === 'me' ? S.me.id : 'team').order('created_at', { ascending: false }).limit(1).maybeSingle()).catch(() => null);
   box.innerHTML = `<div class="card ai-card"><div class="card-h"><h2>✨ AI summary</h2><span class="sub">${last ? `Generated ${timeAgo(last.created_at)}${scope === 'team' && last.user_id !== S.me.id ? ` by ${esc(nameOf(last.user_id))}` : ''}` : 'Reads tasks, projects, EOD reports, attendance' + (scope === 'team' ? ' and leads' : '')}</span>
       <div class="right"><button class="btn primary sm" id="ai-run">${last ? 'Refresh' : 'Generate'}</button></div></div>
@@ -2300,6 +2307,9 @@ VIEWS.settings = async el => {
         ${S.leaveTypes.map(t => `<tr data-lt="${t.id}"><td><input type="text" data-k="name" value="${esc(t.name)}"></td><td><input type="text" data-k="code" value="${esc(t.code)}" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="${num(t.annual_quota)}" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" ${t.is_paid ? 'checked' : ''} aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" ${t.is_active ? 'checked' : ''} aria-label="Active"></td><td><button class="btn sm" data-save-lt>Save</button></td></tr>`).join('')}
         <tr data-lt="new"><td><input type="text" data-k="name" placeholder="New leave type"></td><td><input type="text" data-k="code" placeholder="Code" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="0" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" checked aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" checked aria-label="Active"></td><td><button class="btn primary sm" data-save-lt>Add</button></td></tr>
         </tbody></table></div></div>
+      <div class="card"><div class="card-h"><h2>AI insights</h2></div><div class="card-b">
+        <label class="check"><input type="checkbox" id="ai-on" ${st.ai_enabled ? 'checked' : ''}> Show the ✨ AI summary on the Insights page</label>
+        <p class="hint muted" style="margin:8px 0 0;font-size:12.5px">Turn on only after the <b>ai-insights</b> function and its API key are set up in Supabase. The free checks on Insights work either way.</p></div></div>
       <div class="card"><div class="card-h"><h2>Company Google Drive</h2></div><div class="card-b">
         <div class="field"><label for="st-drive">Shared drive link</label><input id="st-drive" type="url" value="${esc(st.drive_url || '')}" placeholder="https://drive.google.com/drive/folders/…"><span class="hint">Shown to everyone in Knowledge base → Company files.</span></div>
         <button class="btn primary" id="st-drive-save" style="margin-top:12px">Save link</button></div></div>
@@ -2319,6 +2329,7 @@ VIEWS.settings = async el => {
       ${hols.length ? hols.map(h => { const dow = dObj(h.holiday_date).getDay(); return `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div style="flex:1"><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric' })}${dow === 0 ? ' (already a day off)' : ''}</div></div><button class="btn danger sm" data-del-h="${h.id}">Remove</button></div>`; }).join('') : '<div class="empty">No holidays added yet.</div>'}
       </div></div></div>`;
 
+  $('#ai-on').onchange = async e => { try { await q(sb.from('settings').update({ ai_enabled: e.target.checked }).eq('id', 1)); toast(e.target.checked ? 'AI summary turned on' : 'AI summary turned off'); await loadDirectory(); } catch (err) { e.target.checked = !e.target.checked; toast(err.message, 'bad'); } };
   $('#st-drive-save').onclick = async () => { const u = $('#st-drive').value.trim(); if (u && !/^https?:\/\//i.test(u)) return toast('The link must start with https://', 'bad'); try { await q(sb.from('settings').update({ drive_url: u || null }).eq('id', 1)); toast('Drive link saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
   $('#eod-to-save').onclick = async () => { try { await q(sb.from('settings').update({ eod_recipients: $('#eod-to').value.trim() }).eq('id', 1)); toast('EOD recipients saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
   $('#bk-run').onclick = async e => { const b = e.currentTarget, h = b.innerHTML; b.disabled = true; b.textContent = 'Preparing…'; try { await downloadBackup(); toast('Backup downloaded. Keep it in Google Drive.'); } catch (err) { toast(err.message, 'bad'); } b.disabled = false; b.innerHTML = h; };
