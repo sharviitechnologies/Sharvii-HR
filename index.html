@@ -1699,7 +1699,7 @@ VIEWS.projects = async el => {
   const list = S.projects.filter(p => filter === 'all' || p.status === filter);
   const stats = Object.fromEntries(S.projects.map(p => [p.id, projectStats(p, tasks, logs, today)]));
   const counts = k => S.projects.filter(p => k === 'all' || p.status === k).length;
-  const dueTxt = pr => pr.due_date ? `<span class="${pr.due_date < today && pr.status !== 'completed' ? 'overdue' : ''}">${fmtShort(pr.due_date)}</span>` : '<span class="muted">—</span>';
+  const dueTxt = pr => pr.due_date ? `<span class="${pr.due_date < today && pr.status !== 'completed' ? 'overdue' : ''}">${fmtShort(pr.due_date)}</span>` : '<span class="pill info">Ongoing</span>';
 
   const card = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
     return `<a class="proj" href="#/project/${pr.id}" style="--pc:${esc(pr.color || '#3A9A52')}" data-s="${esc((pr.name + ' ' + (pr.client || '')).toLowerCase())}">
@@ -1707,7 +1707,7 @@ VIEWS.projects = async el => {
       <div class="task-sub" style="margin-top:4px">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}</div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><b style="font-size:24px">${st.pct}%</b><span class="task-sub">${st.done} of ${st.ts.length} tasks done</span></div>
       ${stackBar(st)}
-      <div class="proj-meta"><span>${hm(st.mins)} logged</span><span>Due ${dueTxt(pr)}</span></div>
+      <div class="proj-meta"><span>${hm(st.mins)} logged</span><span>${pr.due_date ? `Due ${dueTxt(pr)}` : 'Ongoing'}</span></div>
       <div class="avs">${st.people.slice(0, 7).map(p => `<span class="avatar" title="${esc(p.full_name)}">${esc(initials(p.full_name || p.email))}</span>`).join('')}${st.overdue ? `<span class="pill bad" style="margin-left:auto">${st.overdue} overdue</span>` : ''}</div>
     </a>`; };
   const row = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
@@ -1749,7 +1749,8 @@ function openProject(pr, prefill = {}) {
       <div class="field"><label for="pr-client">Client</label><input id="pr-client" type="text" value="${esc(p.client || '')}" placeholder="e.g. Navdrushti Foundation"></div>
       <div class="field"><label for="pr-owner">Project manager</label><select id="pr-owner"><option value="">None</option>${pms.map(m => `<option value="${m.id}" ${m.id === p.owner_id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
       <div class="field"><label for="pr-start">Start date</label><input id="pr-start" type="date" value="${esc(p.start_date || '')}"></div>
-      <div class="field"><label for="pr-due">Due date</label><input id="pr-due" type="date" value="${esc(p.due_date || '')}"></div>
+      <div class="field full"><label>Type of work</label><div class="seg" style="align-self:flex-start"><button type="button" data-pt="ongoing" class="${!isNew && !p.due_date ? 'on' : ''}">Ongoing client (live site, SEO, maintenance, retainer)</button><button type="button" data-pt="fixed" class="${isNew || p.due_date ? 'on' : ''}">Fixed project with a deadline</button></div></div>
+      <div class="field" id="pr-due-f"><label for="pr-due">Due date <span class="task-sub" style="font-weight:400">(optional)</span></label><input id="pr-due" type="date" value="${esc(p.due_date || '')}"></div>
       <div class="field"><label for="pr-status">Status</label><select id="pr-status">${Object.entries(PSTATUS).map(([v, [, l]]) => `<option value="${v}" ${p.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
       <div class="field"><label>Colour</label><div class="swatches">${PCOLORS.map(c => `<label class="sw" style="background:${c}"><input type="radio" name="pr-color" value="${c}" ${c === p.color ? 'checked' : ''} aria-label="${c}"></label>`).join('')}</div></div>
       <div class="field full"><label for="pr-drive">Google Drive folder</label><input id="pr-drive" type="url" value="${esc(p.drive_url || '')}" placeholder="https://drive.google.com/drive/folders/…"><span class="hint">Shared drive → 01 Clients → Client → Project. Paste the folder link.</span></div>
@@ -1758,6 +1759,9 @@ function openProject(pr, prefill = {}) {
     footer: `${!isNew ? '<button class="btn danger" id="pr-del" style="margin-right:auto">Delete project</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="pr-save">${isNew ? 'Create project' : 'Save project'}</button>`,
     onMount: (root, close) => {
       $('[data-close]', root).onclick = close;
+      const syncType = t => { $$('[data-pt]', root).forEach(b => b.classList.toggle('on', b.dataset.pt === t)); $('#pr-due-f', root).hidden = t === 'ongoing'; if (t === 'ongoing') $('#pr-due', root).value = ''; };
+      $$('[data-pt]', root).forEach(b => b.onclick = () => syncType(b.dataset.pt));
+      syncType(!isNew && !p.due_date ? 'ongoing' : 'fixed');
       $('#pr-save', root).onclick = async () => {
         const v = s => $(s, root).value.trim() || null;
         const drive = v('#pr-drive');
@@ -1813,7 +1817,7 @@ VIEWS.project = async (el, id) => {
         ${stackBar(st)}
         <div class="legend" style="border:0;padding:6px 0 0">${['todo', 'in_progress', 'review', 'done'].map(k => `<span><span class="dot" style="background:${TCOLOR[k]}"></span>${TSTATUS[k]} <b>${k === 'done' ? st.done : k === 'review' ? st.review : k === 'in_progress' ? st.prog : st.todo}</b></span>`).join('')}</div>
         <div class="stats" style="margin:16px 0 0;grid-template-columns:repeat(3,1fr)">
-          <div class="stat"><span>${daysLeft == null ? 'Due date' : daysLeft >= 0 ? 'Days left' : 'Days overdue'}</span><b class="${daysLeft != null && daysLeft < 0 && pr.status !== 'completed' ? 'overdue' : ''}">${daysLeft == null ? '—' : Math.abs(daysLeft)}</b></div>
+          <div class="stat"><span>${daysLeft == null ? 'Timeline' : daysLeft >= 0 ? 'Days left' : 'Days overdue'}</span><b class="${daysLeft != null && daysLeft < 0 && pr.status !== 'completed' ? 'overdue' : ''}">${daysLeft == null ? 'Ongoing' : Math.abs(daysLeft)}</b></div>
           <div class="stat"><span>Overdue tasks</span><b class="${st.overdue ? 'overdue' : ''}">${st.overdue}</b></div>
           <div class="stat"><span>Time logged</span><b>${hm(st.mins)}</b></div></div>
       </div></div>
