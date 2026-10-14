@@ -339,6 +339,13 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .wr-bar-h{display:flex;justify-content:space-between;gap:10px}
 @media (max-width:860px){.wr-grid{grid-template-columns:1fr}}
 
+/* ---------- Pause & manual time ---------- */
+.timer-pill.paused{background:var(--warn-soft);color:var(--warn)}
+.timer-pill.paused .rec{display:none}
+.paused-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.paused-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:12px;padding:10px 14px}
+.pz{font-size:18px}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -573,6 +580,7 @@ const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   tasks: '<path d="M10 6h10M10 12h10M10 18h10"/><path d="M3.5 6l1.5 1.5L7.5 5M3.5 12l1.5 1.5 2.5-2.5M3.5 18l1.5 1.5 2.5-2.5"/>',
   play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+  pause: '<rect x="7" y="5.5" width="3.5" height="13" rx="1"/><rect x="13.5" y="5.5" width="3.5" height="13" rx="1"/>',
   eod: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM9 11h6M9 15h4"/>',
   leads: '<path d="M3 5h18l-7 8v6l-4-2v-4z"/>',
   spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
@@ -852,21 +860,101 @@ function balanceRows(bals, pending, year) {
 async function refreshRunning() {
   try {
     const log = await q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).is('ended_at', null).maybeSingle());
-    const task = log ? await q(sb.from('tasks').select('id,title,project').eq('id', log.task_id).maybeSingle()) : null;
+    const task = log?.task_id ? await q(sb.from('tasks').select('id,title,project').eq('id', log.task_id).maybeSingle()) : null;
     S.running = log ? { ...log, task } : null;
   } catch { S.running = null; }
+  try {   // paused tasks from today (shown with a Resume button)
+    const ps = await q(sb.from('time_logs').select('task_id,ended_at').eq('employee_id', S.me.id).eq('paused', true).gte('ended_at', `${istDate()}T00:00:00+05:30`).order('ended_at', { ascending: false }));
+    const ids = [...new Set(ps.map(x => x.task_id).filter(id => id && id !== S.running?.task_id))];
+    const ts = ids.length ? await q(sb.from('tasks').select('id,title,project,status').in('id', ids)) : [];
+    S.paused = ids.map(id => ({ task_id: id, since: ps.find(x => x.task_id === id).ended_at, task: ts.find(t => t.id === id) })).filter(x => x.task && x.task.status !== 'done');
+  } catch { S.paused = []; }
   paintTimer();
 }
+const isPaused = id => (S.paused || []).some(x => x.task_id === id);
+async function pauseTimer() {
+  try { await q(sb.rpc('pause_timer')); await refreshRunning(); toast('Paused. Resume any time from Tasks or Home.'); route(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+async function discardPause(taskId) {
+  try { await q(sb.rpc('discard_pause', { p_task_id: taskId })); await refreshRunning(); route(); }
+  catch (e) { toast(e.message, 'bad'); }
+}
+const timerButtons = (t, small = true) => S.running?.task_id === t.id
+  ? `<button class="btn ${small ? 'sm ' : ''}icon-btn" data-pause aria-label="Pause timer">${icon('pause')}Pause</button><button class="btn danger ${small ? 'sm ' : ''}icon-btn" data-stop aria-label="Stop timer">${icon('stop')}Stop</button>`
+  : isPaused(t.id) ? `<button class="btn primary ${small ? 'sm ' : ''}icon-btn" data-start="${t.id}" aria-label="Resume timer">${icon('play')}Resume</button>`
+  : `<button class="btn ${small ? 'sm ' : ''}icon-btn" data-start="${t.id}" aria-label="Start timer">${icon('play')}Start</button>`;
+function bindTimerButtons(root) {
+  $$('[data-start]', root).forEach(b => b.onclick = () => startTimer(b.dataset.start));
+  $$('[data-stop]', root).forEach(b => b.onclick = () => stopTimer());
+  $$('[data-pause]', root).forEach(b => b.onclick = () => pauseTimer());
+  $$('[data-discard]', root).forEach(b => b.onclick = () => discardPause(b.dataset.discard));
+}
+const pausedBanner = () => (S.paused || []).length ? `<div class="paused-list">${S.paused.map(x => `<div class="paused-item"><span class="pz">⏸</span><div style="flex:1;min-width:0"><b>${esc(x.task.title)}</b><div class="task-sub">Paused at ${fmtTime(x.since)}${x.task.project ? ` · ${esc(x.task.project)}` : ''}</div></div><button class="btn primary sm icon-btn" data-start="${x.task_id}">${icon('play')}Resume</button><button class="x-btn" data-discard="${x.task_id}" title="Forget this pause" aria-label="Forget this pause">&times;</button></div>`).join('')}</div>` : '';
+
+/* ---------- Manual time entry (meetings, calls, work away from the timer) ---------- */
+const ACTIVITIES = ['Client call', 'Internal meeting', 'Team meeting', 'Training / learning', 'Research', 'Admin work', 'Travel', 'Other'];
+async function openTimeEntry(opts = {}) {
+  const today = istDate();
+  let tasks = await q(sb.from('tasks').select('id,title,project,project_id,status,updated_at').eq('assigned_to', S.me.id).order('updated_at', { ascending: false }).limit(100)).catch(() => []);
+  if (opts.taskId && !tasks.some(t => t.id === opts.taskId)) { const one = await q(sb.from('tasks').select('id,title,project,project_id,status').eq('id', opts.taskId).maybeSingle()).catch(() => null); if (one) tasks.unshift(one); }
+  const now = istMin(), r5 = m => Math.max(0, Math.floor(m / 5) * 5), hhmm = m => `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+  const end = r5(now), start = Math.max(0, end - 60);
+  openModal({
+    title: 'Add time',
+    body: `<div class="form-grid">
+      <div class="field full"><label>What was it?</label><div class="seg" style="align-self:flex-start"><button type="button" data-tt="task">Work on a task</button><button type="button" data-tt="act">Meeting or other activity</button></div></div>
+      <div class="field full" id="te-task-f"><label for="te-task">Task</label><select id="te-task"><option value="">Choose a task…</option>${tasks.map(t => `<option value="${t.id}" ${t.id === opts.taskId ? 'selected' : ''}>${esc(t.title)}${t.project ? ` · ${esc(t.project)}` : ''}${t.status === 'done' ? ' (done)' : ''}</option>`).join('')}</select></div>
+      <div class="field full" id="te-act-f" hidden><label for="te-act">Activity</label><input id="te-act" type="text" list="te-acts" value="${esc(opts.activity || '')}" placeholder="e.g. Client call"><datalist id="te-acts">${ACTIVITIES.map(a => `<option value="${a}">`).join('')}</datalist></div>
+      <div class="field"><label for="te-date">Date</label><input id="te-date" type="date" value="${opts.date || today}" max="${today}" ${isMgr() ? '' : `min="${addDays(today, -7)}"`}></div>
+      <div class="field"><label>Duration</label><div id="te-dur" style="padding:9px 0;font-weight:700">1h 00m</div></div>
+      <div class="field"><label for="te-from">From</label><input id="te-from" type="time" value="${hhmm(start)}"></div>
+      <div class="field"><label for="te-to">To</label><input id="te-to" type="time" value="${hhmm(end)}"></div>
+      <div class="field full"><label for="te-note">Note (optional)</label><input id="te-note" type="text" maxlength="500" placeholder="e.g. FSS weekly call with Sarah, agreed next steps"></div>
+      <div class="note full">Time can be added for the last 7 days. It must not overlap time you already logged.</div>
+    </div>`,
+    footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="te-save">Add time</button>`,
+    onMount: (root, close) => {
+      let type = opts.mode === 'act' || opts.activity ? 'act' : 'task';
+      const sync = () => { $('#te-task-f', root).hidden = type !== 'task'; $('#te-act-f', root).hidden = type !== 'act'; $$('[data-tt]', root).forEach(b => b.classList.toggle('on', b.dataset.tt === type)); };
+      $$('[data-tt]', root).forEach(b => b.onclick = () => { type = b.dataset.tt; sync(); }); sync();
+      const dur = () => { const a = toMin($('#te-from', root).value), b = toMin($('#te-to', root).value); $('#te-dur', root).textContent = b > a ? hm(b - a) : '—'; };
+      $('#te-from', root).oninput = dur; $('#te-to', root).oninput = dur; dur();
+      $('[data-close]', root).onclick = close;
+      $('#te-save', root).onclick = async () => {
+        const taskId = type === 'task' ? $('#te-task', root).value : null, act = type === 'act' ? $('#te-act', root).value.trim() : null;
+        if (type === 'task' && !taskId) return toast('Choose a task', 'bad');
+        if (type === 'act' && !act) return toast('Type or choose the activity, e.g. Client call', 'bad');
+        const b = $('#te-save', root); b.disabled = true;
+        try {
+          const added = $('#te-dur', root).textContent;
+          await q(sb.rpc('add_time_entry', { p_task_id: taskId, p_activity: act, p_date: $('#te-date', root).value, p_start: $('#te-from', root).value, p_end: $('#te-to', root).value, p_note: $('#te-note', root).value.trim() || null }));
+          close(); toast(`Added ${added}`); await refreshRunning();
+          if (opts.onSaved) opts.onSaved(); else route();
+        } catch (e) { toast(e.message, 'bad'); b.disabled = false; }
+      };
+    }
+  });
+}
+async function removeTimeEntry(id) {
+  if (!confirm('Remove this time entry? Admins can restore it from the Recycle bin.')) return;
+  try { await q(sb.rpc('delete_time_entry', { p_id: id })); toast('Time entry removed'); route(); } catch (e) { toast(e.message, 'bad'); }
+}
 function paintTimer() {
-  const pill = $('#timer-pill');
-  if (pill) { pill.hidden = !S.running; if (S.running) $('#timer-pill-title').textContent = S.running.task?.title || 'Task'; }
+  const pill = $('#timer-pill'), pz = (S.paused || []).length;
+  if (pill) {
+    pill.hidden = !S.running && !pz; pill.classList.toggle('paused', !S.running && !!pz);
+    $('#timer-pill-title').textContent = S.running ? (S.running.task?.title || S.running.activity || 'Task') : pz ? `⏸ Paused: ${S.paused[0].task.title}${pz > 1 ? ` +${pz - 1}` : ''}` : '';
+    $('[data-live-timer]', pill).hidden = !S.running;
+  }
   clearInterval(S.timerTick);
   if (!S.running) return;
   const tick = () => { const t = hms(Date.now() - new Date(S.running.started_at)); $$('[data-live-timer]').forEach(e => e.textContent = t); };
   tick(); S.timerTick = setInterval(tick, 1000);
 }
 async function startTimer(taskId) {
-  try { await q(sb.rpc('start_timer', { p_task_id: taskId })); await refreshRunning(); toast('Timer started'); route(); }
+  const resumed = isPaused(taskId);
+  try { await q(sb.rpc('start_timer', { p_task_id: taskId })); await refreshRunning(); toast(resumed ? 'Resumed' : 'Timer started'); route(); }
   catch (e) { toast(e.message, 'bad'); }
 }
 async function stopTimer() {
@@ -937,11 +1025,11 @@ VIEWS.home = async el => {
   <div class="grid g-2">
     <div class="grid" style="align-content:start">
       <div class="card">
-        <div class="card-h"><h2>My tasks</h2><div class="right"><a class="btn sm" href="#/tasks">All tasks</a></div></div>
+        <div class="card-h"><h2>My tasks</h2><div class="right"><button class="btn sm" id="home-addtime">${icon('plus')}Add time</button><a class="btn sm" href="#/tasks">All tasks</a></div></div>
         <div class="card-b">${myTasks.length ? myTasks.map(t => {
           const running = S.running?.task_id === t.id;
           return `<div class="list-row"><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(projName(t) || 'No project')}${t.due_date ? ` · due <span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : ''}</div></div>
-            ${running ? `<b class="num" data-live-timer style="color:var(--bad)"></b><button class="btn danger sm icon-btn" data-stop aria-label="Stop timer">${icon('stop')}Stop</button>` : `<button class="btn sm icon-btn" data-start="${t.id}" aria-label="Start timer">${icon('play')}Start</button>`}</div>`; }).join('')
+            ${running ? '<b class="num" data-live-timer style="color:var(--bad)"></b>' : isPaused(t.id) ? '<span class="pill warn">Paused</span>' : ''}${timerButtons(t)}</div>`; }).join('')
           : '<div class="empty">No open tasks. Add one on the Tasks page to track your time.</div>'}</div>
       </div>
       <div class="card">
@@ -990,8 +1078,8 @@ VIEWS.home = async el => {
   };
   $('#apply').onclick = () => openApplyLeave();
   $('#nudge-btn') && ($('#nudge-btn').onclick = () => openProfile());
-  $$('[data-start]', el).forEach(b => b.onclick = () => startTimer(b.dataset.start));
-  $$('[data-stop]', el).forEach(b => b.onclick = () => stopTimer());
+  bindTimerButtons(el);
+  $('#home-addtime').onclick = () => openTimeEntry();
 };
 
 /* ---------- Attendance ---------- */
@@ -1288,7 +1376,7 @@ async function workData(from, to) {
     allRows(() => sb.from('time_logs').select('*').gte('started_at', f).lte('started_at', t)).catch(() => []),
     allRows(() => sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', to).gte('end_date', from)).catch(() => [])
   ]);
-  const ids = [...new Set(logs.map(l => l.task_id).filter(id => !done.some(d => d.id === id)))];
+  const ids = [...new Set(logs.map(l => l.task_id).filter(id => id && !done.some(d => d.id === id)))];
   const logged = ids.length ? await inChunks(ids, ch => sb.from('tasks').select('*').in('id', ch)).catch(() => []) : [];
   const taskById = new Map([...done, ...logged].map(x => [x.id, x]));
   return { att, eods, done, logs, leaves, taskById };
@@ -1302,9 +1390,9 @@ function personDay(p, date, D) {
   const logs = D.logs.filter(l => l.employee_id === p.id && dayOf(l.started_at) === date);
   const mins = logs.reduce((s, l) => s + logMinutes(l), 0);
   const byProj = {};
-  logs.forEach(l => { const k = projName(D.taskById.get(l.task_id) || {}) || 'No project'; byProj[k] = (byProj[k] || 0) + logMinutes(l); });
+  logs.forEach(l => { const k = l.task_id ? (projName(D.taskById.get(l.task_id) || {}) || 'No project') : `${l.activity || 'Other'} (meeting/activity)`; byProj[k] = (byProj[k] || 0) + logMinutes(l); });
   done.forEach(x => { const k = projName(x) || 'No project'; if (!(k in byProj)) byProj[k] = 0; });
-  const workedOn = [...new Set(logs.map(l => l.task_id))].filter(id => !done.some(d => d.id === id)).map(id => D.taskById.get(id)).filter(Boolean);
+  const workedOn = [...new Set(logs.map(l => l.task_id).filter(Boolean))].filter(id => !done.some(d => d.id === id)).map(id => D.taskById.get(id)).filter(Boolean);
   const code = dayCode(p, date, a, lv);
   return { p, date, a, lv, eod, done, workedOn, mins, byProj, code };
 }
@@ -1809,14 +1897,18 @@ async function eodTodayData() {
     q(mine().gte('created_at', from)).catch(() => []),          // added today
     q(mine().in('status', ['in_progress', 'review'])).catch(() => [])
   ]);
-  const loggedIds = [...new Set(logs.map(l => l.task_id))];
+  const loggedIds = [...new Set(logs.map(l => l.task_id).filter(Boolean))];
   const known = [...doneToday, ...touched, ...createdToday, ...open];
   const missing = loggedIds.filter(id => !known.some(t => t.id === id));
   const extra = missing.length ? await inChunks(missing, ch => sb.from('tasks').select('*').in('id', ch)).catch(() => []) : [];
   const all = [...new Map([...doneToday, ...extra, ...touched, ...createdToday, ...open].map(t => [t.id, t])).values()];
   const mins = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
   const worked = t => doneToday.some(x => x.id === t.id) || loggedIds.includes(t.id) || touched.some(x => x.id === t.id) || createdToday.some(x => x.id === t.id);
-  const items = all.map(t => ({ task_id: t.id, title: t.title, project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)), auto: worked(t) }));
+  const lastLog = id => logs.filter(l => l.task_id === id).reduce((m, l) => (l.created_at || l.started_at) > m ? (l.created_at || l.started_at) : m, '');
+  const items = all.map(t => ({ key: t.id, task_id: t.id, title: t.title, project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)), auto: worked(t), last: [lastLog(t.id), t.completed_at || ''].sort().pop() }));
+  const acts = {};   // meetings and other activities logged today
+  logs.filter(l => !l.task_id && l.activity).forEach(l => { const k = `act:${l.activity}|${l.note || ''}`; acts[k] = acts[k] || { key: k, task_id: null, title: l.note ? `${l.activity}: ${l.note}` : l.activity, project: '', status: 'activity', status_label: 'Meeting / activity', minutes: 0, auto: true, last: '' }; acts[k].minutes += logMinutes(l); if ((l.created_at || l.started_at) > acts[k].last) acts[k].last = l.created_at || l.started_at; });
+  Object.values(acts).forEach(a => { a.minutes = Math.round(a.minutes); items.push(a); });
   items.sort((a, b) => b.auto - a.auto || b.minutes - a.minutes);
   return { att, items };
 }
@@ -1874,14 +1966,15 @@ VIEWS.eod = async el => {
     return;
   }
   const { att, items } = await eodTodayData();
-  const prevIds = new Set((existing?.tasks || []).map(t => t.task_id));
+  const prevIds = new Set((existing?.tasks || []).map(t => t.key || t.task_id));
   const worked = att?.check_in ? ((att.check_out ? new Date(att.check_out) : new Date()) - new Date(att.check_in)) / 36e5 : null;
   body.innerHTML = `<div class="grid g-2">
     <div class="card"><div class="card-h"><h2>Tasks today</h2><span class="sub">Tasks you finished, timed, added or updated today are ticked. Untick anything that isn't today's work.</span></div><div class="card-b">
-      ${items.length ? items.map((t, i) => `<label class="eod-task"><input type="checkbox" data-i="${i}" ${(existing ? prevIds.has(t.task_id) : t.auto) ? 'checked' : ''}>
-          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.project || 'No project')}</div></div>
-          <span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span><span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
+      ${items.length ? items.map((t, i) => `<label class="eod-task"><input type="checkbox" data-i="${i}" ${(existing ? prevIds.has(t.key) || (t.auto && t.last && t.last > existing.submitted_at) : t.auto) ? 'checked' : ''}>
+          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.task_id ? (t.project || 'No project') : 'Logged time')}</div></div>
+          ${t.task_id ? `<span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span>` : '<span class="pill info">Meeting / activity</span>'}<span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
         : '<div class="empty">No tasks tracked today. Use the timer on the Tasks page tomorrow, and it fills this in for you. For today, describe your work in the summary.</div>'}
+      <div style="margin-top:12px"><button class="btn sm" type="button" id="eod-addtime">${icon('plus')}Add time for a meeting or call</button></div>
       <div class="task-sub" style="margin-top:10px">${att?.check_in ? `Checked in ${fmtTime(att.check_in)}${att.check_out ? ` · out ${fmtTime(att.check_out)}` : ''} · ${worked.toFixed(1)} h` : 'Not checked in today'}</div>
     </div></div>
     <div class="card"><div class="card-h"><h2>${fmtDate(today)}</h2></div><div class="card-b"><div class="form-grid" style="grid-template-columns:1fr">
@@ -1891,10 +1984,11 @@ VIEWS.eod = async el => {
       <button class="btn primary" id="eod-send" style="padding:12px">${CONFIG.EOD_EMAIL ? 'Submit and email report' : 'Submit report'}</button>
       <div class="task-sub">${CONFIG.EOD_EMAIL ? `Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you.` : 'Saved for your managers and project managers. You can edit it until the end of the day.'}</div>
     </div></div></div></div>`;
+  $('#eod-addtime').onclick = () => openTimeEntry({ mode: 'act', onSaved: () => route() });
   $('#eod-send').onclick = async e => {
     const b = e.currentTarget, summary = $('#eod-sum').value.trim();
     if (!summary) return toast('Write a short summary of your day', 'bad');
-    const picked = $$('[data-i]', body).filter(c => c.checked).map(c => { const t = items[+c.dataset.i]; return { task_id: t.task_id, title: t.title, project: t.project, status: t.status, status_label: t.status_label, minutes: t.minutes }; });
+    const picked = $$('[data-i]', body).filter(c => c.checked).map(c => { const t = items[+c.dataset.i]; return { key: t.key, task_id: t.task_id, title: t.title, project: t.project, status: t.status, status_label: t.status_label, minutes: t.minutes }; });
     const row = { employee_id: S.me.id, report_date: today, tasks: picked, summary, blockers: $('#eod-block').value.trim() || null, tomorrow: $('#eod-next').value.trim() || null, hours: worked ? +worked.toFixed(2) : null, submitted_at: new Date().toISOString() };
     b.disabled = true; b.textContent = 'Submitting…';
     try {
@@ -2551,6 +2645,9 @@ VIEWS.tasks = async el => {
     q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', `${today}T00:00:00+05:30`))
   ]);
   const logs = tasks.length ? await q(sb.from('time_logs').select('task_id,started_at,ended_at,minutes').in('task_id', tasks.map(t => t.id))) : [];
+  const logTitles = Object.fromEntries(tasks.map(t => [t.id, t.title]));
+  const missingT = [...new Set(todayLogs.map(l => l.task_id).filter(id => id && !logTitles[id]))];
+  if (missingT.length) (await q(sb.from('tasks').select('id,title').in('id', missingT)).catch(() => [])).forEach(t => logTitles[t.id] = t.title);
   const spent = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
   const order = { in_progress: 0, review: 1, todo: 2, done: 3 };
   tasks.sort((a, b) => order[a.status] - order[b.status] || (a.due_date || '9999').localeCompare(b.due_date || '9999'));
@@ -2560,9 +2657,11 @@ VIEWS.tasks = async el => {
       <div class="field"><label>View</label><div class="seg" role="tablist"><button data-scope="mine" class="${scope === 'mine' ? 'on' : ''}">My tasks</button><button data-scope="byme" class="${scope === 'byme' ? 'on' : ''}">Assigned by me</button>${isMgr() ? `<button data-scope="team" class="${scope === 'team' ? 'on' : ''}">Team tasks</button>` : ''}</div></div>
       <div class="field"><label for="t-filter">Show</label><select id="t-filter"><option value="open" ${filter === 'open' ? 'selected' : ''}>Open tasks</option><option value="done" ${filter === 'done' ? 'selected' : ''}>Done</option><option value="all" ${filter === 'all' ? 'selected' : ''}>All</option></select></div>
       <div class="field grow"><label for="t-search">Search</label><input id="t-search" type="text" placeholder="Task, project or person"></div>
+      <button class="btn" id="t-addtime" title="Meetings, calls or work done without the timer">${icon('plus')}Add time</button>
       <button class="btn primary" id="t-new">${icon('plus')}New task</button>
     </div>
-    ${S.running ? `<div class="run-banner"><span class="rec"></span><div style="min-width:0"><small>Timer running</small><b>${esc(S.running.task?.title || 'Task')}</b>${S.running.task?.project ? `<div class="task-sub">${esc(S.running.task.project)}</div>` : ''}</div><b class="num big" data-live-timer>0:00:00</b><button class="btn danger" data-stop>${icon('stop')}Stop</button></div>` : ''}
+    ${S.running ? `<div class="run-banner"><span class="rec"></span><div style="min-width:0"><small>Timer running</small><b>${esc(S.running.task?.title || 'Task')}</b>${S.running.task?.project ? `<div class="task-sub">${esc(S.running.task.project)}</div>` : ''}</div><b class="num big" data-live-timer>0:00:00</b><button class="btn" data-pause>${icon('pause')}Pause</button><button class="btn danger" data-stop>${icon('stop')}Stop</button></div>` : ''}
+    ${pausedBanner()}
     <div class="stats">
       <div class="stat"><span>Tracked today (you)</span><b>${hm(todayLogs.reduce((s, l) => s + logMinutes(l), 0))}</b></div>
       <div class="stat"><span>In progress</span><b>${tasks.filter(t => t.status === 'in_progress').length}</b></div>
@@ -2579,16 +2678,25 @@ VIEWS.tasks = async el => {
         <td class="num">${t.due_date ? `<span class="${t.status !== 'done' && t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '<span class="muted">—</span>'}</td>
         <td><span class="pill ${pc}">${pl}</span></td>
         <td><select class="mini" data-status="${t.id}" aria-label="Status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
-        <td class="num">${running ? '<b data-live-timer style="color:var(--bad)">0:00:00</b>' : hm(spent(t.id))}</td>
-        <td style="text-align:right;white-space:nowrap">${mine && t.status !== 'done' ? (running ? `<button class="btn danger sm icon-btn" data-stop>${icon('stop')}Stop</button>` : `<button class="btn sm icon-btn" data-start="${t.id}">${icon('play')}Start</button>`) : ''} <button class="btn sm" data-edit="${t.id}">Edit</button></td></tr>`; }).join('')
-      : `<tr><td colspan="7" class="empty">${filter === 'done' ? 'No finished tasks yet.' : 'No open tasks. Create one and press Start to track your time.'}</td></tr>`}</tbody></table></div></div>`;
+        <td class="num">${running ? '<b data-live-timer style="color:var(--bad)">0:00:00</b>' : `${hm(spent(t.id))}${isPaused(t.id) ? ' <span class="pill warn">Paused</span>' : ''}`}</td>
+        <td style="text-align:right;white-space:nowrap">${mine && t.status !== 'done' ? timerButtons(t) : ''} <button class="btn sm" data-edit="${t.id}">Edit</button></td></tr>`; }).join('')
+      : `<tr><td colspan="7" class="empty">${filter === 'done' ? 'No finished tasks yet.' : 'No open tasks. Create one and press Start to track your time.'}</td></tr>`}</tbody></table></div></div>
+    <div class="card" style="margin-top:20px"><div class="card-h"><h2>My time today</h2><span class="sub">${hm(todayLogs.reduce((s, l) => s + logMinutes(l), 0))} logged</span><div class="right"><button class="btn sm" id="t-addtime2">${icon('plus')}Add time</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>From – to</th><th>Task or activity</th><th>How</th><th>Time</th><th></th></tr></thead><tbody>
+      ${todayLogs.sort((a, b) => a.started_at.localeCompare(b.started_at)).map(l => `<tr><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : '<b style="color:var(--bad)">running</b>'}${l.paused ? ' <span class="pill warn">paused</span>' : ''}</td>
+        <td style="white-space:normal"><span class="task-title">${esc(l.task_id ? (logTitles[l.task_id] || 'Task') : l.activity || 'Activity')}</span>${l.note ? `<div class="task-sub">${esc(l.note)}</div>` : ''}</td>
+        <td>${l.kind === 'manual' ? '<span class="pill info">Added</span>' : '<span class="pill muted">Timer</span>'}</td><td class="num">${hm(logMinutes(l))}</td>
+        <td style="text-align:right">${l.ended_at ? `<button class="x-btn" data-deltime="${l.id}" aria-label="Remove entry" title="Remove">&times;</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">Nothing logged yet today. Start a timer, or add time for a meeting.</td></tr>'}
+      </tbody></table></div></div>`;
 
   $$('[data-scope]', el).forEach(b => b.onclick = () => { S.taskScope = b.dataset.scope; route(); });
   $('#t-filter').onchange = e => { S.taskFilter = e.target.value; route(); };
   $('#t-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#t-rows tr[data-s]').forEach(r => r.style.display = r.dataset.s.includes(v) ? '' : 'none'); };
   $('#t-new').onclick = () => openTask(null);
-  $$('[data-start]', el).forEach(b => b.onclick = () => startTimer(b.dataset.start));
-  $$('[data-stop]', el).forEach(b => b.onclick = () => stopTimer());
+  $('#t-addtime').onclick = () => openTimeEntry();
+  $('#t-addtime2').onclick = () => openTimeEntry();
+  $$('[data-deltime]', el).forEach(b => b.onclick = () => removeTimeEntry(b.dataset.deltime));
+  bindTimerButtons(el);
   $$('[data-edit]', el).forEach(b => b.onclick = () => openTask(tasks.find(t => t.id === b.dataset.edit)));
   $$('[data-status]', el).forEach(sel => sel.onchange = async () => {
     const t = tasks.find(x => x.id === sel.dataset.status);
@@ -2661,7 +2769,7 @@ async function openTask(task, opts = {}) {
           <div class="field"><label for="tk-status">Status</label><select id="tk-status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
-          <div class="field">${isNew ? '' : `<label>Time logged</label><div style="padding:9px 0;font-weight:600">${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}</div>`}</div>
+          <div class="field">${isNew ? '' : `<label>Time logged</label><div style="padding:6px 0;font-weight:600;display:flex;gap:10px;align-items:center">${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}<button class="btn sm" type="button" id="tk-addtime">${icon('plus')}Add time</button></div>`}</div>
           <div class="field full sop-box"><label>SOP <span class="task-sub" style="font-weight:400">· how this work is done, so anyone can repeat it</span></label>
             <label class="check"><input type="radio" name="tk-sop" value="existing" ${sopMode === 'existing' ? 'checked' : ''}> Follow an existing SOP</label>
             <div class="sop-pick" style="display:flex;gap:8px;margin:2px 0 6px 26px"><select id="tk-sopid" style="flex:1"><option value="">Choose an SOP…</option>${arts.map(a => `<option value="${a.id}" ${a.id === t.sop_article_id ? 'selected' : ''}>${esc(a.title)}${a.status !== 'published' ? ` (${a.status === 'review' ? 'in review' : 'draft'})` : ''}</option>`).join('')}</select>${t.sop_article_id ? `<a class="btn sm" href="#/kb/${t.sop_article_id}" target="_blank" rel="noopener">Open SOP</a>` : ''}</div>
@@ -2676,7 +2784,7 @@ async function openTask(task, opts = {}) {
         <div id="ck-list"></div>
         <div class="ck-add"><input id="ck-new" type="text" placeholder="Add an item and press Enter"><button class="btn sm" id="ck-add" type="button">${icon('plus')}Add</button></div>
         ${isNew ? '' : '<div class="section-h"><b>Attachments</b></div><div id="tk-docs"></div>'}
-        ${logs.length ? `<details style="margin-top:16px"><summary class="task-sub" style="cursor:pointer">Time log (${logs.length})</summary><div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
+        ${logs.length ? `<details style="margin-top:16px"><summary class="task-sub" style="cursor:pointer">Time log (${logs.length})</summary><div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}${l.kind === 'manual' ? ' <span class="pill info">added</span>' : ''}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
       </div>
       <div class="task-side">
         <div class="section-h" style="margin-top:0"><b>Comments</b></div>
@@ -2707,6 +2815,7 @@ async function openTask(task, opts = {}) {
       $$('input[name=tk-sop]', root).forEach(r => r.onchange = syncSop); syncSop();
       $('#tk-sopid', root).onchange = () => { if ($('#tk-sopid', root).value) { $('input[name=tk-sop][value=existing]', root).checked = true; syncSop(); } };
       $('#tk-writesop', root) && ($('#tk-writesop', root).onclick = () => { close(); writeSopFor(t, null); });
+      $('#tk-addtime', root) && ($('#tk-addtime', root).onclick = () => { close(); openTimeEntry({ taskId: t.id }); });
       if (!isNew) { mountComments($('#tk-comments', root), { taskId: t.id, projectId: t.project_id || null }); mountDocs($('#tk-docs', root), { taskId: t.id }, { empty: 'No files yet.' }); }
 
       const finish = () => { close(); if (changed) route(); };
