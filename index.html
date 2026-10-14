@@ -327,6 +327,18 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .sop-box{background:var(--canvas);border-radius:10px;padding:12px 14px;gap:4px}
 .sop-box .check{font-size:14px}
 
+/* ---------- Work reports ---------- */
+.wr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}
+.wr-card .card-h{align-items:flex-start}
+.wr-card .right{gap:6px}
+.wr-projs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.wr-sec{margin:10px 0 0}
+.wr-sec>b{font-size:13px;color:var(--ink-2)}
+.wr-sec ul{margin:4px 0 0;padding-left:18px}
+.wr-sec li{margin:2px 0}
+.wr-bar-h{display:flex;justify-content:space-between;gap:10px}
+@media (max-width:860px){.wr-grid{grid-template-columns:1fr}}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -424,6 +436,7 @@ const CONFIG = {
   LOGO_BACKUP_URL: 'sharvi-logo.png',   // optional copy in the GitHub repo, used if the website link fails
   BRAND_COLOR: '#3A9A52',      // Sharvii green (website colour)
   TIMEZONE: 'Asia/Kolkata',
+  EOD_EMAIL: false,            // turn on after the send-eod email function is set up
   AI_ENABLED: false            // or switch on in the app: Leave & holidays → AI insights
   // Shift timings and days off are set by admins in the app: Leave & holidays → Shift & working days
 };
@@ -912,7 +925,7 @@ VIEWS.home = async el => {
     </div>
   </section>
 
-  ${!S._eodDone && !off && istMin() >= toMin(st.shift_end) - 60 ? `<div class="nudge"><div><b>Time for your EOD report</b><div class="task-sub">Your tasks for today are already filled in. It takes a minute and is emailed automatically.</div></div><a class="btn primary sm" href="#/eod">Write EOD report</a></div>` : ''}
+  ${!S._eodDone && !off && istMin() >= toMin(st.shift_end) - 60 ? `<div class="nudge"><div><b>Time for your EOD report</b><div class="task-sub">Your tasks for today are already filled in. It takes a minute.</div></div><a class="btn primary sm" href="#/eod">Write EOD report</a></div>` : ''}
   ${missing.length ? `<div class="nudge"><div><b>Complete your profile</b><div class="task-sub">Add your ${missing.map(k => ({ phone: 'phone number', emergency_contact: 'emergency contact', date_of_birth: 'date of birth' })[k]).join(', ')} so the team can reach you.</div></div><button class="btn primary sm" id="nudge-btn">Add details</button></div>` : ''}
 
   ${isMgr() ? `<div class="stats">
@@ -1265,8 +1278,138 @@ async function exportAttendance(fmt, reg, mode, label) {
   XLSX.writeFile(wb, `${name}.xlsx`);
 }
 
+/* ---------- Work reports (admins and project managers) ---------- */
+async function workData(from, to) {
+  const f = `${from}T00:00:00+05:30`, t = `${to}T23:59:59+05:30`;
+  const [att, eods, done, logs, leaves] = await Promise.all([
+    allRows(() => sb.from('attendance').select('*').gte('work_date', from).lte('work_date', to)),
+    allRows(() => sb.from('eod_reports').select('*').gte('report_date', from).lte('report_date', to)).catch(() => []),
+    allRows(() => sb.from('tasks').select('*').eq('status', 'done').gte('completed_at', f).lte('completed_at', t)).catch(() => []),
+    allRows(() => sb.from('time_logs').select('*').gte('started_at', f).lte('started_at', t)).catch(() => []),
+    allRows(() => sb.from('leave_requests').select('*').eq('status', 'approved').lte('start_date', to).gte('end_date', from)).catch(() => [])
+  ]);
+  const ids = [...new Set(logs.map(l => l.task_id).filter(id => !done.some(d => d.id === id)))];
+  const logged = ids.length ? await inChunks(ids, ch => sb.from('tasks').select('*').in('id', ch)).catch(() => []) : [];
+  const taskById = new Map([...done, ...logged].map(x => [x.id, x]));
+  return { att, eods, done, logs, leaves, taskById };
+}
+const dayOf = ts => istDate(new Date(ts));
+function personDay(p, date, D) {
+  const a = D.att.find(x => x.employee_id === p.id && x.work_date === date);
+  const lv = D.leaves.find(l => l.employee_id === p.id && l.start_date <= date && l.end_date >= date);
+  const eod = D.eods.find(e => e.employee_id === p.id && e.report_date === date);
+  const done = D.done.filter(x => x.assigned_to === p.id && dayOf(x.completed_at) === date);
+  const logs = D.logs.filter(l => l.employee_id === p.id && dayOf(l.started_at) === date);
+  const mins = logs.reduce((s, l) => s + logMinutes(l), 0);
+  const byProj = {};
+  logs.forEach(l => { const k = projName(D.taskById.get(l.task_id) || {}) || 'No project'; byProj[k] = (byProj[k] || 0) + logMinutes(l); });
+  done.forEach(x => { const k = projName(x) || 'No project'; if (!(k in byProj)) byProj[k] = 0; });
+  const workedOn = [...new Set(logs.map(l => l.task_id))].filter(id => !done.some(d => d.id === id)).map(id => D.taskById.get(id)).filter(Boolean);
+  const code = dayCode(p, date, a, lv);
+  return { p, date, a, lv, eod, done, workedOn, mins, byProj, code };
+}
+const attChip = d => d.code === 'P' || d.code === 'LT' ? `<span class="pill ${d.code === 'LT' ? 'warn' : 'ok'}">${fmtTime(d.a.check_in)} – ${d.a.check_out ? fmtTime(d.a.check_out) : '…'}${d.a.hours_worked ? ` · ${num(d.a.hours_worked)} h` : ''}</span>`
+  : d.code === 'M' ? '<span class="pill bad">Missed check-out</span>' : d.code === 'L' || d.code === 'HD' ? `<span class="pill info">${esc(typeName(d.lv.leave_type_id))}</span>`
+  : d.code === 'H' || d.code === 'WO' ? `<span class="pill muted">${esc(offReason(d.date))}</span>` : d.code === 'A' ? '<span class="pill bad">Absent</span>' : '<span class="pill muted">Not yet</span>';
+
+async function workReports(el) {
+  const mode = S.wrMode || 'daily', today = istDate();
+  const people = teamList();
+  const head = `<div class="toolbar"><div class="field"><label>Report</label><div class="seg">${[['daily', 'Daily'], ['person', 'Person'], ['team', 'Team month']].map(([v, l]) => `<button data-wr="${v}" class="${mode === v ? 'on' : ''}">${l}</button>`).join('')}</div></div><div id="wr-controls" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap"></div><div class="grow"></div><div class="field"><label>Download</label><button class="btn primary" id="wr-xlsx">${icon('download')}Excel</button></div></div><div id="wr-body"><div class="loading">Loading…</div></div>`;
+  el.insertAdjacentHTML('beforeend', head);
+  $$('[data-wr]', el).forEach(b => b.onclick = () => { S.wrMode = b.dataset.wr; route(); });
+  const body = $('#wr-body'), ctl = $('#wr-controls');
+  const monthNav = (ym, key) => { const lab = dObj(ym + '-01').toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+    ctl.insertAdjacentHTML('beforeend', `<div class="field"><label>Month</label><div class="month-nav"><button class="btn sm icon-btn" data-mn="-1">${icon('back')}</button><b>${lab}</b><button class="btn sm icon-btn" data-mn="1" ${ym >= today.slice(0, 7) ? 'disabled' : ''}>${icon('next')}</button></div></div>`);
+    $$('[data-mn]', ctl).forEach(b => b.onclick = () => { const [y, m] = ym.split('-').map(Number), d = new Date(y, m - 1 + +b.dataset.mn, 1); S[key] = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; route(); }); };
+  let exportRows = null;
+
+  if (mode === 'daily') {
+    const date = S.wrDate || today;
+    ctl.innerHTML = `<div class="field"><label for="wr-date">Date</label><input id="wr-date" type="date" value="${date}" max="${today}"></div>`;
+    $('#wr-date').onchange = e => { S.wrDate = e.target.value; route(); };
+    const D = await workData(date, date);
+    const days = people.map(p => personDay(p, date, D));
+    const tot = { done: days.reduce((s, d) => s + d.done.length, 0), mins: days.reduce((s, d) => s + d.mins, 0), eod: days.filter(d => d.eod).length, present: days.filter(d => ['P', 'LT', 'M'].includes(d.code)).length };
+    body.innerHTML = `<div class="stats"><div class="stat"><span>Present</span><b>${tot.present}/${people.length}</b></div><div class="stat"><span>Tasks completed</span><b>${tot.done}</b></div><div class="stat"><span>Time on tasks</span><b>${hm(tot.mins)}</b></div><div class="stat"><span>EOD reports</span><b>${tot.eod}/${tot.present || people.length}</b></div></div>
+      <div class="wr-grid">${days.map(d => `<div class="card wr-card"><div class="card-h">${personLink(d.p, d.p.designation || '')}<div class="right" style="flex-wrap:wrap;justify-content:flex-end">${attChip(d)}${d.eod ? '<span class="pill ok">EOD ✓</span>' : ['P', 'LT', 'M'].includes(d.code) ? '<span class="pill warn">No EOD</span>' : ''}</div></div><div class="card-b">
+        ${Object.keys(d.byProj).length ? `<div class="wr-projs">${Object.entries(d.byProj).sort((a, b) => b[1] - a[1]).map(([k, m]) => `<span class="chip" style="padding-right:12px">${esc(k)}${m ? ` · ${hm(m)}` : ''}</span>`).join('')}</div>` : ''}
+        <div class="wr-sec"><b>Completed (${d.done.length})</b>${d.done.length ? `<ul>${d.done.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(projName(x) || '')}</span></li>`).join('')}</ul>` : '<div class="muted">—</div>'}</div>
+        ${d.workedOn.length ? `<div class="wr-sec"><b>Also worked on</b><ul>${d.workedOn.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(TSTATUS[x.status])}</span></li>`).join('')}</ul></div>` : ''}
+        ${(d.eod?.tasks || []).filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).length ? `<div class="wr-sec"><b>From EOD</b><ul>${d.eod.tasks.filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).map(t => `<li>${esc(t.title)} <span class="task-sub">${esc(t.status_label || '')}</span></li>`).join('')}</ul></div>` : ''}
+        ${d.eod ? `<div class="wr-sec"><b>Summary</b><div class="cm-text">${esc(d.eod.summary || '—')}</div></div><div class="wr-sec"><b>Plan for tomorrow</b><div class="cm-text">${esc(d.eod.tomorrow || '—')}</div></div>${d.eod.blockers ? `<div class="wr-sec"><b style="color:var(--bad)">Blockers</b><div class="cm-text" style="color:var(--bad)">${esc(d.eod.blockers)}</div></div>` : ''}` : ''}
+      </div></div>`).join('')}</div>`;
+    exportRows = () => ({ name: `Daily-work-report-${date}`, sheets: [['Daily report', [['Date', 'Employee', 'Attendance', 'Check in', 'Check out', 'Hours at work', 'Tasks completed', 'Completed tasks', 'Projects (time)', 'Time on tasks (min)', 'EOD submitted', 'Summary', 'Plan for tomorrow', 'Blockers'],
+      ...days.map(d => [date, d.p.full_name, CODES[d.code] || '', d.a ? fmtTime(d.a.check_in) : '', d.a?.check_out ? fmtTime(d.a.check_out) : '', d.a?.hours_worked ?? '', d.done.length, d.done.map(x => x.title).join('; '), Object.entries(d.byProj).map(([k, m]) => `${k} (${Math.round(m)}m)`).join('; '), Math.round(d.mins), d.eod ? 'Yes' : 'No', d.eod?.summary || '', d.eod?.tomorrow || '', d.eod?.blockers || ''])], [11, 22, 14, 10, 10, 10, 10, 50, 40, 12, 10, 50, 40, 30]]] });
+  }
+
+  if (mode === 'person') {
+    const ym = S.wrMonth || today.slice(0, 7), who = S.wrWho && people.some(p => p.id === S.wrWho) ? S.wrWho : people[0]?.id;
+    ctl.innerHTML = `<div class="field" style="min-width:200px"><label for="wr-who">Person</label><select id="wr-who">${people.map(p => `<option value="${p.id}" ${p.id === who ? 'selected' : ''}>${esc(p.full_name || p.email)}</option>`).join('')}</select></div>`;
+    monthNav(ym, 'wrMonth');
+    $('#wr-who').onchange = e => { S.wrWho = e.target.value; route(); };
+    const p = profileOf(who), { first, last } = monthBounds(ym), end = last > today ? today : last;
+    const D = await workData(first, end);
+    const days = datesBetween(first, end).reverse().map(d => personDay(p, d, D)).filter(d => d.code || d.done.length || d.mins || d.eod);
+    const working = days.filter(d => d.code && !['H', 'WO'].includes(d.code)).length, present = days.filter(d => ['P', 'LT', 'M'].includes(d.code)).length;
+    const allDone = days.flatMap(d => d.done), mins = days.reduce((s, d) => s + d.mins, 0);
+    const proj = {}; days.forEach(d => { Object.entries(d.byProj).forEach(([k, m]) => { proj[k] = proj[k] || { m: 0, n: 0 }; proj[k].m += m; }); d.done.forEach(x => { const k = projName(x) || 'No project'; proj[k] = proj[k] || { m: 0, n: 0 }; proj[k].n++; }); });
+    const maxM = Math.max(1, ...Object.values(proj).map(x => x.m));
+    const attH = days.reduce((s, d) => s + Number(d.a?.hours_worked || 0), 0);
+    body.innerHTML = `<div class="stats"><div class="stat"><span>Days present</span><b>${present}/${working}</b></div><div class="stat"><span>Tasks completed</span><b>${allDone.length}</b></div><div class="stat"><span>Time on tasks</span><b>${hm(mins)}</b></div><div class="stat"><span>Task time vs hours at work</span><b>${attH ? Math.round(mins / 60 / attH * 100) : 0}%</b></div><div class="stat"><span>EOD reports</span><b>${days.filter(d => d.eod).length}/${present}</b></div></div>
+      <div class="grid g-2"><div class="card"><div class="card-h"><h2>Where the time went</h2><span class="sub">By project</span></div><div class="card-b">
+        ${Object.entries(proj).sort((a, b) => b[1].m - a[1].m).map(([k, x]) => `<div class="wr-bar"><div class="wr-bar-h"><b>${esc(k)}</b><span class="task-sub">${x.n} done · ${hm(x.m)}</span></div><div class="prog" style="margin:4px 0 10px"><span style="width:${x.m / maxM * 100}%;background:var(--brand)"></span></div></div>`).join('') || '<div class="empty">No task time logged this month.</div>'}
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Plans and blockers</h2><span class="sub">Latest EOD reports</span></div><div class="card-b">
+        ${days.filter(d => d.eod).slice(0, 5).map(d => `<div class="wr-sec"><b>${fmtShort(d.date)} ${dayName(d.date)}</b><div class="task-sub">Tomorrow: ${esc(d.eod.tomorrow || '—')}</div>${d.eod.blockers ? `<div class="task-sub" style="color:var(--bad)">Blocker: ${esc(d.eod.blockers)}</div>` : ''}</div>`).join('') || '<div class="empty">No EOD reports this month.</div>'}
+      </div></div></div>
+      <div class="card" style="margin-top:20px"><div class="card-h"><h2>Day by day</h2><span class="sub">${esc(p.full_name)} · ${dObj(first).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</span></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Attendance</th><th>Completed</th><th>Time on tasks</th><th>Summary</th><th>Plan for tomorrow</th></tr></thead><tbody>
+        ${days.map(d => `<tr><td class="num"><b>${fmtShort(d.date)}</b> <span class="muted">${dayName(d.date)}</span></td><td>${attChip(d)}</td><td style="white-space:normal;min-width:220px">${d.done.map(x => `<div>✓ ${esc(x.title)}</div>`).join('') || '<span class="muted">—</span>'}</td><td class="num">${d.mins ? hm(d.mins) : '—'}</td><td style="white-space:normal;min-width:240px">${esc(d.eod?.summary || '') || '<span class="muted">No EOD</span>'}${d.eod?.blockers ? `<div style="color:var(--bad)">⚠ ${esc(d.eod.blockers)}</div>` : ''}</td><td style="white-space:normal;min-width:200px">${esc(d.eod?.tomorrow || '—')}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">Nothing recorded yet this month.</td></tr>'}
+      </tbody></table></div></div>`;
+    exportRows = () => ({ name: `Work-report-${(p.full_name || '').replace(/\s+/g, '-')}-${ym}`, sheets: [
+      ['Day by day', [['Date', 'Day', 'Attendance', 'Check in', 'Check out', 'Hours at work', 'Tasks completed', 'Completed tasks', 'Projects (time)', 'Time on tasks (min)', 'Summary', 'Plan for tomorrow', 'Blockers'], ...days.slice().reverse().map(d => [d.date, dayName(d.date), CODES[d.code] || '', d.a ? fmtTime(d.a.check_in) : '', d.a?.check_out ? fmtTime(d.a.check_out) : '', d.a?.hours_worked ?? '', d.done.length, d.done.map(x => x.title).join('; '), Object.entries(d.byProj).map(([k, m]) => `${k} (${Math.round(m)}m)`).join('; '), Math.round(d.mins), d.eod?.summary || '', d.eod?.tomorrow || '', d.eod?.blockers || ''])], [11, 6, 14, 10, 10, 10, 10, 50, 40, 12, 50, 40, 30]],
+      ['By project', [['Project', 'Tasks completed', 'Time (hours)'], ...Object.entries(proj).map(([k, x]) => [k, x.n, +(x.m / 60).toFixed(2)])], [30, 15, 14]]] });
+  }
+
+  if (mode === 'team') {
+    const ym = S.wrTeamMonth || today.slice(0, 7);
+    monthNav(ym, 'wrTeamMonth');
+    const { first, last } = monthBounds(ym), end = last > today ? today : last;
+    const D = await workData(first, end), dates = datesBetween(first, end);
+    const rows = people.map(p => {
+      const days = dates.map(d => personDay(p, d, D));
+      const present = days.filter(d => ['P', 'LT', 'M'].includes(d.code)).length, working = days.filter(d => d.code && !['H', 'WO'].includes(d.code)).length;
+      const proj = {}; days.forEach(d => Object.entries(d.byProj).forEach(([k, m]) => proj[k] = (proj[k] || 0) + m));
+      const mins = days.reduce((s, d) => s + d.mins, 0), attH = days.reduce((s, d) => s + Number(d.a?.hours_worked || 0), 0);
+      return { p, present, working, done: days.reduce((s, d) => s + d.done.length, 0), mins, util: attH ? Math.round(mins / 60 / attH * 100) : 0, eod: days.filter(d => d.eod).length, blockers: days.filter(d => d.eod?.blockers).length, proj };
+    });
+    const projects = [...new Set(rows.flatMap(r => Object.keys(r.proj)))].sort();
+    const maxCell = Math.max(1, ...rows.flatMap(r => Object.values(r.proj)));
+    body.innerHTML = `<div class="stats"><div class="stat"><span>Tasks completed</span><b>${rows.reduce((s, r) => s + r.done, 0)}</b></div><div class="stat"><span>Time on tasks</span><b>${hm(rows.reduce((s, r) => s + r.mins, 0))}</b></div><div class="stat"><span>Active projects</span><b>${projects.filter(p => p !== 'No project').length}</b></div><div class="stat"><span>EOD reports</span><b>${rows.reduce((s, r) => s + r.eod, 0)}</b></div></div>
+      <div class="card"><div class="card-h"><h2>Team summary</h2><span class="sub">“Task time vs hours at work” shows how much of the working day is tracked on tasks</span></div><div class="table-wrap"><table><thead><tr><th>Person</th><th>Present</th><th>Tasks completed</th><th>Time on tasks</th><th>Task time vs hours at work</th><th>EOD reports</th><th>Blockers raised</th><th>Main projects</th></tr></thead><tbody>
+        ${rows.map(r => `<tr><td>${personLink(r.p, r.p.designation || '')}</td><td class="num">${r.present}/${r.working}</td><td class="num"><b>${r.done}</b></td><td class="num">${hm(r.mins)}</td><td class="num"><span class="pill ${r.util >= 60 ? 'ok' : r.util >= 30 ? 'warn' : 'muted'}">${r.util}%</span></td><td class="num">${r.eod}/${r.present}</td><td class="num">${r.blockers || 0}</td><td style="white-space:normal">${Object.entries(r.proj).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => esc(k)).join(', ') || '<span class="muted">—</span>'}</td></tr>`).join('')}
+      </tbody></table></div></div>
+      <div class="card" style="margin-top:20px"><div class="card-h"><h2>Who works on what</h2><span class="sub">Hours on each project this month. Darker = more time.</span></div><div class="table-wrap"><table class="reg"><thead><tr><th class="namec">Person</th>${projects.map(k => `<th style="min-width:110px;white-space:normal;padding:6px">${esc(k)}</th>`).join('')}</tr></thead><tbody>
+        ${rows.map(r => `<tr><td class="namec"><b>${esc(r.p.full_name || r.p.email)}</b></td>${projects.map(k => { const m = r.proj[k] || 0; return `<td style="background:${m ? `color-mix(in srgb, var(--brand) ${Math.round(12 + m / maxCell * 60)}%, #fff)` : '#fff'};color:${m / maxCell > .6 ? '#fff' : 'inherit'};font-weight:600">${m ? (m / 60).toFixed(1) + 'h' : ''}</td>`; }).join('')}</tr>`).join('')}
+      </tbody></table></div>${projects.length ? '' : '<div class="empty">No task time logged this month yet. Ask the team to use the task timer.</div>'}</div>`;
+    exportRows = () => ({ name: `Team-work-report-${ym}`, sheets: [
+      ['Team summary', [['Employee', 'Days present', 'Working days', 'Tasks completed', 'Time on tasks (hours)', 'Task time vs hours at work (%)', 'EOD reports', 'Blockers raised', 'Main projects'], ...rows.map(r => [r.p.full_name, r.present, r.working, r.done, +(r.mins / 60).toFixed(2), r.util, r.eod, r.blockers, Object.entries(r.proj).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k).join(', ')])], [22, 12, 12, 14, 18, 24, 12, 14, 40]],
+      ['Who works on what', [['Employee', ...projects], ...rows.map(r => [r.p.full_name, ...projects.map(k => +((r.proj[k] || 0) / 60).toFixed(2))])], [22, ...projects.map(() => 16)]],
+      ['All EOD reports', [['Date', 'Employee', 'Summary', 'Plan for tomorrow', 'Blockers'], ...D.eods.sort((a, b) => a.report_date.localeCompare(b.report_date)).map(e => [e.report_date, nameOf(e.employee_id), e.summary || '', e.tomorrow || '', e.blockers || ''])], [11, 22, 60, 45, 35]]] });
+  }
+
+  $('#wr-xlsx').onclick = async e => {
+    const b = e.currentTarget, h = b.innerHTML; b.disabled = true; b.textContent = 'Preparing…';
+    try { await loadXLSX(); const r = exportRows(), wb = XLSX.utils.book_new(); r.sheets.forEach(([n, rows, w]) => XLSX.utils.book_append_sheet(wb, xsheet(rows, w), n)); XLSX.writeFile(wb, `Sharvii-${r.name}.xlsx`); toast('Report downloaded'); }
+    catch (err) { toast(err.message, 'bad'); }
+    b.disabled = false; b.innerHTML = h;
+  };
+}
+
 /* ---------- Reports: attendance only ---------- */
 VIEWS.reports = async el => {
+  const rtab = S.repTab || 'work';
+  if (rtab === 'work') { el.innerHTML = `<div class="tabs"><button data-rt="work" class="on">Work reports</button><button data-rt="att">Attendance</button></div>`; $$('[data-rt]', el).forEach(b => b.onclick = () => { S.repTab = b.dataset.rt; route(); }); return workReports(el); }
   const today = istDate(), mode = S.repMode || 'month';
   const month = S.repMonth || today.slice(0, 7), year = S.repYear || +today.slice(0, 4);
   let first, last, label;
@@ -1302,7 +1445,7 @@ VIEWS.reports = async el => {
         return `<td title="${MONTHS[i]}: ${pr} present, ${lv} leave, ${ab} absent">${any ? `<b>${pr}</b>${ab || lv ? `<div style="font-size:10.5px;line-height:1.1"><span style="color:var(--bad)">${ab ? ab + 'A' : ''}</span> <span style="color:var(--info)">${lv ? lv + 'L' : ''}</span></div>` : ''}` : '<span class="muted">·</span>'}</td>`; }).join('')}
       <td class="tot">${r.present}</td><td class="tot">${r.tot.LT}</td><td class="tot">${num(r.leave)}</td><td class="tot">${r.tot.A}</td><td class="tot">${num(r.hours)}</td></tr>`).join('')}</tbody></table></div>`;
 
-  el.innerHTML = `<div class="toolbar">
+  el.innerHTML = `<div class="tabs"><button data-rt="work">Work reports</button><button data-rt="att" class="on">Attendance</button></div><div class="toolbar">
       <div class="field"><label>View</label><div class="seg"><button data-mode="month" class="${mode === 'month' ? 'on' : ''}">Month</button><button data-mode="year" class="${mode === 'year' ? 'on' : ''}">Year</button></div></div>
       <div class="field"><label>${mode === 'month' ? 'Month' : 'Year'}</label><div class="month-nav"><button class="btn sm icon-btn" id="r-prev" aria-label="Previous">${icon('back')}</button><b>${label}</b><button class="btn sm icon-btn" id="r-next" aria-label="Next" ${atEnd ? 'disabled' : ''}>${icon('next')}</button></div></div>
       <div class="grow"></div>
@@ -1320,6 +1463,7 @@ VIEWS.reports = async el => {
     <p class="muted" style="font-size:13px;margin-top:10px">${mode === 'month' ? 'Hover over a day to see check-in and check-out times.' : 'Numbers are days present. Click a month to open its register.'} Click a name to open their profile.</p>`;
 
   $$('[data-mode]', el).forEach(b => b.onclick = () => { S.repMode = b.dataset.mode; route(); });
+  $$('[data-rt]', el).forEach(b => b.onclick = () => { S.repTab = b.dataset.rt; route(); });
   $('#r-prev').onclick = () => { mode === 'month' ? S.repMonth = shiftMonth(month, -1) : S.repYear = year - 1; route(); };
   $('#r-next').onclick = () => { mode === 'month' ? S.repMonth = shiftMonth(month, 1) : S.repYear = year + 1; route(); };
   $$('[data-goto]', el).forEach(b => b.onclick = () => { S.repMode = 'month'; S.repMonth = b.dataset.goto; route(); });
@@ -1744,8 +1888,8 @@ VIEWS.eod = async el => {
       <div class="field"><label for="eod-sum">What did you get done today?</label><textarea id="eod-sum" rows="5" placeholder="Key work, results, meetings…">${esc(existing?.summary || '')}</textarea></div>
       <div class="field"><label for="eod-block">Blockers or help needed</label><textarea id="eod-block" rows="2" placeholder="Anything stopping you? Leave empty if none.">${esc(existing?.blockers || '')}</textarea></div>
       <div class="field"><label for="eod-next">Plan for tomorrow</label><textarea id="eod-next" rows="3">${esc(existing?.tomorrow || '')}</textarea></div>
-      <button class="btn primary" id="eod-send" style="padding:12px">Submit and email report</button>
-      <div class="task-sub">Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you.</div>
+      <button class="btn primary" id="eod-send" style="padding:12px">${CONFIG.EOD_EMAIL ? 'Submit and email report' : 'Submit report'}</button>
+      <div class="task-sub">${CONFIG.EOD_EMAIL ? `Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you.` : 'Saved for your managers and project managers. You can edit it until the end of the day.'}</div>
     </div></div></div></div>`;
   $('#eod-send').onclick = async e => {
     const b = e.currentTarget, summary = $('#eod-sum').value.trim();
@@ -1757,12 +1901,12 @@ VIEWS.eod = async el => {
       const saved = existing ? await q(sb.from('eod_reports').update(row).eq('id', existing.id).select().single()) : await q(sb.from('eod_reports').insert(row).select().single());
       b.textContent = 'Sending email…';
       let sent = false;
-      let why = ''; try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; if (!sent) why = await fnError(error, data, 'send-eod'); } catch (e) { why = e.message; }
+      let why = ''; if (CONFIG.EOD_EMAIL) { try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; if (!sent) why = await fnError(error, data, 'send-eod'); } catch (e) { why = e.message; } }
       if (!sent && isAdmin() && why) console.warn('EOD email:', why);
       S.eodEdit = false;
-      toast(sent ? 'EOD report submitted and emailed' : 'EOD report saved. Email is not set up yet; managers can read it in the app.', sent ? 'ok' : 'bad');
+      toast(sent ? 'EOD report submitted and emailed' : CONFIG.EOD_EMAIL ? 'EOD report saved. The email could not be sent; managers can still read it in the app.' : 'EOD report submitted. Your managers can see it in the app.', sent || !CONFIG.EOD_EMAIL ? 'ok' : 'bad');
       route();
-    } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = 'Submit and email report'; }
+    } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = CONFIG.EOD_EMAIL ? 'Submit and email report' : 'Submit report'; }
   };
 };
 
@@ -1933,7 +2077,7 @@ async function mountDocs(box, ref, opts = {}) {
     $$('[data-deldoc]', list).forEach(b => b.onclick = async () => {
       const d = docs.find(x => x.id === b.dataset.deldoc);
       if (!confirm(`Remove "${d.title}"?`)) return;
-      try { if (d.storage_path) await sb.storage.from('documents').remove([d.storage_path]); await q(sb.from('documents').delete().eq('id', d.id)); load(); } catch (e) { toast(e.message, 'bad'); }
+      try { await q(sb.from('documents').delete().eq('id', d.id)); toast('Removed. Admins can restore it from the Recycle bin.'); load(); } catch (e) { toast(e.message, 'bad'); }
     });
   };
   const base = col ? { [col]: val } : {};
@@ -2323,6 +2467,7 @@ VIEWS.settings = async el => {
         ${S.leaveTypes.map(t => `<tr data-lt="${t.id}"><td><input type="text" data-k="name" value="${esc(t.name)}"></td><td><input type="text" data-k="code" value="${esc(t.code)}" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="${num(t.annual_quota)}" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" ${t.is_paid ? 'checked' : ''} aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" ${t.is_active ? 'checked' : ''} aria-label="Active"></td><td><button class="btn sm" data-save-lt>Save</button></td></tr>`).join('')}
         <tr data-lt="new"><td><input type="text" data-k="name" placeholder="New leave type"></td><td><input type="text" data-k="code" placeholder="Code" style="width:70px"></td><td><input type="number" data-k="annual_quota" min="0" step="0.5" value="0" style="width:80px"></td><td><input type="checkbox" data-k="is_paid" checked aria-label="Paid"></td><td><input type="checkbox" data-k="is_active" checked aria-label="Active"></td><td><button class="btn primary sm" data-save-lt>Add</button></td></tr>
         </tbody></table></div></div>
+      <div class="card"><div class="card-h"><h2>Recycle bin</h2><span class="sub">Everything deleted is kept here</span></div><div class="card-b" id="bin"><div class="muted">Loading…</div></div></div>
       <div class="card"><div class="card-h"><h2>AI insights</h2></div><div class="card-b">
         <label class="check"><input type="checkbox" id="ai-on" ${st.ai_enabled ? 'checked' : ''}> Show the ✨ AI summary on the Insights page</label>
         <p class="hint muted" style="margin:8px 0 0;font-size:12.5px">Turn on only after the <b>ai-insights</b> function and its API key are set up in Supabase. The free checks on Insights work either way.</p></div></div>
@@ -2345,6 +2490,15 @@ VIEWS.settings = async el => {
       ${hols.length ? hols.map(h => { const dow = dObj(h.holiday_date).getDay(); return `<div class="list-row"><span class="date-chip"><b>${dObj(h.holiday_date).getDate()}</b><small>${dObj(h.holiday_date).toLocaleDateString('en-IN', { month: 'short' })}</small></span><div style="flex:1"><b>${esc(h.name)}</b><div class="muted" style="font-size:13px">${dObj(h.holiday_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric' })}${dow === 0 ? ' (already a day off)' : ''}</div></div><button class="btn danger sm" data-del-h="${h.id}">Remove</button></div>`; }).join('') : '<div class="empty">No holidays added yet.</div>'}
       </div></div></div>`;
 
+  (async () => {
+    const box = $('#bin'); if (!box) return;
+    const rows = await q(sb.from('recycle_bin').select('id,table_name,label,deleted_by,deleted_at').order('deleted_at', { ascending: false }).limit(100)).catch(() => null);
+    if (rows === null) { box.innerHTML = '<div class="muted">Run update_v11.sql in Supabase to turn on the recycle bin.</div>'; return; }
+    const what = { tasks: 'Task', projects: 'Project', project_members: 'Project member', comments: 'Comment', documents: 'Document', time_logs: 'Time entry', leads: 'Lead', lead_notes: 'Lead note', kb_articles: 'Article / SOP', attendance: 'Attendance day', leave_requests: 'Leave request', eod_reports: 'EOD report', employee_details: 'Personal details', holidays: 'Holiday', leave_balances: 'Leave balance' };
+    box.innerHTML = rows.length ? `<p class="task-sub" style="margin-top:0">Restore puts the item back exactly as it was. Restore a project or task before its comments and files.</p>${rows.map(r => `<div class="list-row"><div style="flex:1;min-width:0"><b>${esc(what[r.table_name] || r.table_name)}</b>${r.label ? `: ${esc(r.label.slice(0, 80))}` : ''}<div class="task-sub">Deleted ${timeAgo(r.deleted_at)}${r.deleted_by ? ` by ${esc(nameOf(r.deleted_by))}` : ''}</div></div><button class="btn sm" data-restore="${r.id}">Restore</button></div>`).join('')}`
+      : '<div class="muted">Nothing deleted. Anything removed in the app will appear here and can be restored.</div>';
+    $$('[data-restore]', box).forEach(b => b.onclick = async () => { b.disabled = true; try { await q(sb.rpc('restore_deleted', { bin_id: b.dataset.restore })); toast('Restored'); await loadDirectory(); route(); } catch (e) { toast(e.message.replace(/^.*?:\s*/, ''), 'bad'); b.disabled = false; } });
+  })();
   $('#ai-on').onchange = async e => { try { await q(sb.from('settings').update({ ai_enabled: e.target.checked }).eq('id', 1)); toast(e.target.checked ? 'AI summary turned on' : 'AI summary turned off'); await loadDirectory(); } catch (err) { e.target.checked = !e.target.checked; toast(err.message, 'bad'); } };
   $('#st-drive-save').onclick = async () => { const u = $('#st-drive').value.trim(); if (u && !/^https?:\/\//i.test(u)) return toast('The link must start with https://', 'bad'); try { await q(sb.from('settings').update({ drive_url: u || null }).eq('id', 1)); toast('Drive link saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
   $('#eod-to-save').onclick = async () => { try { await q(sb.from('settings').update({ eod_recipients: $('#eod-to').value.trim() }).eq('id', 1)); toast('EOD recipients saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
