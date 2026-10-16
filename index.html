@@ -94,7 +94,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field label{font-size:13px;font-weight:600;color:var(--ink-2)}
 .field .hint{font-size:12px;color:var(--ink-3)}
-input[type=text],input[type=email],input[type=tel],input[type=time],input[type=password],input[type=date],input[type=month],input[type=number],select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;width:100%;min-width:0}
+input[type=text],input[type=email],input[type=tel],input[type=time],input[type=search],input[type=url],input[type=password],input[type=date],input[type=month],input[type=number],select,textarea{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fff;width:100%;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-soft)}
 textarea{resize:vertical;min-height:80px}
 .check{display:flex;align-items:center;gap:8px;font-size:14px}
@@ -346,6 +346,43 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .paused-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:12px;padding:10px 14px}
 .pz{font-size:18px}
 
+/* ---------- Searchable dropdown ---------- */
+.cbx{position:relative;width:100%}
+.cbx-native{position:absolute!important;opacity:0;pointer-events:none;width:1px!important;height:1px;bottom:0;left:0}
+.cbx-btn{width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;padding:9px 34px 9px 11px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A8494' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:40px}
+.cbx-btn.ph{color:var(--ink-3)}
+.cbx-btn:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-soft)}
+.cbx-btn:disabled{background-color:var(--canvas);cursor:not-allowed;color:var(--ink-3)}
+.cbx-pop{position:absolute;z-index:70;top:calc(100% + 4px);left:0;right:0;min-width:240px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(20,28,40,.16);padding:6px}
+.cbx-q{width:100%;margin-bottom:6px}
+.cbx-list{max-height:260px;overflow-y:auto}
+.cbx-opt{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:14px}
+.cbx-opt.act{background:var(--brand-soft)}
+.cbx-opt.on{font-weight:700;color:var(--brand)}
+.cbx-empty{padding:10px;color:var(--ink-3);font-size:13px}
+
+/* ---------- Clients ---------- */
+.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.cl-card{cursor:pointer;display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit}
+.cl-card:hover{border-color:var(--brand);box-shadow:0 6px 18px rgba(20,28,40,.06)}
+.cl-top{display:flex;gap:12px;align-items:center}
+.cl-top b{font-size:16px}
+.cl-contact{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink-2)}
+.cl-contact div{display:flex;align-items:center;gap:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-contact .ic{width:15px;height:15px;color:var(--ink-3)}
+.cl-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;border-top:1px solid var(--line);padding-top:10px}
+.socs{display:flex;gap:6px;flex-wrap:wrap}
+.soc{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.soc:hover{color:var(--brand);border-color:var(--brand)}
+.soc .ic{width:16px;height:16px}
+.soc-list{display:grid;gap:8px}
+.soc-row{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:inherit}
+.soc-row:hover{border-color:var(--brand)}
+.soc-row>span{display:flex;flex-direction:column;min-width:0}
+.soc-row .task-sub{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.soc-label{display:flex;align-items:center;gap:6px}
+.soc-label .ic{width:15px;height:15px}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -473,9 +510,10 @@ const dayName = d => dObj(d).toLocaleDateString('en-IN', { weekday: 'short' });
 const fmtRange = (a, b) => a === b ? fmtDate(a) : `${fmtShort(a)} – ${fmtDate(b)}`;
 const dur = ms => { if (!ms || ms < 0) return '0h 00m'; const m = Math.floor(ms / 60000); return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; };
 const num = n => (Math.round(Number(n || 0) * 10) / 10).toString();
-const initials = n => (n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+const initials = n => ((n || '?').trim().split(/\s+/).filter(w => /^[\p{L}\p{N}]/u.test(w)).slice(0, 2).map(x => x[0]).join('') || '?').toUpperCase();
 const isAdmin = () => S.me?.role === 'admin';
 const isMgr = () => S.me?.role === 'manager' || isAdmin();
+const canLeads = () => isAdmin() || !!S.me?.can_leads;
 const nameOf = id => S.profiles.find(p => p.id === id)?.full_name || S.profiles.find(p => p.id === id)?.email || 'Unknown';
 const profileOf = id => S.profiles.find(p => p.id === id) || {};
 const typeName = id => S.leaveTypes.find(t => t.id === id)?.name || 'Leave';
@@ -550,7 +588,7 @@ async function saveDetails(id, root) {
 const logMinutes = l => l.ended_at ? Number(l.minutes || 0) : (Date.now() - new Date(l.started_at)) / 60000;
 
 function teamList() {
-  if (isAdmin()) return S.profiles.filter(p => p.is_active);
+  if (isMgr()) return S.profiles.filter(p => p.is_active);   // admins and project managers see everyone
   return S.profiles.filter(p => p.is_active && (p.manager_id === S.me.id || p.id === S.me.id));
 }
 
@@ -585,6 +623,7 @@ const ICONS = {
   leads: '<path d="M3 5h18l-7 8v6l-4-2v-4z"/>',
   spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
   book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7"/>',
+  clients: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   back: '<path d="M15 18l-6-6 6-6"/>',
@@ -731,11 +770,12 @@ function navItems() {
     { id: 'tasks', label: 'Tasks', icon: 'tasks' },
     { id: 'projects', label: m ? 'Projects' : 'My projects', icon: 'folder' },
     { id: 'eod', label: 'EOD report', icon: 'eod' },
-    { id: 'leads', label: 'Leads', icon: 'leads' },
+    m && { id: 'clients', label: 'Clients', icon: 'clients' },
+    canLeads() && { id: 'leads', label: 'Leads', icon: 'leads' },
     { id: 'kb', label: 'Knowledge base', icon: 'book' },
-    m && { id: 'approvals', label: 'Approvals', icon: 'check' },
+    a && { id: 'approvals', label: 'Approvals', icon: 'check' },
     m && { id: 'team', label: 'Team', icon: 'team' },
-    m && { id: 'reports', label: 'Reports', icon: 'report' },
+    a && { id: 'reports', label: 'Reports', icon: 'report' },
     a && { id: 'employees', label: 'Employees', icon: 'people' },
     a && { id: 'settings', label: 'Leave & holidays', icon: 'settings' }
   ].filter(Boolean);
@@ -772,8 +812,8 @@ function renderShell() {
 }
 
 async function refreshBadge() {
-  if (!isMgr()) return;
-  sb.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new').then(({ count }) => $$('[data-badge-leads]').forEach(b => { b.hidden = !count; b.textContent = count || ''; }), () => {});
+  if (canLeads()) sb.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'new').then(({ count }) => $$('[data-badge-leads]').forEach(b => { b.hidden = !count; b.textContent = count || ''; }), () => {});
+  if (!isAdmin()) return;
   const { count } = await sb.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending').neq('employee_id', S.me.id);
   $$('[data-badge]').forEach(b => { b.hidden = !count; b.textContent = count || ''; });
 }
@@ -1016,7 +1056,7 @@ VIEWS.home = async el => {
   ${!S._eodDone && !off && istMin() >= toMin(st.shift_end) - 60 ? `<div class="nudge"><div><b>Time for your EOD report</b><div class="task-sub">Your tasks for today are already filled in. It takes a minute.</div></div><a class="btn primary sm" href="#/eod">Write EOD report</a></div>` : ''}
   ${missing.length ? `<div class="nudge"><div><b>Complete your profile</b><div class="task-sub">Add your ${missing.map(k => ({ phone: 'phone number', emergency_contact: 'emergency contact', date_of_birth: 'date of birth' })[k]).join(', ')} so the team can reach you.</div></div><button class="btn primary sm" id="nudge-btn">Add details</button></div>` : ''}
 
-  ${isMgr() ? `<div class="stats">
+  ${isAdmin() ? `<div class="stats">
     <a class="stat" href="#/approvals" style="text-decoration:none;color:inherit"><span>Leave requests to review</span><b>${apprCount}</b></a>
     <a class="stat" href="#/team" style="text-decoration:none;color:inherit"><span>Team on leave today</span><b>${onLeave.length}</b></a>
     <div class="stat"><span>Your pending requests</span><b>${pending.length}</b></div>
@@ -1739,14 +1779,15 @@ VIEWS.projects = async el => {
   $('#pj-new') && ($('#pj-new').onclick = () => openProject(null));
 };
 
-function openProject(pr, prefill = {}) {
+async function openProject(pr, prefill = {}) {
   const isNew = !pr, p = pr || { status: 'active', color: PCOLORS[S.projects.length % PCOLORS.length], owner_id: S.me.id, ...prefill };
+  const clients = await loadClients();
   const pms = S.profiles.filter(x => x.is_active && (x.role === 'manager' || x.role === 'admin'));
   openModal({
     title: isNew ? 'New project' : 'Edit project',
     body: `<div class="form-grid">
       <div class="field full"><label for="pr-name">Project name</label><input id="pr-name" type="text" value="${esc(p.name || '')}" placeholder="e.g. Navdrushti website redesign"></div>
-      <div class="field"><label for="pr-client">Client</label><input id="pr-client" type="text" value="${esc(p.client || '')}" placeholder="e.g. Navdrushti Foundation"></div>
+      <div class="field"><label for="pr-client">Client</label><div style="display:flex;gap:8px;align-items:stretch"><div style="flex:1;min-width:0"><select id="pr-client" data-search><option value="">Internal (no client)</option>${clients.map(c => `<option value="${c.id}" ${c.id === p.client_id || (!p.client_id && p.client && c.name.toLowerCase() === String(p.client).toLowerCase()) ? 'selected' : ''}>${esc(c.name)}${c.status === 'past' ? ' (past)' : ''}</option>`).join('')}</select></div><button class="btn sm" type="button" id="pr-newclient" title="Add a new client">${icon('plus')}New</button></div></div>
       <div class="field"><label for="pr-owner">Project manager</label><select id="pr-owner"><option value="">None</option>${pms.map(m => `<option value="${m.id}" ${m.id === p.owner_id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
       <div class="field"><label for="pr-start">Start date</label><input id="pr-start" type="date" value="${esc(p.start_date || '')}"></div>
       <div class="field full"><label>Type of work</label><div class="seg" style="align-self:flex-start"><button type="button" data-pt="ongoing" class="${!isNew && !p.due_date ? 'on' : ''}">Ongoing client (live site, SEO, maintenance, retainer)</button><button type="button" data-pt="fixed" class="${isNew || p.due_date ? 'on' : ''}">Fixed project with a deadline</button></div></div>
@@ -1759,6 +1800,11 @@ function openProject(pr, prefill = {}) {
     footer: `${!isNew ? '<button class="btn danger" id="pr-del" style="margin-right:auto">Delete project</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="pr-save">${isNew ? 'Create project' : 'Save project'}</button>`,
     onMount: (root, close) => {
       $('[data-close]', root).onclick = close;
+      $('#pr-newclient', root).onclick = () => {
+        const draft = { name: $('#pr-name', root).value };
+        openClient(null, { name: prefill.client || '', onSaved: c => openProject(pr, { ...prefill, ...draft, client_id: c.id, client: c.name }) });
+      };
+      if (isNew && prefill.name) $('#pr-name', root).value = prefill.name;
       const syncType = t => { $$('[data-pt]', root).forEach(b => b.classList.toggle('on', b.dataset.pt === t)); $('#pr-due-f', root).hidden = t === 'ongoing'; if (t === 'ongoing') $('#pr-due', root).value = ''; };
       $$('[data-pt]', root).forEach(b => b.onclick = () => syncType(b.dataset.pt));
       syncType(!isNew && !p.due_date ? 'ongoing' : 'fixed');
@@ -1766,7 +1812,8 @@ function openProject(pr, prefill = {}) {
         const v = s => $(s, root).value.trim() || null;
         const drive = v('#pr-drive');
         if (drive && !/^https?:\/\//i.test(drive)) return toast('The Drive link must start with https://', 'bad');
-        const row = { drive_url: drive, name: v('#pr-name'), client: v('#pr-client'), owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc') };
+        const cid = $('#pr-client', root).value || null;
+        const row = { drive_url: drive, name: v('#pr-name'), client_id: cid, client: (S.clients || []).find(c => c.id === cid)?.name || null, owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc') };
         if (!row.name) return toast('Enter a project name', 'bad');
         try {
           if (isNew) { const created = await q(sb.from('projects').insert({ ...row, created_by: S.me.id }).select().single()); S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => S.projects); close(); toast('Project created'); location.hash = `#/project/${created.id}`; }
@@ -1846,7 +1893,7 @@ VIEWS.project = async (el, id) => {
     <div class="card proj-head" style="--pc:${esc(pr.color || '#3A9A52')}">
       <div style="min-width:0;flex:1">
         <h2>${esc(pr.name)}</h2>
-        <div class="muted">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}</div>
+        <div class="muted">${pr.client_id && isMgr() ? `<a class="plink" href="#/clients/${pr.client_id}"><b>${esc(pr.client || 'Client')}</b></a>` : esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}</div>
         ${pr.description ? `<p style="margin:10px 0 0;color:var(--ink-2);white-space:pre-line">${esc(pr.description)}</p>` : ''}
       </div>
       <div class="right"><span class="pill ${pc}">${pl}</span>${pr.drive_url ? `<a class="btn" href="${esc(pr.drive_url)}" target="_blank" rel="noopener">📁 Drive folder</a>` : ''}${isMgr() ? '<button class="btn" id="pv-edit">Edit project</button>' : ''}<button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
@@ -2123,7 +2170,16 @@ async function openLead(lead) {
         if (!confirm('Delete this lead and its notes?')) return;
         try { await q(sb.from('leads').delete().eq('id', l.id)); close(); toast('Lead deleted'); route(); } catch (e) { toast(e.message, 'bad'); }
       });
-      $('#ld-proj', root) && ($('#ld-proj', root).onclick = () => { close(); openProject(null, { name: (l.organisation || l.name) + (l.service ? ` – ${l.service}` : ''), client: l.organisation || l.name, description: l.message || '' }); });
+      $('#ld-proj', root) && ($('#ld-proj', root).onclick = async () => {
+        close();
+        const name = (l.organisation || l.name).trim(), all = await loadClients();
+        let c = all.find(x => x.name.toLowerCase() === name.toLowerCase());
+        if (!c) {
+          try { c = await q(sb.from('clients').insert({ name, contact_name: l.organisation ? l.name : null, email: l.email, phone: l.phone, country: l.country, status: 'active', notes: l.message || null, started_on: istDate(), created_by: S.me.id }).select().single()); await loadClients(); toast(`${name} added to Clients`); }
+          catch (e) { if (isMgr()) return toast(e.message, 'bad'); }
+        }
+        openProject(null, { name: name + (l.service ? ` – ${l.service}` : ''), client_id: c?.id, client: name, description: l.message || '' });
+      });
     }
   });
 }
@@ -2370,8 +2426,8 @@ async function aiCard(box, scope) {
 }
 
 VIEWS.insights = async el => {
-  const tab = isMgr() ? (S.insTab || 'team') : 'me', today = istDate();
-  el.innerHTML = `${isMgr() ? `<div class="tabs"><button data-it="team" class="${tab === 'team' ? 'on' : ''}">Team</button><button data-it="me" class="${tab === 'me' ? 'on' : ''}">My focus</button></div>` : ''}<div id="ai-box"></div><div id="ins-body"><div class="loading">Checking…</div></div>`;
+  const tab = isAdmin() ? (S.insTab || 'team') : 'me', today = istDate();
+  el.innerHTML = `${isAdmin() ? `<div class="tabs"><button data-it="team" class="${tab === 'team' ? 'on' : ''}">Team</button><button data-it="me" class="${tab === 'me' ? 'on' : ''}">My focus</button></div>` : ''}<div id="ai-box"></div><div id="ins-body"><div class="loading">Checking…</div></div>`;
   $$('[data-it]', el).forEach(b => b.onclick = () => { S.insTab = b.dataset.it; route(); });
   aiCard($('#ai-box'), tab);
   const body = $('#ins-body');
@@ -2478,6 +2534,156 @@ VIEWS.insights = async el => {
   $$('[data-open]', body).forEach(r => r.onclick = () => openTask(tasks.find(t => t.id === r.dataset.open)));
 };
 
+/* ---------- Searchable dropdowns: any list with 6+ options gets a search box ---------- */
+function enhanceSelect(sel) {
+  if (sel.dataset.enh || sel.multiple || sel.classList.contains('mini') || sel.dataset.nosearch !== undefined || (sel.options.length < 6 && sel.dataset.search === undefined)) return;
+  sel.dataset.enh = '1';
+  const wrap = document.createElement('div'); wrap.className = 'cbx';
+  sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel); sel.classList.add('cbx-native'); sel.tabIndex = -1;
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'cbx-btn';
+  if (sel.id) btn.setAttribute('aria-label', document.querySelector(`label[for="${sel.id}"]`)?.textContent || 'Choose');
+  const pop = document.createElement('div'); pop.className = 'cbx-pop'; pop.hidden = true;
+  pop.innerHTML = '<input class="cbx-q" type="search" placeholder="Type to search…" autocomplete="off"><div class="cbx-list" role="listbox"></div>';
+  wrap.append(btn, pop);
+  const q = $('.cbx-q', pop), list = $('.cbx-list', pop);
+  const label = () => { const o = sel.options[sel.selectedIndex]; btn.textContent = o ? o.text : ''; btn.disabled = sel.disabled; btn.classList.toggle('ph', !o || !o.value); };
+  const render = () => {
+    const t = q.value.trim().toLowerCase(); list.innerHTML = '';
+    [...sel.options].forEach((o, i) => { if (t && !o.text.toLowerCase().includes(t)) return; const d = document.createElement('div'); d.className = 'cbx-opt' + (i === sel.selectedIndex ? ' on' : ''); d.textContent = o.text; d.dataset.i = i; d.setAttribute('role', 'option'); list.appendChild(d); });
+    if (!list.children.length) list.innerHTML = '<div class="cbx-empty">No matches</div>';
+    list.querySelector('.cbx-opt')?.classList.add('act');
+  };
+  const open = () => { if (sel.disabled) return; pop.hidden = false; q.value = ''; render(); q.focus(); list.querySelector('.cbx-opt.on')?.scrollIntoView({ block: 'nearest' }); };
+  const close = () => { pop.hidden = true; };
+  const pick = i => { sel.selectedIndex = i; label(); close(); btn.focus(); sel.dispatchEvent(new Event('change', { bubbles: true })); };
+  btn.onclick = () => pop.hidden ? open() : close();
+  btn.onkeydown = e => { if (e.key === 'ArrowDown' || (e.key.length === 1 && !e.metaKey && !e.ctrlKey)) { open(); if (e.key.length === 1) { q.value = e.key; render(); e.preventDefault(); } } };
+  q.oninput = render;
+  q.onkeydown = e => {
+    const opts = [...list.querySelectorAll('.cbx-opt')]; let i = opts.findIndex(o => o.classList.contains('act'));
+    if (e.key === 'ArrowDown') i = Math.min(opts.length - 1, i + 1); else if (e.key === 'ArrowUp') i = Math.max(0, i - 1);
+    else if (e.key === 'Enter') { e.preventDefault(); if (opts[i]) pick(+opts[i].dataset.i); return; }
+    else if (e.key === 'Escape') { e.stopPropagation(); close(); btn.focus(); return; } else return;
+    e.preventDefault(); opts.forEach(o => o.classList.remove('act')); if (opts[i]) { opts[i].classList.add('act'); opts[i].scrollIntoView({ block: 'nearest' }); }
+  };
+  pop.addEventListener('mousedown', e => { const o = e.target.closest('.cbx-opt'); if (o) { e.preventDefault(); pick(+o.dataset.i); } });
+  document.addEventListener('mousedown', e => { if (!wrap.contains(e.target)) close(); });
+  sel.addEventListener('change', label);
+  new MutationObserver(label).observe(sel, { attributes: true, childList: true, subtree: true });
+  label();
+}
+let _enhT = null;
+new MutationObserver(() => { clearTimeout(_enhT); _enhT = setTimeout(() => $$('select').forEach(enhanceSelect), 30); }).observe(document.body, { childList: true, subtree: true });
+
+/* ---------- Clients (admins and project managers) ---------- */
+const SOCIAL = {
+  website: ['Website', '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 3 2.5 15 0 18M12 3c-2.5 3-2.5 15 0 18"/>'],
+  linkedin: ['LinkedIn', '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/>'],
+  facebook: ['Facebook', '<path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8a0 0 0 0 1 0 0z"/>'],
+  instagram: ['Instagram', '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5v.01"/>'],
+  twitter: ['X (Twitter)', '<path d="M4 4l16 16M20 4L4 20"/>'],
+  youtube: ['YouTube', '<rect x="2.5" y="6" width="19" height="12" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/>'],
+  drive_url: ['Google Drive folder', '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>']
+};
+const CSTATUS = { active: ['ok', 'Active'], past: ['muted', 'Past client'], prospect: ['info', 'Prospect'] };
+const sicon = (k, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SOCIAL[k][1]}</svg>`;
+const socialLinks = c => Object.keys(SOCIAL).filter(k => c[k]).map(k => `<a class="soc" href="${esc(c[k])}" target="_blank" rel="noopener" title="${SOCIAL[k][0]}" aria-label="${SOCIAL[k][0]}">${sicon(k)}</a>`).join('');
+const waLink = n => { const d = String(n || '').replace(/\D/g, ''); return d ? `https://wa.me/${d.length === 10 ? '91' + d : d}` : ''; };
+async function loadClients() { S.clients = await q(sb.from('clients').select('*').order('name')).catch(() => []); return S.clients; }
+
+VIEWS.clients = async (el, param) => {
+  if (param) return clientPage(el, param);
+  const clients = await loadClients(), filter = S.cliFilter || 'active';
+  const projects = await q(sb.from('projects').select('id,client_id,status')).catch(() => []);
+  const list = clients.filter(c => filter === 'all' || c.status === filter);
+  const count = k => clients.filter(c => k === 'all' || c.status === k).length;
+  el.innerHTML = `<div class="toolbar">
+      <div class="field"><label>Show</label><div class="seg">${[['active', 'Active'], ['prospect', 'Prospects'], ['past', 'Past'], ['all', 'All']].map(([v, l]) => `<button data-cf="${v}" class="${filter === v ? 'on' : ''}">${l} (${count(v)})</button>`).join('')}</div></div>
+      <div class="field grow"><label for="cl-q">Search</label><input id="cl-q" type="search" placeholder="Client, contact, email, city…"></div>
+      <button class="btn primary" id="cl-new">${icon('plus')}New client</button></div>
+    ${list.length ? `<div class="cl-grid" id="cl-items">${list.map(c => { const ps = projects.filter(p => p.client_id === c.id); const [pc, pl] = CSTATUS[c.status] || CSTATUS.active;
+      return `<div class="cl-card" role="link" tabindex="0" data-href="#/clients/${c.id}" data-s="${esc([c.name, c.contact_name, c.email, c.phone, c.city, c.country, c.kind].join(' ').toLowerCase())}">
+        <div class="cl-top"><span class="avatar">${esc(initials(c.name))}</span><div style="flex:1;min-width:0"><b>${esc(c.name)}</b><div class="task-sub">${esc([c.kind, c.city, c.country].filter(Boolean).join(' · ') || '—')}</div></div><span class="pill ${pc}">${pl}</span></div>
+        ${c.contact_name || c.email || c.phone ? `<div class="cl-contact">${c.contact_name ? `<div>${icon('people')}${esc(c.contact_name)}</div>` : ''}${c.email ? `<div>${icon('mail')}${esc(c.email)}</div>` : ''}${c.phone ? `<div>${icon('phone')}${esc(c.phone)}</div>` : ''}</div>` : ''}
+        <div class="cl-foot"><div class="socs">${socialLinks(c)}</div><span class="task-sub">${ps.filter(p => p.status !== 'completed').length} open project${ps.filter(p => p.status !== 'completed').length === 1 ? '' : 's'}</span></div></div>`; }).join('')}</div>`
+    : `<div class="card empty">${clients.length ? 'No clients here.' : 'No clients yet. Add your first client to keep contacts, links and projects together.'}</div>`}`;
+  $$('[data-cf]', el).forEach(b => b.onclick = () => { S.cliFilter = b.dataset.cf; route(); });
+  $('#cl-q').oninput = e => { const v = e.target.value.toLowerCase(); $$('#cl-items [data-s]').forEach(c => c.style.display = c.dataset.s.includes(v) ? '' : 'none'); };
+  $$('#cl-items .cl-card').forEach(c => { const go = e => { if (!e.target.closest('a')) location.hash = c.dataset.href; }; c.onclick = go; c.onkeydown = e => { if (e.key === 'Enter') go(e); }; });
+  $('#cl-new').onclick = () => openClient(null);
+};
+
+async function clientPage(el, id) {
+  const c = await q(sb.from('clients').select('*').eq('id', id).maybeSingle());
+  if (!c) { el.innerHTML = '<div class="card empty">Client not found. <a href="#/clients">Back to clients</a></div>'; return; }
+  $('#page-title').textContent = c.name;
+  const projects = await q(sb.from('projects').select('*').eq('client_id', id).order('created_at', { ascending: false }));
+  const tasks = projects.length ? await q(sb.from('tasks').select('id,project_id,status,due_date').in('project_id', projects.map(p => p.id))).catch(() => []) : [];
+  const [pc, pl] = CSTATUS[c.status] || CSTATUS.active, today = istDate();
+  const row = (k, v) => v ? `<div><dt>${k}</dt><dd>${v}</dd></div>` : '';
+  el.innerHTML = `<a class="back" href="#/clients">${icon('back')}All clients</a>
+    <div class="card person-head"><span class="avatar lg">${esc(initials(c.name))}</span>
+      <div style="min-width:0"><h2>${esc(c.name)}</h2><div class="muted">${esc([c.kind, c.city, c.country].filter(Boolean).join(' · '))}</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="pill ${pc}">${pl}</span>${c.started_on ? `<span class="task-sub">Client since ${fmtDate(c.started_on)}</span>` : ''}</div></div>
+      <div class="right">${c.email ? `<a class="btn" href="mailto:${esc(c.email)}">${icon('mail')}Email</a>` : ''}${c.phone ? `<a class="btn" href="tel:${esc(c.phone)}">${icon('phone')}Call</a>` : ''}${c.whatsapp || c.phone ? `<a class="btn" href="${waLink(c.whatsapp || c.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}<button class="btn primary" id="cp-edit">Edit</button></div></div>
+    <div class="grid g-2">
+      <div class="card"><div class="card-h"><h2>Contact and links</h2></div><div class="card-b">
+        <dl class="facts">${row('Contact person', esc(c.contact_name || ''))}${row('Email', c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '')}${row('Phone', c.phone ? `<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>` : '')}${row('WhatsApp', c.whatsapp ? `<a href="${waLink(c.whatsapp)}" target="_blank" rel="noopener">${esc(c.whatsapp)}</a>` : '')}${row('Address', esc([c.address, c.city, c.country].filter(Boolean).join(', ')))}</dl>
+        ${socialLinks(c) ? `<div class="section-h"><b>Online</b></div><div class="soc-list">${Object.keys(SOCIAL).filter(k => c[k]).map(k => `<a class="soc-row" href="${esc(c[k])}" target="_blank" rel="noopener">${sicon(k)}<span><b>${SOCIAL[k][0]}</b><span class="task-sub">${esc(c[k].replace(/^https?:\/\/(www\.)?/, '').slice(0, 60))}</span></span></a>`).join('')}</div>` : '<p class="muted">No website or social links yet. Click Edit to add them.</p>'}
+        ${c.notes ? `<div class="section-h"><b>Notes</b></div><div class="cm-text">${esc(c.notes)}</div>` : ''}
+      </div></div>
+      <div class="card"><div class="card-h"><h2>Projects</h2><span class="sub">${projects.length}</span><div class="right"><button class="btn sm" id="cp-proj">${icon('plus')}New project</button></div></div><div class="card-b">
+        ${projects.map(p => { const ts = tasks.filter(t => t.project_id === p.id), d = ts.filter(t => t.status === 'done').length, pct = ts.length ? Math.round(d / ts.length * 100) : 0, od = ts.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length, [sc, sl] = PSTATUS[p.status] || PSTATUS.active;
+          return `<a class="list-row plink" href="#/project/${p.id}" style="align-items:center"><span class="dot" style="background:${esc(p.color || '#3A9A52')}"></span><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="task-sub">${d}/${ts.length} tasks · ${pct}%${od ? ` · <span class="overdue">${od} overdue</span>` : ''} · ${p.due_date ? 'due ' + fmtShort(p.due_date) : 'Ongoing'}</div></div><span class="pill ${sc}">${sl}</span></a>`; }).join('') || '<div class="empty">No projects for this client yet.</div>'}
+      </div></div>
+    </div>`;
+  $('#cp-edit').onclick = () => openClient(c);
+  $('#cp-proj').onclick = () => openProject(null, { client_id: c.id, client: c.name, drive_url: c.drive_url || '' });
+}
+
+function openClient(c0, prefill = {}) {
+  const isNew = !c0, c = c0 || { status: 'active', kind: 'NGO', ...prefill };
+  const f = (id, label, val, type = 'text', ph = '', full = false) => `<div class="field${full ? ' full' : ''}"><label for="${id}">${label}</label><input id="${id}" type="${type}" value="${esc(val || '')}" placeholder="${esc(ph)}"></div>`;
+  openModal({
+    title: isNew ? 'New client' : `Edit ${c.name}`, wide: true,
+    body: `<div class="form-grid">
+      ${f('c-name', 'Client / organisation name', c.name, 'text', 'e.g. Families for Safe Streets', true)}
+      <div class="field"><label for="c-kind">Type</label><input id="c-kind" type="text" list="c-kinds" value="${esc(c.kind || '')}"><datalist id="c-kinds"><option value="NGO"><option value="Foundation / Trust"><option value="Company"><option value="Government"><option value="Individual"></datalist></div>
+      <div class="field"><label for="c-status">Status</label><select id="c-status">${Object.entries(CSTATUS).map(([v, [, l]]) => `<option value="${v}" ${c.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="full section-h" style="margin:6px 0 0"><b>Contact</b></div>
+      ${f('c-contact', 'Contact person', c.contact_name, 'text', 'Name and role')}
+      ${f('c-email', 'Email', c.email, 'email', 'name@organisation.org')}
+      ${f('c-phone', 'Phone', c.phone, 'tel', '+1 555 123 4567')}
+      ${f('c-wa', 'WhatsApp (if different)', c.whatsapp, 'tel')}
+      ${f('c-city', 'City', c.city)}
+      ${f('c-country', 'Country', c.country, 'text', 'India, USA, UK, UAE…')}
+      ${f('c-address', 'Address', c.address, 'text', '', true)}
+      <div class="full section-h" style="margin:6px 0 0"><b>Website and social media</b> <span class="task-sub">Paste full links starting with https://</span></div>
+      ${Object.keys(SOCIAL).map(k => `<div class="field"><label for="c-${k}" class="soc-label">${sicon(k)}${SOCIAL[k][0]}</label><input id="c-${k}" type="url" value="${esc(c[k] || '')}" placeholder="https://"></div>`).join('')}
+      ${f('c-since', 'Client since', c.started_on, 'date')}
+      <div class="field full"><label for="c-notes">Notes</label><textarea id="c-notes" placeholder="Scope, billing, preferences, important history…">${esc(c.notes || '')}</textarea></div>
+    </div>`,
+    footer: `${!isNew && isAdmin() ? '<button class="btn danger" id="c-del" style="margin-right:auto">Delete</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="c-save">${isNew ? 'Add client' : 'Save client'}</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#c-save', root).onclick = async () => {
+        const v = s => $(s, root).value.trim() || null;
+        const row = { name: v('#c-name'), kind: v('#c-kind') || 'NGO', status: v('#c-status'), contact_name: v('#c-contact'), email: v('#c-email'), phone: v('#c-phone'), whatsapp: v('#c-wa'), city: v('#c-city'), country: v('#c-country'), address: v('#c-address'), started_on: v('#c-since'), notes: v('#c-notes') };
+        for (const k of Object.keys(SOCIAL)) { let u = v(`#c-${k}`); if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u.replace(/^\/+/, ''); row[k] = u; }
+        if (!row.name) return toast('Enter the client name', 'bad');
+        try {
+          if (isNew) { const created = await q(sb.from('clients').insert({ ...row, created_by: S.me.id }).select().single()); close(); toast('Client added'); await loadClients(); if (prefill.onSaved) prefill.onSaved(created); else location.hash = `#/clients/${created.id}`; }
+          else { await q(sb.from('clients').update(row).eq('id', c.id)); await q(sb.from('projects').update({ client: row.name }).eq('client_id', c.id)).catch(() => {}); close(); toast('Client saved'); await loadClients(); route(); }
+        } catch (e) { toast(/clients_name_uniq|duplicate/i.test(e.message) ? 'A client with this name already exists' : e.message, 'bad'); }
+      };
+      $('#c-del', root) && ($('#c-del', root).onclick = async () => {
+        if (!confirm(`Delete ${c.name}? Projects stay, without a client. Admins can restore it from the Recycle bin.`)) return;
+        try { await q(sb.from('clients').delete().eq('id', c.id)); close(); toast('Client deleted'); location.hash = '#/clients'; } catch (e) { toast(e.message, 'bad'); }
+      });
+    }
+  });
+}
+
 /* ---------- Employees (admin) ---------- */
 VIEWS.employees = async el => {
   await loadDirectory();
@@ -2490,7 +2696,7 @@ VIEWS.employees = async el => {
     <tbody id="e-rows">${list.map(p => `<tr data-s="${esc((p.full_name + ' ' + p.email + ' ' + (p.department || '')).toLowerCase())}">
       <td>${personLink(p, p.email)}</td>
       <td class="muted">${esc(p.employee_code || '—')}</td><td class="num">${phoneOf(p.id) ? `<a href="tel:${esc(phoneOf(p.id))}" style="color:inherit">${esc(phoneOf(p.id))}</a>` : '<span class="muted">—</span>'}</td><td>${p.date_of_joining ? fmtDate(p.date_of_joining) : '<span class="muted">—</span>'}</td>
-      <td style="text-transform:capitalize">${esc(p.role)}</td><td>${p.manager_id ? esc(nameOf(p.manager_id)) : '<span class="muted">—</span>'}</td>
+      <td style="text-transform:capitalize">${esc(p.role === 'manager' ? 'Project manager' : p.role)}${p.can_leads && p.role !== 'admin' ? ' <span class="pill info">Leads</span>' : ''}</td><td>${p.manager_id ? esc(nameOf(p.manager_id)) : '<span class="muted">—</span>'}</td>
       <td>${p.is_active ? '<span class="pill ok">Active</span>' : '<span class="pill muted">Inactive</span>'}</td>
       <td style="text-align:right"><button class="btn sm" data-edit="${p.id}">Edit</button></td></tr>`).join('')}</tbody></table></div></div>`;
   $('#e-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#e-rows tr').forEach(r => r.style.display = r.dataset.s.includes(v) ? '' : 'none'); };
@@ -2512,6 +2718,7 @@ async function editEmployee(id) {
       <div class="field"><label for="f-role">Role</label><select id="f-role">${['employee', 'manager', 'admin'].map(r => `<option value="${r}" ${p.role === r ? 'selected' : ''}>${r[0].toUpperCase() + r.slice(1)}</option>`).join('')}</select></div>
       <div class="field"><label for="f-mgr">Reports to</label><select id="f-mgr"><option value="">No manager</option>${managers.map(m => `<option value="${m.id}" ${p.manager_id === m.id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
       <div class="field"><label for="f-doj">Date of joining</label><input id="f-doj" type="date" value="${esc(p.date_of_joining || '')}"></div>
+      <label class="check full"><input type="checkbox" id="f-leads" ${p.can_leads || p.role === 'admin' ? 'checked' : ''} ${p.role === 'admin' ? 'disabled' : ''}> Leads access <span class="task-sub">(admins always have it)</span></label>
       <div class="field"><label for="f-active">Status</label><select id="f-active"><option value="1" ${p.is_active ? 'selected' : ''}>Active</option><option value="0" ${!p.is_active ? 'selected' : ''}>Inactive (can't sign in)</option></select></div>
       <div class="full note">Phone, date of birth, emergency contact and address are added by the employee in <b>My profile</b>.</div>
       <div class="full" style="margin-top:6px"><b>Leave allotted for ${year}</b><div class="hint muted" style="font-size:12.5px">Days used so far are kept as they are.</div></div>
@@ -2526,7 +2733,7 @@ async function editEmployee(id) {
           await q(sb.from('profiles').update({
             full_name: v('#f-name'), employee_code: v('#f-code') || null, department: v('#f-dept') || null,
             designation: v('#f-desig') || null, role: v('#f-role'), manager_id: v('#f-mgr') || null,
-            date_of_joining: v('#f-doj') || null, is_active: v('#f-active') === '1'
+            date_of_joining: v('#f-doj') || null, is_active: v('#f-active') === '1', can_leads: $('#f-leads', root).checked
           }).eq('id', id));
           const ups = $$('[data-bal]', root).filter(i => i.value !== '').map(i => ({ employee_id: id, leave_type_id: +i.dataset.bal, year, allotted: +i.value }));
           if (ups.length) await q(sb.from('leave_balances').upsert(ups, { onConflict: 'employee_id,leave_type_id,year' }));
