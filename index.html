@@ -417,6 +417,24 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .tag-chip.sm{font-size:11.5px;padding:2px 8px}
 @media (max-width:860px){.bell-pop{position:fixed;left:8px;right:8px;width:auto;top:64px}}
 
+/* ---------- EOD report view ---------- */
+.eod-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;margin-top:6px}
+.eod-list{display:flex;flex-direction:column;gap:10px}
+.eod-item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.eod-item-h{display:flex;gap:12px;align-items:baseline;justify-content:space-between}
+.eod-item-h b{font-size:15px;line-height:1.4}
+.eod-time{font-weight:700;color:var(--ink-2);white-space:nowrap}
+.eod-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.eod-desc{margin-top:8px;padding:8px 10px;background:var(--canvas);border-radius:8px;white-space:pre-wrap;word-break:break-word;font-size:14px;color:var(--ink-2)}
+.eod-box{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px;background:#fff}
+.eod-box.warn{border-color:color-mix(in srgb,var(--bad) 40%,#fff);background:var(--bad-soft)}
+.eod-clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;margin-top:2px}
+@media (max-width:860px){.eod-grid{grid-template-columns:1fr}}
+
+/* ---------- Payroll forms ---------- */
+.ad-row{display:grid;grid-template-columns:auto 1fr 160px auto;gap:8px;align-items:center;margin-bottom:8px}
+#sl-parts .ad-row,#sl-ded .ad-row{grid-template-columns:1fr 160px auto}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -660,6 +678,7 @@ const ICONS = {
   clients: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
   bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  wallet: '<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2M7 6V4h10v2"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/>',
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   back: '<path d="M15 18l-6-6 6-6"/>',
@@ -809,6 +828,8 @@ function navItems() {
     m && { id: 'clients', label: 'Clients', icon: 'clients' },
     canLeads() && { id: 'leads', label: 'Leads', icon: 'leads' },
     { id: 'kb', label: 'Knowledge base', icon: 'book' },
+    { id: 'payslips', label: 'My payslips', icon: 'wallet' },
+    a && { id: 'payroll', label: 'Payroll', icon: 'wallet' },
     a && { id: 'approvals', label: 'Approvals', icon: 'check' },
     m && { id: 'team', label: 'Team', icon: 'team' },
     a && { id: 'reports', label: 'Reports', icon: 'report' },
@@ -891,9 +912,10 @@ async function openProfile() {
       ${detailFields(d)}
       <div class="field full"><label for="p-pw">New password</label><input id="p-pw" type="password" placeholder="Leave blank to keep your current password" autocomplete="new-password"></div>
     </div>`,
-    footer: `<button class="btn danger" id="p-out" style="margin-right:auto">Sign out</button><a class="btn" href="#/person/${me.id}" data-close>My page</a><button class="btn primary" id="p-save">Save changes</button>`,
+    footer: `<button class="btn danger" id="p-out" style="margin-right:auto">Sign out</button><a class="btn" href="#/person/${me.id}" data-close>My page</a><button class="btn" id="p-bank" type="button">Bank & payroll</button><button class="btn primary" id="p-save">Save changes</button>`,
     onMount: (root, close) => {
       $('[data-close]', root).onclick = close;
+      $('#p-bank', root).onclick = async () => { const d = await q(sb.from('payroll_details').select('*').eq('employee_id', me.id).maybeSingle()).catch(() => null); close(); openPayrollDetails(me.id, d); };
       $('#p-out', root).onclick = async () => { close(); await sb.auth.signOut(); S.me = null; renderLogin(); };
       $('#p-save', root).onclick = async () => {
         try {
@@ -1505,9 +1527,9 @@ async function workReports(el) {
     body.innerHTML = `<div class="stats"><div class="stat"><span>Present</span><b>${tot.present}/${people.length}</b></div><div class="stat"><span>Tasks completed</span><b>${tot.done}</b></div><div class="stat"><span>Time on tasks</span><b>${hm(tot.mins)}</b></div><div class="stat"><span>EOD reports</span><b>${tot.eod}/${tot.present || people.length}</b></div></div>
       <div class="wr-grid">${days.map(d => `<div class="card wr-card"><div class="card-h">${personLink(d.p, d.p.designation || '')}<div class="right" style="flex-wrap:wrap;justify-content:flex-end">${attChip(d)}${d.eod ? '<span class="pill ok">EOD ✓</span>' : ['P', 'LT', 'M'].includes(d.code) ? '<span class="pill warn">No EOD</span>' : ''}</div></div><div class="card-b">
         ${Object.keys(d.byProj).length ? `<div class="wr-projs">${Object.entries(d.byProj).sort((a, b) => b[1] - a[1]).map(([k, m]) => `<span class="chip" style="padding-right:12px">${esc(k)}${m ? ` · ${hm(m)}` : ''}</span>`).join('')}</div>` : ''}
-        <div class="wr-sec"><b>Completed (${d.done.length})</b>${d.done.length ? `<ul>${d.done.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(projName(x) || '')}</span></li>`).join('')}</ul>` : '<div class="muted">—</div>'}</div>
-        ${d.workedOn.length ? `<div class="wr-sec"><b>Also worked on</b><ul>${d.workedOn.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(TSTATUS[x.status])}</span></li>`).join('')}</ul></div>` : ''}
-        ${(d.eod?.tasks || []).filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).length ? `<div class="wr-sec"><b>From EOD</b><ul>${d.eod.tasks.filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).map(t => `<li>${esc(t.title)} <span class="task-sub">${esc(t.status_label || '')}</span></li>`).join('')}</ul></div>` : ''}
+        <div class="wr-sec"><b>Completed (${d.done.length})</b>${d.done.length ? `<ul>${d.done.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(projName(x) || '')}</span>${x.description ? `<div class="task-sub eod-clamp">${esc(x.description)}</div>` : ''}</li>`).join('')}</ul>` : '<div class="muted">—</div>'}</div>
+        ${d.workedOn.length ? `<div class="wr-sec"><b>Also worked on</b><ul>${d.workedOn.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(TSTATUS[x.status])}</span>${x.description ? `<div class="task-sub eod-clamp">${esc(x.description)}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
+        ${(d.eod?.tasks || []).filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).length ? `<div class="wr-sec"><b>From EOD</b><ul>${d.eod.tasks.filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).map(t => `<li>${esc(t.title)} <span class="task-sub">${esc(t.status_label || '')}${t.project ? ` · ${esc(t.project)}` : ''}</span>${t.description ? `<div class="task-sub eod-clamp">${esc(t.description)}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
         ${d.eod ? `<div class="wr-sec"><b>Summary</b><div class="cm-text">${esc(d.eod.summary || '—')}</div></div><div class="wr-sec"><b>Plan for tomorrow</b><div class="cm-text">${esc(d.eod.tomorrow || '—')}</div></div>${d.eod.blockers ? `<div class="wr-sec"><b style="color:var(--bad)">Blockers</b><div class="cm-text" style="color:var(--bad)">${esc(d.eod.blockers)}</div></div>` : ''}` : ''}
       </div></div>`).join('')}</div>`;
     exportRows = () => ({ name: `Daily-work-report-${date}`, sheets: [['Daily report', [['Date', 'Employee', 'Attendance', 'Check in', 'Check out', 'Hours at work', 'Tasks completed', 'Completed tasks', 'Projects (time)', 'Time on tasks (min)', 'EOD submitted', 'Summary', 'Plan for tomorrow', 'Blockers'],
@@ -2037,24 +2059,47 @@ async function eodTodayData() {
   const mins = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
   const worked = t => doneToday.some(x => x.id === t.id) || loggedIds.includes(t.id) || touched.some(x => x.id === t.id) || createdToday.some(x => x.id === t.id);
   const lastLog = id => logs.filter(l => l.task_id === id).reduce((m, l) => (l.created_at || l.started_at) > m ? (l.created_at || l.started_at) : m, '');
-  const items = all.map(t => ({ key: t.id, task_id: t.id, title: t.title, project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)), auto: worked(t), last: [lastLog(t.id), t.completed_at || ''].sort().pop() }));
+  const items = all.map(t => ({ key: t.id, task_id: t.id, title: t.title, description: (t.description || '').slice(0, 1000), project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)), auto: worked(t), last: [lastLog(t.id), t.completed_at || ''].sort().pop() }));
   const acts = {};   // meetings and other activities logged today
-  logs.filter(l => !l.task_id && l.activity).forEach(l => { const k = `act:${l.activity}|${l.note || ''}`; acts[k] = acts[k] || { key: k, task_id: null, title: l.note ? `${l.activity}: ${l.note}` : l.activity, project: '', status: 'activity', status_label: 'Meeting / activity', minutes: 0, auto: true, last: '' }; acts[k].minutes += logMinutes(l); if ((l.created_at || l.started_at) > acts[k].last) acts[k].last = l.created_at || l.started_at; });
+  logs.filter(l => !l.task_id && l.activity).forEach(l => { const k = `act:${l.activity}|${l.note || ''}`; acts[k] = acts[k] || { key: k, task_id: null, title: l.activity, description: l.note || '', project: l.project_id ? (S.projects.find(p => p.id === l.project_id)?.name || '') : '', status: 'activity', status_label: 'Meeting / activity', minutes: 0, auto: true, last: '' }; acts[k].minutes += logMinutes(l); if ((l.created_at || l.started_at) > acts[k].last) acts[k].last = l.created_at || l.started_at; });
   Object.values(acts).forEach(a => { a.minutes = Math.round(a.minutes); items.push(a); });
   items.sort((a, b) => b.auto - a.auto || b.minutes - a.minutes);
   return { att, items };
 }
 
-function eodView(r) {
-  const tasks = Array.isArray(r.tasks) ? r.tasks : [];
-  return `<div class="eod-read">
-    <div class="task-sub">${fmtDate(r.report_date)} · submitted ${fmtTime(r.submitted_at)}${r.hours ? ` · ${r.hours} h at work` : ''} · ${r.emailed_at ? `<span style="color:var(--ok)">emailed ${fmtTime(r.emailed_at)}</span>` : '<span class="muted">not emailed</span>'}</div>
-    <div class="section-h"><b>Tasks (${tasks.length})</b></div>
-    ${tasks.length ? `<div class="table-wrap" style="border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Task</th><th>Project</th><th>Status</th><th>Time</th></tr></thead><tbody>${tasks.map(t => `<tr><td style="white-space:normal">${esc(t.title)}</td><td>${esc(t.project || '—')}</td><td>${esc(t.status_label || t.status || '')}</td><td class="num">${t.minutes ? hm(t.minutes) : '—'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="muted">No tasks listed.</div>'}
-    <div class="section-h"><b>Summary</b></div><div class="cm-text">${esc(r.summary || '—')}</div>
-    <div class="section-h"><b>Blockers / help needed</b></div><div class="cm-text">${esc(r.blockers || '—')}</div>
-    <div class="section-h"><b>Plan for tomorrow</b></div><div class="cm-text">${esc(r.tomorrow || '—')}</div></div>`;
+async function loadEodInfo(reports) {
+  // live task details (description, checklist) for the tasks listed in EOD reports
+  const ids = [...new Set(reports.flatMap(r => (r.tasks || []).map(t => t.task_id)).filter(Boolean))];
+  const rows = ids.length ? await inChunks(ids, ch => sb.from('tasks').select('id,title,description,checklist,project_id,project,status,due_date').in('id', ch)).catch(() => []) : [];
+  return Object.fromEntries(rows.map(t => [t.id, t]));
 }
+function eodView(r, info = {}) {
+  const tasks = Array.isArray(r.tasks) ? r.tasks : [];
+  const total = tasks.reduce((s, t) => s + (t.minutes || 0), 0);
+  const item = t => {
+    const live = t.task_id ? info[t.task_id] : null;
+    const desc = (live?.description ?? t.description ?? '').trim();
+    const ck = Array.isArray(live?.checklist) ? live.checklist : [];
+    const proj = t.project || (live ? projName(live) : '') || '';
+    const isAct = !t.task_id;
+    return `<div class="eod-item">
+      <div class="eod-item-h"><b>${esc(t.title)}</b><span class="num eod-time">${t.minutes ? hm(t.minutes) : ''}</span></div>
+      <div class="eod-tags">${isAct ? '<span class="pill info">Meeting / activity</span>' : `<span class="pill" style="background:${TCOLOR[t.status] || '#8A94A6'}1f;color:${TCOLOR[t.status] || '#8A94A6'}">${esc(t.status_label || TSTATUS[t.status] || '')}</span>`}${proj ? `<span class="pill muted">${esc(proj)}</span>` : ''}${ck.length ? `<span class="task-sub">Checklist ${ck.filter(x => x.done).length}/${ck.length}</span>` : ''}</div>
+      ${desc ? `<div class="eod-desc">${esc(desc)}</div>` : ''}
+    </div>`;
+  };
+  return `<div class="eod-read">
+    <div class="task-sub">${fmtDate(r.report_date)} · submitted ${fmtTime(r.submitted_at)}${r.hours ? ` · ${r.hours} h at work` : ''}${total ? ` · ${hm(total)} on tasks and meetings` : ''}</div>
+    <div class="eod-grid">
+      <div><div class="section-h"><b>Work done (${tasks.length})</b></div>${tasks.length ? `<div class="eod-list">${tasks.map(item).join('')}</div>` : '<div class="muted">No tasks listed.</div>'}</div>
+      <div>
+        <div class="eod-box"><div class="section-h" style="margin-top:0"><b>Summary</b></div><div class="cm-text">${esc(r.summary || '—')}</div></div>
+        <div class="eod-box ${r.blockers ? 'warn' : ''}"><div class="section-h" style="margin-top:0"><b>Blockers / help needed</b></div><div class="cm-text">${esc(r.blockers || 'None')}</div></div>
+        <div class="eod-box"><div class="section-h" style="margin-top:0"><b>Plan for tomorrow</b></div><div class="cm-text">${esc(r.tomorrow || '—')}</div></div>
+      </div>
+    </div></div>`;
+}
+async function openEod(r, title) { const info = await loadEodInfo([r]); openModal({ title, wide: true, body: eodView(r, info) }); }
 
 VIEWS.eod = async el => {
   const tab = S.eodTab || 'today', today = istDate();
@@ -2070,7 +2115,7 @@ VIEWS.eod = async el => {
     body.innerHTML = `<div class="card"><div class="table-wrap"><table><thead><tr><th>Date</th><th>Tasks</th><th>Summary</th><th>Email</th></tr></thead><tbody>
       ${rows.map(r => `<tr data-r="${r.id}" style="cursor:pointer"><td class="num"><b>${fmtShort(r.report_date)}</b> <span class="muted">${dayName(r.report_date)}</span></td><td class="num">${(r.tasks || []).length}</td><td style="white-space:normal">${esc((r.summary || '').slice(0, 120))}${(r.summary || '').length > 120 ? '…' : ''}</td><td>${r.emailed_at ? '<span class="pill ok">Sent</span>' : '<span class="pill muted">Saved</span>'}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">No reports yet.</td></tr>'}
       </tbody></table></div></div>`;
-    $$('[data-r]', body).forEach(tr => tr.onclick = () => { const r = rows.find(x => x.id === tr.dataset.r); openModal({ title: `EOD report · ${fmtDate(r.report_date)}`, wide: true, body: eodView(r) }); });
+    $$('[data-r]', body).forEach(tr => tr.onclick = () => { const r = rows.find(x => x.id === tr.dataset.r); openEod(r, `EOD report · ${fmtDate(r.report_date)}`); });
     return;
   }
 
@@ -2086,14 +2131,14 @@ VIEWS.eod = async el => {
         return `<tr ${r ? `data-r="${r.id}" style="cursor:pointer"` : ''}><td>${personLink(p, p.designation || '')}</td><td>${r ? `<span class="pill ok">Submitted ${fmtTime(r.submitted_at)}</span>` : '<span class="pill warn">Not submitted</span>'}</td><td class="num">${r ? (r.tasks || []).length : '—'}</td><td style="white-space:normal;max-width:320px">${r?.blockers ? `<span style="color:var(--bad)">${esc(r.blockers.slice(0, 90))}</span>` : '<span class="muted">—</span>'}</td><td>${r ? (r.emailed_at ? '<span class="pill ok">Sent</span>' : '<span class="pill muted">Saved</span>') : ''}</td></tr>`; }).join('')}
       </tbody></table></div></div>`;
     $('#eod-date').onchange = e => { S.eodDate = e.target.value; route(); };
-    $$('[data-r]', body).forEach(tr => tr.onclick = e => { if (e.target.closest('a')) return; const r = rows.find(x => x.id === tr.dataset.r); openModal({ title: `EOD · ${nameOf(r.employee_id)} · ${fmtDate(r.report_date)}`, wide: true, body: eodView(r) }); });
+    $$('[data-r]', body).forEach(tr => tr.onclick = e => { if (e.target.closest('a')) return; const r = rows.find(x => x.id === tr.dataset.r); openEod(r, `EOD · ${nameOf(r.employee_id)} · ${fmtDate(r.report_date)}`); });
     return;
   }
 
   // Today
   const existing = await q(sb.from('eod_reports').select('*').eq('employee_id', S.me.id).eq('report_date', today).maybeSingle());
   if (existing && !S.eodEdit) {
-    body.innerHTML = `<div class="card"><div class="card-h"><h2>Today's report is submitted</h2><div class="right"><button class="btn" id="eod-edit">Edit and resend</button></div></div><div class="card-b">${eodView(existing)}</div></div>`;
+    body.innerHTML = `<div class="card"><div class="card-h"><h2>Today's report is submitted</h2><div class="right"><button class="btn" id="eod-edit">Edit and resend</button></div></div><div class="card-b">${eodView(existing, await loadEodInfo([existing]))}</div></div>`;
     $('#eod-edit').onclick = () => { S.eodEdit = true; route(); };
     return;
   }
@@ -2103,7 +2148,7 @@ VIEWS.eod = async el => {
   body.innerHTML = `<div class="grid g-2">
     <div class="card"><div class="card-h"><h2>Tasks today</h2><span class="sub">Tasks you finished, timed, added or updated today are ticked. Untick anything that isn't today's work.</span></div><div class="card-b">
       ${items.length ? items.map((t, i) => `<label class="eod-task"><input type="checkbox" data-i="${i}" ${(existing ? prevIds.has(t.key) || (t.auto && t.last && t.last > existing.submitted_at) : t.auto) ? 'checked' : ''}>
-          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.task_id ? (t.project || 'No project') : 'Logged time')}</div></div>
+          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.task_id ? (t.project || 'No project') : (t.project ? `Meeting · ${t.project}` : 'Logged time'))}</div>${t.description ? `<div class="task-sub eod-clamp">${esc(t.description)}</div>` : ''}</div>
           ${t.task_id ? `<span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span>` : '<span class="pill info">Meeting / activity</span>'}<span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
         : '<div class="empty">No tasks tracked today. Use the timer on the Tasks page tomorrow, and it fills this in for you. For today, describe your work in the summary.</div>'}
       <div style="margin-top:12px"><button class="btn sm" type="button" id="eod-addtime">${icon('plus')}Add time for a meeting or call</button></div>
@@ -2120,7 +2165,7 @@ VIEWS.eod = async el => {
   $('#eod-send').onclick = async e => {
     const b = e.currentTarget, summary = $('#eod-sum').value.trim();
     if (!summary) return toast('Write a short summary of your day', 'bad');
-    const picked = $$('[data-i]', body).filter(c => c.checked).map(c => { const t = items[+c.dataset.i]; return { key: t.key, task_id: t.task_id, title: t.title, project: t.project, status: t.status, status_label: t.status_label, minutes: t.minutes }; });
+    const picked = $$('[data-i]', body).filter(c => c.checked).map(c => { const t = items[+c.dataset.i]; return { key: t.key, task_id: t.task_id, title: t.title, description: t.description || '', project: t.project, status: t.status, status_label: t.status_label, minutes: t.minutes }; });
     const row = { employee_id: S.me.id, report_date: today, tasks: picked, summary, blockers: $('#eod-block').value.trim() || null, tomorrow: $('#eod-next').value.trim() || null, hours: worked ? +worked.toFixed(2) : null, submitted_at: new Date().toISOString() };
     b.disabled = true; b.textContent = 'Submitting…';
     try {
@@ -2634,7 +2679,7 @@ async function refreshBell() {
 function paintBell() {
   const p = $('#bell-pop'); if (!p) return;
   const notes = S.notes || [], bdays = S.bdays || [];
-  const ico = k => k === 'task_assigned' ? icon('tasks') : icon('folder');
+  const ico = k => k === 'task_assigned' ? icon('tasks') : k === 'payslip' ? icon('wallet') : icon('folder');
   p.innerHTML = `<div class="bell-h"><b>Notifications</b>${notes.some(n => !n.read_at) ? '<button class="btn link" id="bell-all">Mark all read</button>' : ''}</div>
     ${bdays.length ? `<div class="bell-sec">🎂 Birthdays</div>${bdays.map(b => `<div class="bell-item bday${b.days_away === 0 ? ' unread' : ''}"><span class="avatar sm">${esc(initials(b.full_name))}</span><div><b>${esc(b.full_name)}</b><div class="task-sub">${b.days_away === 0 ? 'Today! Wish them a happy birthday 🎉' : b.days_away === 1 ? 'Tomorrow' : `${dObj(b.birthday).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}`}</div></div></div>`).join('')}` : ''}
     <div class="bell-sec">Updates</div>
@@ -2824,6 +2869,331 @@ function openClient(c0, prefill = {}) {
         if (!confirm(`Delete ${c.name}? Projects stay, without a client. Admins can restore it from the Recycle bin.`)) return;
         try { await q(sb.from('clients').delete().eq('id', c.id)); close(); toast('Client deleted'); location.hash = '#/clients'; } catch (e) { toast(e.message, 'bad'); }
       });
+    }
+  });
+}
+
+/* ---------- Payroll & payslips ---------- */
+const inr = n => '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const inr0 = n => '₹' + Math.round(Number(n || 0)).toLocaleString('en-IN');
+function inWords(amount) {
+  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  const two = n => n < 20 ? ones[n] : tens[Math.floor(n / 10)] + (n % 10 ? '-' + ones[n % 10] : '');
+  const three = n => (n >= 100 ? ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' : '') : '') + (n % 100 ? two(n % 100) : '');
+  const words = n => { if (!n) return 'Zero'; const parts = []; const cr = Math.floor(n / 1e7); n %= 1e7; const lk = Math.floor(n / 1e5); n %= 1e5; const th = Math.floor(n / 1e3); n %= 1e3;
+    if (cr) parts.push(words(cr) + ' Crore'); if (lk) parts.push(two(lk) + ' Lakh'); if (th) parts.push(two(th) + ' Thousand'); if (n) parts.push(three(n)); return parts.join(' '); };
+  const r = Math.floor(Math.abs(amount)), p = Math.round((Math.abs(amount) - r) * 100);
+  return `Indian Rupee ${words(r)}${p ? ` and ${two(p)} Paise` : ''} Only`;
+}
+const monthLabel = d => dObj(String(d).slice(0, 10)).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+const LOGO_SVG_DARK = () => `<svg viewBox="4 0 60 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sharvii"><defs><linearGradient id="svg-s2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3AA0E8"/><stop offset="1" stop-color="#6CC17A"/></linearGradient></defs><path d="M47 15c-7-7-33-6-33 6 0 13 33 8 33 21 0 13-28 14-37 5" fill="none" stroke="url(#svg-s2)" stroke-width="8.5" stroke-linecap="round"/><circle cx="51" cy="9" r="3" fill="#6CC17A"/><circle cx="58" cy="5" r="2" fill="#3AA0E8"/></svg>`;
+const PS_CSS = `
+.ps{font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#1B2430;background:#fff;max-width:820px;margin:0 auto;padding:34px 38px;font-size:13.5px;line-height:1.45}
+.ps *{box-sizing:border-box}
+.ps-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:18px;border-bottom:1.5px solid #E3E7EC}
+.ps-brand{display:flex;align-items:center;gap:14px}.ps-brand svg{height:50px;width:auto}
+.ps-co b{display:block;font-size:19px;color:#131C3F}.ps-co span{color:#5B6577;font-size:13px;white-space:pre-line}
+.ps-month{text-align:right}.ps-month span{color:#5B6577;font-size:13px}.ps-month b{display:block;font-size:20px;color:#131C3F;margin-top:2px}
+.ps-sum{display:grid;grid-template-columns:1.25fr 1fr;gap:26px;padding:22px 0 18px;border-bottom:1.5px dashed #D5DAE1}
+.ps-h{font-size:11.5px;font-weight:700;color:#5B6577;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+.ps-kv{display:grid;grid-template-columns:150px 12px 1fr;row-gap:7px}.ps-kv span{color:#5B6577}.ps-kv b{font-weight:600}
+.ps-net{border:1px solid #D7E8DC;border-radius:12px;overflow:hidden;align-self:start}
+.ps-net-top{background:#EEF8F0;padding:18px 20px;border-left:5px solid #3A9A52}
+.ps-net-top b{display:block;font-size:26px;color:#131C3F;letter-spacing:-.01em}.ps-net-top span{color:#2F7D45;font-size:13px;font-weight:600}
+.ps-net-kv{padding:14px 20px;display:grid;grid-template-columns:1fr 12px auto;row-gap:6px}.ps-net-kv span{color:#5B6577}
+.ps-ids{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 26px;padding:16px 0}
+.ps-ids div{display:grid;grid-template-columns:150px 12px 1fr}.ps-ids span{color:#5B6577}
+.ps-tbl{border:1px solid #E3E7EC;border-radius:12px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+.ps-tbl table{width:100%;border-collapse:collapse}.ps-tbl table+table{border-left:1px solid #E3E7EC}
+.ps-tbl th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#1B2430;text-align:left;padding:12px 12px;border-bottom:1px dashed #D5DAE1;background:#fff}
+.ps-tbl th.r,.ps-tbl td.r{text-align:right;white-space:nowrap}.ps-tbl tr.tot td:first-child{white-space:nowrap}.ps-tbl td{padding:10px 12px;vertical-align:top;font-size:13px}.ps-tbl td.y{color:#5B6577}
+.ps-tbl tr.tot td{background:#F5F7F9;font-weight:700;border-top:1px solid #E3E7EC}
+.ps-tbl .one{font-size:11px;color:#2D6CDF;font-weight:600}
+.ps-pay{margin-top:18px;border:1px solid #E3E7EC;border-radius:12px;display:flex;justify-content:space-between;align-items:stretch;overflow:hidden}
+.ps-pay div:first-child{padding:14px 18px}.ps-pay b{font-size:14px;letter-spacing:.03em}.ps-pay small{display:block;color:#5B6577;font-size:12.5px}
+.ps-pay div:last-child{background:#EEF8F0;padding:14px 22px;font-size:20px;font-weight:700;display:flex;align-items:center;color:#131C3F}
+.ps-words{text-align:right;margin-top:14px;color:#1B2430}.ps-words span{color:#5B6577}
+.ps-foot{margin-top:22px;padding-top:14px;border-top:1.5px solid #E3E7EC;text-align:center;color:#7A8494;font-size:11.5px}
+.ps-draft{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;color:#A3650E;background:#FCF1DE;border-radius:999px;padding:2px 8px;vertical-align:3px}
+@media (max-width:640px){.ps{padding:20px 16px}.ps-sum,.ps-tbl,.ps-ids{grid-template-columns:1fr}.ps-tbl table+table{border-left:0;border-top:1px solid #E3E7EC}.ps-kv,.ps-ids div{grid-template-columns:120px 10px 1fr}}
+@media print{@page{size:A4;margin:12mm}body{margin:0}.ps{padding:0;max-width:none}}`;
+
+async function payslipYTD(ps) {
+  // financial year April–March, published payslips up to this month
+  const [y, m] = String(ps.period).split('-').map(Number), fy = m >= 4 ? y : y - 1;
+  const rows = await q(sb.from('payslips').select('period,earnings,deductions,status').eq('employee_id', ps.employee_id).gte('period', `${fy}-04-01`).lte('period', ps.period)).catch(() => []);
+  const list = rows.filter(r => r.status === 'published' || r.period === ps.period);
+  if (!list.some(r => r.period === ps.period)) list.push(ps);
+  const sum = key => { const t = {}; list.forEach(r => (r[key] || []).forEach(x => { const k = x.lop ? 'Loss of Pay' : x.name; t[k] = (t[k] || 0) + Number(x.amount || 0); })); return t; };
+  return { earn: sum('earnings'), ded: sum('deductions') };
+}
+function payslipHTML(ps, ytd) {
+  const e = ps.employee || {}, c = ps.company || {};
+  const kv = (k, v) => `<span>${k}</span><span>:</span><b>${esc(v || '—')}</b>`;
+  const ids = [['PAN', e.pan], ['UAN', e.uan], ['PF A/C Number', e.pf_number], ['Bank Account', e.bank_name || e.account_masked ? `${e.bank_name || ''}${e.account_masked ? ` · ${e.account_masked}` : ''}` : '']];
+  const rowsE = ps.earnings || [], rowsD = ps.deductions || [], n = Math.max(rowsE.length, rowsD.length, 1);
+  const ytdOf = (map, x) => inr(map[x.lop ? 'Loss of Pay' : x.name] ?? x.amount);
+  const cell = (x, map) => x ? `<td>${esc(x.name)}${x.one_off ? ' <span class="one">one-off</span>' : ''}</td><td class="r"><b>${inr(x.amount)}</b></td><td class="r y">${ytdOf(map, x)}</td>` : '<td></td><td></td><td></td>';
+  return `<div class="ps">
+    <div class="ps-top"><div class="ps-brand">${LOGO_SVG_DARK()}<div class="ps-co"><b>${esc(c.name || CONFIG.COMPANY)}</b><span>${esc(c.address || '')}</span></div></div>
+      <div class="ps-month"><span>Payslip for the month</span><b>${monthLabel(ps.period)}${ps.status !== 'published' ? '<span class="ps-draft">DRAFT</span>' : ''}</b></div></div>
+    <div class="ps-sum">
+      <div><div class="ps-h">Employee summary</div><div class="ps-kv">${kv('Employee Name', e.name)}${kv('Designation', e.designation)}${kv('Employee ID', e.employee_code)}${kv('Date of Joining', e.date_of_joining ? fmtDate(e.date_of_joining) : '')}${kv('Pay Period', monthLabel(ps.period))}${kv('Pay Date', ps.pay_date ? fmtDate(ps.pay_date) : '')}</div></div>
+      <div class="ps-net"><div class="ps-net-top"><b>${inr(ps.net_pay)}</b><span>Employee Net Pay</span></div>
+        <div class="ps-net-kv"><span>Working Days</span><span>:</span><b>${num(ps.working_days)}</b><span>Paid Days</span><span>:</span><b>${num(ps.paid_days)}</b><span>LOP Days</span><span>:</span><b>${num(ps.lop_days)}</b></div></div>
+    </div>
+    <div class="ps-ids">${ids.map(([k, v]) => `<div><span>${k}</span><span>:</span><b>${esc(v || '—')}</b></div>`).join('')}</div>
+    <div class="ps-tbl">
+      <table><thead><tr><th>Earnings</th><th class="r">Amount</th><th class="r">YTD</th></tr></thead><tbody>
+        ${Array.from({ length: n }, (_, i) => `<tr>${cell(rowsE[i], ytd.earn)}</tr>`).join('')}
+        <tr class="tot"><td>Gross Earnings</td><td class="r">${inr(ps.gross_earnings)}</td><td></td></tr></tbody></table>
+      <table><thead><tr><th>Deductions</th><th class="r">Amount</th><th class="r">YTD</th></tr></thead><tbody>
+        ${Array.from({ length: n }, (_, i) => `<tr>${cell(rowsD[i], ytd.ded)}</tr>`).join('')}
+        <tr class="tot"><td>Total Deductions</td><td class="r">${inr(ps.total_deductions)}</td><td></td></tr></tbody></table>
+    </div>
+    <div class="ps-pay"><div><b>TOTAL NET PAYABLE</b><small>Gross Earnings − Total Deductions</small></div><div>${inr(ps.net_pay)}</div></div>
+    <div class="ps-words"><span>Amount in words : </span>${inWords(ps.net_pay)}</div>
+    <div class="ps-foot">-- ${esc(c.footer || 'This is a system-generated payslip and does not require a signature.')} --</div>
+  </div>`;
+}
+function lopExplain(ps) {
+  const b = ps.breakdown || {}, parts = [];
+  if (+b.absent) parts.push(`${num(b.absent)} absent`);
+  if (+b.unpaid_leave) parts.push(`${num(b.unpaid_leave)} unpaid leave`);
+  if (+b.late_checkins) parts.push(`${b.late_checkins} late check-in${b.late_checkins > 1 ? 's' : ''}${+b.late_lop ? ` = ${num(b.late_lop)} day` : ' (no deduction yet)'}`);
+  if (+b.missed_checkouts) parts.push(`${b.missed_checkouts} missed check-out${b.missed_checkouts > 1 ? 's' : ''}${+b.missed_lop ? ` = ${num(b.missed_lop)} day` : ' (not deducted)'}`);
+  if (+b.not_joined) parts.push(`${num(b.not_joined)} working days before joining`);
+  if (ps.lop_override != null) parts.push(`LOP set by admin to ${num(ps.lop_override)} days`);
+  return parts.join(' · ') || 'No loss of pay';
+}
+async function viewPayslip(ps) {
+  const ytd = await payslipYTD(ps);
+  openModal({
+    title: `Payslip · ${ps.employee?.name || ''} · ${monthLabel(ps.period)}`, wide: true,
+    body: `<style>${PS_CSS}</style><div class="note" style="margin-bottom:14px"><b>Loss of pay:</b> ${esc(lopExplain(ps))}${ps.breakdown?.per_day ? ` · per day ${inr(ps.breakdown.per_day)} (salary ÷ ${num(ps.working_days)} working days)` : ''}</div>
+      <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">${payslipHTML(ps, ytd)}</div>`,
+    footer: `<button class="btn" data-close>Close</button><button class="btn primary" id="ps-pdf">${icon('download')}Download PDF</button>`,
+    onMount: (root, close) => { $('[data-close]', root).onclick = close; $('#ps-pdf', root).onclick = () => printPayslips([[ps, ytd]]); }
+  });
+}
+function printPayslips(list) {
+  const w = window.open('', '_blank');
+  if (!w) return toast('Allow pop-ups for this site to download the PDF', 'bad');
+  const name = list.length === 1 ? `Payslip-${(list[0][0].employee?.name || '').replace(/\s+/g, '-')}-${String(list[0][0].period).slice(0, 7)}` : `Payslips-${String(list[0][0].period).slice(0, 7)}`;
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(name)}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>${PS_CSS} .pg{page-break-after:always}.pg:last-child{page-break-after:auto} body{background:#fff} .hint{font-family:Arial,sans-serif;text-align:center;color:#5B6577;font-size:13px;padding:10px} @media print{.hint{display:none}}</style></head>
+    <body><div class="hint">In the print window, choose <b>Save as PDF</b> as the destination.</div>${list.map(([ps, ytd]) => `<div class="pg">${payslipHTML(ps, ytd)}</div>`).join('')}
+    <script>window.onload=()=>setTimeout(()=>window.print(),400)<\/script></body></html>`);
+  w.document.close();
+}
+
+/* My payslips (everyone) */
+VIEWS.payslips = async (el, param) => {
+  const [mine, sal, det] = await Promise.all([
+    q(sb.from('payslips').select('*').eq('employee_id', S.me.id).eq('status', 'published').order('period', { ascending: false })).catch(() => []),
+    q(sb.from('salary_structures').select('*').eq('employee_id', S.me.id).maybeSingle()).catch(() => null),
+    q(sb.from('payroll_details').select('*').eq('employee_id', S.me.id).maybeSingle()).catch(() => null)
+  ]);
+  const missing = ['account_number', 'ifsc', 'bank_name'].filter(k => !det?.[k]);
+  el.innerHTML = `${missing.length ? `<div class="nudge"><div><b>Add your bank details</b><div class="task-sub">Your bank name, account number and IFSC appear on your payslip. PAN and UAN can be added too.</div></div><button class="btn primary sm" id="ps-bank">Add details</button></div>` : ''}
+    <div class="stats"><div class="stat"><span>Monthly salary</span><b>${sal ? inr0(sal.monthly_gross) : '—'}</b></div><div class="stat"><span>Payslips</span><b>${mine.length}</b></div><div class="stat"><span>Latest net pay</span><b>${mine[0] ? inr0(mine[0].net_pay) : '—'}</b></div><div class="stat"><span>Payslips come out on</span><b>${S.settings.payroll_run_day || 10}th</b></div></div>
+    <div class="card"><div class="card-h"><h2>My payslips</h2><span class="sub">Only you and admins can see these</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Month</th><th>Paid days</th><th>LOP days</th><th>Gross</th><th>Deductions</th><th>Net pay</th><th></th></tr></thead><tbody>
+      ${mine.map(p => `<tr><td><b>${monthLabel(p.period)}</b><div class="task-sub">Paid on ${fmtDate(p.pay_date)}</div></td><td class="num">${num(p.paid_days)} / ${num(p.working_days)}</td><td class="num">${+p.lop_days ? `<span class="pill warn">${num(p.lop_days)}</span>` : '0'}</td><td class="num">${inr0(p.gross_earnings)}</td><td class="num">${inr0(p.total_deductions)}</td><td class="num"><b>${inr0(p.net_pay)}</b></td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-view="${p.id}">View</button> <button class="btn sm" data-pdf="${p.id}">${icon('download')}PDF</button></td></tr>`).join('') || `<tr><td colspan="7" class="empty">No payslips yet. They are published on the ${S.settings.payroll_run_day || 10}th of every month for the month before.</td></tr>`}
+      </tbody></table></div></div>`;
+  $('#ps-bank') && ($('#ps-bank').onclick = () => openPayrollDetails(S.me.id, det));
+  $$('[data-view]', el).forEach(b => b.onclick = () => viewPayslip(mine.find(p => p.id === b.dataset.view)));
+  $$('[data-pdf]', el).forEach(b => b.onclick = async () => { const p = mine.find(x => x.id === b.dataset.pdf); printPayslips([[p, await payslipYTD(p)]]); });
+  if (param) { const p = mine.find(x => String(x.period).startsWith(param)); if (p) viewPayslip(p); }
+};
+
+function openPayrollDetails(empId, det, after) {
+  const d = det || {}, mine = empId === S.me.id;
+  openModal({
+    title: mine ? 'Bank and payroll details' : `Bank and payroll details · ${nameOf(empId)}`,
+    body: `<div class="form-grid">
+      <div class="field"><label for="pd-bank">Bank name</label><input id="pd-bank" type="text" value="${esc(d.bank_name || '')}" placeholder="e.g. State Bank of India"></div>
+      <div class="field"><label for="pd-holder">Account holder name</label><input id="pd-holder" type="text" value="${esc(d.account_name || '')}" placeholder="As in bank records"></div>
+      <div class="field"><label for="pd-acct">Account number</label><input id="pd-acct" type="text" inputmode="numeric" value="${esc(d.account_number || '')}" autocomplete="off"></div>
+      <div class="field"><label for="pd-ifsc">IFSC</label><input id="pd-ifsc" type="text" value="${esc(d.ifsc || '')}" placeholder="e.g. SBIN0012927" style="text-transform:uppercase"></div>
+      <div class="field"><label for="pd-pan">PAN <span class="task-sub" style="font-weight:400">(optional)</span></label><input id="pd-pan" type="text" value="${esc(d.pan || '')}" placeholder="ABCDE1234F" style="text-transform:uppercase"></div>
+      <div class="field"><label for="pd-uan">UAN <span class="task-sub" style="font-weight:400">(optional, 12 digits)</span></label><input id="pd-uan" type="text" inputmode="numeric" value="${esc(d.uan || '')}"></div>
+      <div class="field full"><label for="pd-pf">PF account number <span class="task-sub" style="font-weight:400">(optional)</span></label><input id="pd-pf" type="text" value="${esc(d.pf_number || '')}"></div>
+      <div class="note full">Only ${mine ? 'you and' : 'this person and'} admins can see these details. Payslips show the account number masked, e.g. XXXX4910.</div>
+    </div>`,
+    footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="pd-save">Save details</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#pd-save', root).onclick = async () => {
+        const v = s => $(s, root).value.trim() || null;
+        const row = { employee_id: empId, bank_name: v('#pd-bank'), account_name: v('#pd-holder'), account_number: (v('#pd-acct') || '').replace(/\s/g, '') || null, ifsc: (v('#pd-ifsc') || '').toUpperCase() || null, pan: (v('#pd-pan') || '').toUpperCase() || null, uan: (v('#pd-uan') || '').replace(/\s/g, '') || null, pf_number: v('#pd-pf'), updated_at: new Date().toISOString() };
+        if (row.account_number && !/^\d{6,20}$/.test(row.account_number)) return toast('Account number should be 6–20 digits', 'bad');
+        if (row.ifsc && !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(row.ifsc)) return toast('IFSC looks wrong. It is 11 characters, like SBIN0012927', 'bad');
+        if (row.pan && !/^[A-Z]{5}\d{4}[A-Z]$/.test(row.pan)) return toast('PAN looks wrong. It is like ABCDE1234F', 'bad');
+        if (row.uan && !/^\d{12}$/.test(row.uan)) return toast('UAN is 12 digits', 'bad');
+        try { await q(sb.from('payroll_details').upsert(row)); close(); toast('Details saved'); after ? after() : route(); } catch (e) { toast(e.message, 'bad'); }
+      };
+    }
+  });
+}
+
+/* Payroll (admins) */
+VIEWS.payroll = async el => {
+  const tab = S.prTab || 'run', today = istDate();
+  const def = (() => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; })();
+  el.innerHTML = `<div class="tabs">${[['run', 'Payslips'], ['salaries', 'Salaries & bank details'], ['settings', 'Payslip settings']].map(([v, l]) => `<button data-prt="${v}" class="${tab === v ? 'on' : ''}">${l}</button>`).join('')}</div><div id="pr-body"><div class="loading">Loading…</div></div>`;
+  $$('[data-prt]', el).forEach(b => b.onclick = () => { S.prTab = b.dataset.prt; route(); });
+  const body = $('#pr-body'), people = S.profiles.filter(p => p.is_active);
+
+  if (tab === 'salaries') {
+    const [sal, det] = await Promise.all([q(sb.from('salary_structures').select('*')), q(sb.from('payroll_details').select('*'))]);
+    const total = sal.reduce((s, x) => s + Number(x.monthly_gross || 0), 0);
+    body.innerHTML = `<div class="stats"><div class="stat"><span>On payroll</span><b>${sal.filter(s => +s.monthly_gross > 0).length}</b></div><div class="stat"><span>Monthly salaries</span><b>${inr0(total)}</b></div><div class="stat"><span>Bank details missing</span><b class="${people.filter(p => sal.some(s => s.employee_id === p.id) && !det.find(d => d.employee_id === p.id)?.account_number).length ? 'overdue' : ''}">${people.filter(p => sal.some(s => s.employee_id === p.id) && !det.find(d => d.employee_id === p.id)?.account_number).length}</b></div></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Monthly salary</th><th>Salary parts</th><th>Bank</th><th>PAN</th><th>UAN</th><th></th></tr></thead><tbody>
+      ${people.map(p => { const s = sal.find(x => x.employee_id === p.id), d = det.find(x => x.employee_id === p.id) || {};
+        return `<tr><td>${personLink(p, p.designation || '')}</td><td class="num"><b>${s ? inr0(s.monthly_gross) : '<span class="muted">Not set</span>'}</b></td><td style="white-space:normal">${s ? (s.earnings || []).map(x => esc(x.name)).join(', ') : '—'}</td>
+          <td>${d.account_number ? `${esc(d.bank_name || 'Bank')} · XXXX${esc(d.account_number.slice(-4))}` : '<span class="pill warn">Missing</span>'}</td><td>${esc(d.pan || '—')}</td><td>${esc(d.uan || '—')}</td>
+          <td style="text-align:right;white-space:nowrap"><button class="btn sm" data-sal="${p.id}">Salary</button> <button class="btn sm" data-bank="${p.id}">Bank & IDs</button></td></tr>`; }).join('')}
+      </tbody></table></div></div>`;
+    $$('[data-sal]', body).forEach(b => b.onclick = () => openSalary(b.dataset.sal, sal.find(x => x.employee_id === b.dataset.sal)));
+    $$('[data-bank]', body).forEach(b => b.onclick = () => openPayrollDetails(b.dataset.bank, det.find(x => x.employee_id === b.dataset.bank)));
+    return;
+  }
+
+  if (tab === 'settings') {
+    const st = S.settings;
+    body.innerHTML = `<div class="grid g-2"><div class="card"><div class="card-h"><h2>On the payslip</h2></div><div class="card-b"><div class="form-grid" style="grid-template-columns:1fr">
+        <div class="field"><label for="ps-co">Company name</label><input id="ps-co" type="text" value="${esc(st.payroll_company || 'Sharvii Technologies')}"></div>
+        <div class="field"><label for="ps-addr">Company address</label><textarea id="ps-addr" rows="3">${esc(st.payroll_address || '')}</textarea></div>
+        <div class="field"><label for="ps-foot">Footer note</label><input id="ps-foot" type="text" value="${esc(st.payroll_footer || '')}"></div></div></div></div>
+      <div class="card"><div class="card-h"><h2>Rules</h2></div><div class="card-b"><div class="form-grid" style="grid-template-columns:1fr">
+        <div class="field"><label for="ps-day">Publish payslips on day</label><input id="ps-day" type="number" min="1" max="28" value="${st.payroll_run_day || 10}"><span class="hint">Payslips for the previous month are published automatically at 9:00 AM on this day.</span></div>
+        <label class="check"><input type="checkbox" id="ps-auto" ${st.payroll_auto !== false ? 'checked' : ''}> Publish automatically every month</label>
+        <div class="field"><label for="ps-late">Late check-ins that make ½ day LOP</label><input id="ps-late" type="number" min="1" max="10" value="${st.payroll_lates_per_half_day || 3}"></div>
+        <div class="field"><label for="ps-miss">Missed check-out counts as</label><select id="ps-miss" data-nosearch>${[['0', 'No deduction (flag only)'], ['0.5', '½ day LOP'], ['1', '1 day LOP']].map(([v, l]) => `<option value="${v}" ${Number(st.payroll_missed_checkout_lop || 0) === +v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <div class="note">LOP per day = monthly salary ÷ working days in that month (Sundays, off Saturdays and holidays are not working days). Paid leave is never deducted.</div></div></div></div></div>
+      <div style="margin-top:16px"><button class="btn primary" id="ps-save">Save settings</button></div>`;
+    $('#ps-save').onclick = async () => {
+      try { await q(sb.from('settings').update({ payroll_company: $('#ps-co').value.trim() || 'Sharvii Technologies', payroll_address: $('#ps-addr').value.trim(), payroll_footer: $('#ps-foot').value.trim(), payroll_run_day: Math.min(28, Math.max(1, +$('#ps-day').value || 10)), payroll_auto: $('#ps-auto').checked, payroll_lates_per_half_day: Math.max(1, +$('#ps-late').value || 3), payroll_missed_checkout_lop: +$('#ps-miss').value }).eq('id', 1)); await loadDirectory(); toast('Payslip settings saved. Refresh drafts to apply them.'); route(); }
+      catch (e) { toast(e.message, 'bad'); }
+    };
+    return;
+  }
+
+  // Payslips for a month
+  const month = S.prMonth || def, period = `${month}-01`;
+  const [slips, sal] = await Promise.all([q(sb.from('payslips').select('*').eq('period', period)), q(sb.from('salary_structures').select('employee_id,monthly_gross'))]);
+  const onPay = people.filter(p => sal.some(s => s.employee_id === p.id && +s.monthly_gross > 0));
+  const pub = slips.filter(s => s.status === 'published'), drafts = slips.filter(s => s.status === 'draft');
+  const runDay = S.settings.payroll_run_day || 10;
+  const [yy, mm] = month.split('-').map(Number), nd = new Date(yy, mm, runDay), runDate = ymd(nd);
+  const shift = n => { const d = new Date(yy, mm - 1 + n, 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; };
+  const statusLine = pub.length && pub.length >= onPay.length ? `<span class="pill ok">Published</span> All ${pub.length} payslips are visible to the team.`
+    : `${pub.length ? `<span class="pill warn">${pub.length} published</span> ` : ''}${S.settings.payroll_auto !== false ? `Publishes automatically on <b>${fmtDate(runDate)}, 9:00 AM</b>.` : 'Automatic publishing is off.'} Drafts are visible only to admins.`;
+  body.innerHTML = `<div class="toolbar"><div class="field"><label>Month</label><div class="month-nav"><button class="btn sm icon-btn" id="pr-prev">${icon('back')}</button><b>${monthLabel(period)}</b><button class="btn sm icon-btn" id="pr-next" ${month >= today.slice(0, 7) ? 'disabled' : ''}>${icon('next')}</button></div></div><div class="grow"></div>
+      <button class="btn" id="pr-gen">${icon('clock')}${slips.length ? 'Refresh drafts' : 'Prepare drafts'}</button>
+      <button class="btn" id="pr-all" ${slips.length ? '' : 'disabled'}>${icon('download')}All PDFs</button>
+      <button class="btn primary" id="pr-pub" ${drafts.length || slips.length < onPay.length ? '' : 'disabled'}>Publish all</button></div>
+    <div class="note" style="margin-bottom:16px">${statusLine}</div>
+    <div class="stats"><div class="stat"><span>Employees</span><b>${slips.length}/${onPay.length}</b></div><div class="stat"><span>Gross</span><b>${inr0(slips.reduce((s, x) => s + +x.gross_earnings, 0))}</b></div><div class="stat"><span>Loss of pay</span><b>${inr0(slips.reduce((s, x) => s + (x.deductions || []).filter(d => d.lop).reduce((a, d) => a + +d.amount, 0), 0))}</b></div><div class="stat"><span>Net payable</span><b>${inr0(slips.reduce((s, x) => s + +x.net_pay, 0))}</b></div></div>
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Working</th><th>Paid</th><th>LOP</th><th>Gross</th><th>Deductions</th><th>Net pay</th><th>Status</th><th></th></tr></thead><tbody>
+    ${slips.sort((a, b) => (a.employee?.name || '').localeCompare(b.employee?.name || '')).map(s => `<tr><td><b>${esc(s.employee?.name || nameOf(s.employee_id))}</b><div class="task-sub">${esc(s.employee?.designation || '')}</div></td>
+      <td class="num">${num(s.working_days)}</td><td class="num">${num(s.paid_days)}</td><td class="num" title="${esc(lopExplain(s))}">${+s.lop_days ? `<span class="pill warn">${num(s.lop_days)}</span>` : '0'}${s.lop_override != null ? ' ✎' : ''}${+s.breakdown?.missed_checkouts && !+s.breakdown?.missed_lop ? ` <span class="task-sub" title="Missed check-outs (not deducted)">⚑${s.breakdown.missed_checkouts}</span>` : ''}</td>
+      <td class="num">${inr0(s.gross_earnings)}</td><td class="num">${inr0(s.total_deductions)}</td><td class="num"><b>${inr0(s.net_pay)}</b></td>
+      <td>${s.status === 'published' ? '<span class="pill ok">Published</span>' : '<span class="pill muted">Draft</span>'}</td>
+      <td style="text-align:right;white-space:nowrap"><button class="btn sm" data-psv="${s.id}">View</button> ${s.status === 'draft' ? `<button class="btn sm" data-psa="${s.id}">Adjust</button> <button class="btn sm" data-psp="${s.id}">Publish</button>` : `<button class="btn sm" data-psu="${s.id}" title="Move back to draft to correct it">Unpublish</button>`}</td></tr>`).join('') || `<tr><td colspan="9" class="empty">No payslips for ${monthLabel(period)} yet. Click <b>Prepare drafts</b> to calculate them now from attendance and leave, or wait for the automatic run.</td></tr>`}
+    </tbody></table></div></div>
+    ${onPay.length > slips.length && slips.length ? `<p class="task-sub">${onPay.length - slips.length} employee(s) on payroll have no payslip for this month (for example, they joined after the month ended). Refresh drafts to include anyone newly added.</p>` : ''}`;
+  $('#pr-prev').onclick = () => { S.prMonth = shift(-1); route(); };
+  $('#pr-next').onclick = () => { S.prMonth = shift(1); route(); };
+  const busy = async (btn, fn) => { const h = btn.innerHTML; btn.disabled = true; btn.textContent = 'Working…'; try { await fn(); } catch (e) { toast(e.message, 'bad'); } btn.disabled = false; btn.innerHTML = h; };
+  $('#pr-gen').onclick = e => busy(e.currentTarget, async () => { const n = await q(sb.rpc('generate_payslips', { p_period: period, p_publish: false })); toast(`${n} draft payslip${n === 1 ? '' : 's'} ready. Published ones were not changed.`); route(); });
+  $('#pr-pub').onclick = e => { if (!confirm(`Publish ${monthLabel(period)} payslips? Each employee will see theirs and get a notification.`)) return; busy(e.currentTarget, async () => { const n = await q(sb.rpc('generate_payslips', { p_period: period, p_publish: true })); toast(`${n} payslip${n === 1 ? '' : 's'} published`); route(); }); };
+  $('#pr-all').onclick = e => busy(e.currentTarget, async () => { const list = []; for (const s of slips.sort((a, b) => (a.employee?.name || '').localeCompare(b.employee?.name || ''))) list.push([s, await payslipYTD(s)]); printPayslips(list); });
+  $$('[data-psv]', body).forEach(b => b.onclick = () => viewPayslip(slips.find(s => s.id === b.dataset.psv)));
+  $$('[data-psa]', body).forEach(b => b.onclick = () => adjustPayslip(slips.find(s => s.id === b.dataset.psa)));
+  $$('[data-psp]', body).forEach(b => b.onclick = () => busy(b, async () => { await q(sb.rpc('set_payslip_status', { p_id: b.dataset.psp, p_status: 'published' })); toast('Payslip published'); route(); }));
+  $$('[data-psu]', body).forEach(b => b.onclick = () => { if (!confirm('Move this payslip back to draft? The employee will not see it until you publish it again.')) return; busy(b, async () => { await q(sb.rpc('set_payslip_status', { p_id: b.dataset.psu, p_status: 'draft' })); toast('Moved to draft'); route(); }); });
+};
+
+function adjustPayslip(ps) {
+  let adj = Array.isArray(ps.adjustments) ? ps.adjustments.map(x => ({ ...x })) : [];
+  openModal({
+    title: `Adjust · ${ps.employee?.name} · ${monthLabel(ps.period)}`, wide: true,
+    body: `<div class="note" style="margin-bottom:14px"><b>Calculated LOP:</b> ${esc(lopExplain({ ...ps, lop_override: null }))}</div>
+      <div class="form-grid">
+        <div class="field"><label for="ad-lop">LOP days (leave empty to use the calculation)</label><input id="ad-lop" type="number" min="0" step="0.5" value="${ps.lop_override ?? ''}" placeholder="${num(ps.lop_days)}"></div>
+        <div class="field"><label for="ad-note">Internal note</label><input id="ad-note" type="text" value="${esc(ps.notes || '')}" placeholder="Why it was changed (admins only)"></div>
+        <div class="full section-h" style="margin:4px 0 0"><b>One-off additions or deductions this month</b> <span class="task-sub">e.g. Bonus, Incentive, Advance recovery</span></div>
+        <div class="full" id="ad-list"></div>
+        <div class="full" style="display:flex;gap:8px"><button class="btn sm" type="button" data-adadd="earning">${icon('plus')}Addition</button><button class="btn sm" type="button" data-adadd="deduction">${icon('plus')}Deduction</button></div>
+      </div>`,
+    footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="ad-save">Save and recalculate</button>`,
+    onMount: (root, close) => {
+      const paint = () => { $('#ad-list', root).innerHTML = adj.length ? adj.map((x, i) => `<div class="ad-row"><span class="pill ${x.type === 'earning' ? 'ok' : 'bad'}">${x.type === 'earning' ? 'Addition' : 'Deduction'}</span><input type="text" data-an="${i}" value="${esc(x.name || '')}" placeholder="Name"><input type="number" data-aa="${i}" value="${esc(x.amount ?? '')}" min="0" step="1" placeholder="Amount ₹"><button class="x-btn" type="button" data-adel="${i}" aria-label="Remove">&times;</button></div>`).join('') : '<div class="muted" style="font-size:13px">None this month.</div>';
+        $$('[data-an]', root).forEach(i => i.oninput = () => adj[+i.dataset.an].name = i.value);
+        $$('[data-aa]', root).forEach(i => i.oninput = () => adj[+i.dataset.aa].amount = +i.value);
+        $$('[data-adel]', root).forEach(b => b.onclick = () => { adj.splice(+b.dataset.adel, 1); paint(); }); };
+      $$('[data-adadd]', root).forEach(b => b.onclick = () => { adj.push({ type: b.dataset.adadd, name: b.dataset.adadd === 'earning' ? 'Bonus' : 'Advance recovery', amount: 0 }); paint(); });
+      paint();
+      $('[data-close]', root).onclick = close;
+      $('#ad-save', root).onclick = async () => {
+        const clean = adj.filter(x => x.name?.trim() && +x.amount > 0).map(x => ({ type: x.type, name: x.name.trim().slice(0, 60), amount: Math.round(+x.amount) }));
+        const lopV = $('#ad-lop', root).value;
+        try {
+          await q(sb.from('payslips').update({ adjustments: clean, lop_override: lopV === '' ? null : Math.max(0, +lopV), notes: $('#ad-note', root).value.trim() || null }).eq('id', ps.id));
+          await q(sb.rpc('generate_payslips', { p_period: ps.period, p_publish: false, p_only: ps.employee_id }));
+          close(); toast('Payslip recalculated'); route();
+        } catch (e) { toast(e.message, 'bad'); }
+      };
+    }
+  });
+}
+
+function openSalary(empId, s) {
+  const p = profileOf(empId);
+  let parts = s?.earnings?.length ? s.earnings.map(x => ({ ...x })) : [{ name: 'Basic Salary', amount: s?.monthly_gross || 0 }];
+  let fixedDed = s?.deductions?.length ? s.deductions.map(x => ({ ...x })) : [];
+  openModal({
+    title: `Salary · ${p.full_name || p.email}`, wide: true,
+    body: `<div class="form-grid">
+      <div class="field"><label for="sl-gross">Monthly salary (gross) ₹</label><input id="sl-gross" type="number" min="0" step="100" value="${esc(s?.monthly_gross ?? '')}"></div>
+      <div class="field"><label for="sl-from">Effective from</label><input id="sl-from" type="date" value="${esc(s?.effective_from || '')}"></div>
+      <div class="full section-h" style="margin:4px 0 0"><b>Earnings on the payslip</b> <span class="task-sub" id="sl-sum"></span></div>
+      <div class="full" id="sl-parts"></div>
+      <div class="full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="sl-add">${icon('plus')}Add part</button><button class="btn sm" type="button" id="sl-std" title="Basic 50%, HRA 20%, Special Allowance 30%">Use standard split</button><button class="btn sm" type="button" id="sl-one">Single line</button></div>
+      <div class="full section-h" style="margin:8px 0 0"><b>Fixed monthly deductions</b> <span class="task-sub">optional, e.g. Professional Tax, PF</span></div>
+      <div class="full" id="sl-ded"></div>
+      <div class="full"><button class="btn sm" type="button" id="sl-addd">${icon('plus')}Add deduction</button></div>
+      <div class="note full">Changes apply to drafts the next time they are prepared or refreshed. Published payslips never change.</div>
+    </div>`,
+    footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="sl-save">Save salary</button>`,
+    onMount: (root, close) => {
+      const gross = () => +$('#sl-gross', root).value || 0;
+      const rows = (arr, box, key) => { $(box, root).innerHTML = arr.map((x, i) => `<div class="ad-row"><input type="text" data-${key}n="${i}" value="${esc(x.name)}" placeholder="Name"><input type="number" data-${key}a="${i}" value="${esc(x.amount)}" min="0" step="1" placeholder="₹ per month"><button class="x-btn" type="button" data-${key}d="${i}" aria-label="Remove">&times;</button></div>`).join('') || '<div class="muted" style="font-size:13px">None.</div>';
+        $$(`[data-${key}n]`, root).forEach(i => i.oninput = () => { arr[+i.getAttribute(`data-${key}n`)].name = i.value; });
+        $$(`[data-${key}a]`, root).forEach(i => i.oninput = () => { arr[+i.getAttribute(`data-${key}a`)].amount = +i.value; sum(); });
+        $$(`[data-${key}d]`, root).forEach(b => b.onclick = () => { arr.splice(+b.getAttribute(`data-${key}d`), 1); paint(); }); };
+      const sum = () => { const t = parts.reduce((a, x) => a + (+x.amount || 0), 0), g = gross(); $('#sl-sum', root).innerHTML = t === g ? `<span style="color:var(--ok)">Adds up to ${inr0(g)} ✓</span>` : `<span style="color:var(--bad)">Parts add up to ${inr0(t)}, salary is ${inr0(g)}</span>`; };
+      const paint = () => { rows(parts, '#sl-parts', 'p'); rows(fixedDed, '#sl-ded', 'x'); sum(); };
+      $('#sl-gross', root).oninput = () => { if (parts.length === 1) { parts[0].amount = gross(); paint(); } else sum(); };
+      $('#sl-add', root).onclick = () => { parts.push({ name: 'Special Allowance', amount: 0 }); paint(); };
+      $('#sl-addd', root).onclick = () => { fixedDed.push({ name: 'Professional Tax', amount: 0 }); paint(); };
+      $('#sl-std', root).onclick = () => { const g = gross(), b = Math.round(g * .5), h = Math.round(g * .2); parts = [{ name: 'Basic Salary', amount: b }, { name: 'House Rent Allowance', amount: h }, { name: 'Special Allowance', amount: g - b - h }]; paint(); };
+      $('#sl-one', root).onclick = () => { parts = [{ name: 'Basic Salary', amount: gross() }]; paint(); };
+      paint();
+      $('[data-close]', root).onclick = close;
+      $('#sl-save', root).onclick = async () => {
+        const g = gross(), cleanP = parts.filter(x => x.name?.trim()).map(x => ({ name: x.name.trim().slice(0, 60), amount: Math.round(+x.amount || 0) }));
+        if (g <= 0) return toast('Enter the monthly salary', 'bad');
+        if (cleanP.reduce((a, x) => a + x.amount, 0) !== Math.round(g)) return toast('The earnings parts must add up to the monthly salary', 'bad');
+        try {
+          await q(sb.from('salary_structures').upsert({ employee_id: empId, monthly_gross: g, earnings: cleanP, deductions: fixedDed.filter(x => x.name?.trim() && +x.amount > 0).map(x => ({ name: x.name.trim().slice(0, 60), amount: Math.round(+x.amount) })), effective_from: $('#sl-from', root).value || null, updated_by: S.me.id, updated_at: new Date().toISOString() }));
+          close(); toast('Salary saved'); route();
+        } catch (e) { toast(e.message, 'bad'); }
+      };
     }
   });
 }
