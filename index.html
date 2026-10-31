@@ -565,6 +565,7 @@ const num = n => (Math.round(Number(n || 0) * 10) / 10).toString();
 const initials = n => ((n || '?').trim().split(/\s+/).filter(w => /^[\p{L}\p{N}]/u.test(w)).slice(0, 2).map(x => x[0]).join('') || '?').toUpperCase();
 const isAdmin = () => S.me?.role === 'admin';
 const isMgr = () => S.me?.role === 'manager' || isAdmin();
+const eodEmailOn = () => !!(CONFIG.EOD_EMAIL || S.settings?.eod_email_enabled);
 const canLeads = () => isAdmin() || !!S.me?.can_leads;
 const nameOf = id => S.profiles.find(p => p.id === id)?.full_name || S.profiles.find(p => p.id === id)?.email || 'Unknown';
 const profileOf = id => S.profiles.find(p => p.id === id) || {};
@@ -997,26 +998,27 @@ const pausedBanner = () => (S.paused || []).length ? `<div class="paused-list">$
 /* ---------- Manual time entry (meetings, calls, work away from the timer) ---------- */
 const ACTIVITIES = ['Client call', 'Internal meeting', 'Team meeting', 'Training / learning', 'Research', 'Admin work', 'Travel', 'Other'];
 async function openTimeEntry(opts = {}) {
-  const today = istDate();
+  const today = istDate(), ed = opts.entry || null;   // ed = existing entry being edited
+  if (ed) { opts = { ...opts, taskId: ed.task_id || null, mode: ed.task_id ? 'task' : 'act', activity: ed.activity || '', projectId: ed.project_id || null, date: istDate(new Date(ed.started_at)) }; }
   let tasks = await q(sb.from('tasks').select('id,title,project,project_id,status,updated_at').eq('assigned_to', S.me.id).order('updated_at', { ascending: false }).limit(100)).catch(() => []);
   if (opts.taskId && !tasks.some(t => t.id === opts.taskId)) { const one = await q(sb.from('tasks').select('id,title,project,project_id,status').eq('id', opts.taskId).maybeSingle()).catch(() => null); if (one) tasks.unshift(one); }
   const now = istMin(), r5 = m => Math.max(0, Math.floor(m / 5) * 5), hhmm = m => `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
   const end = r5(now), start = Math.max(0, end - 60);
   openModal({
-    title: 'Add time',
+    title: ed ? 'Edit time' : 'Add time',
     body: `<div class="form-grid">
-      <div class="field full"><label>What was it?</label><div class="seg" style="align-self:flex-start"><button type="button" data-tt="task">Work on a task</button><button type="button" data-tt="act">Meeting or other activity</button></div></div>
-      <div class="field full" id="te-task-f"><label for="te-task">Task</label><select id="te-task"><option value="">Choose a task…</option>${tasks.map(t => `<option value="${t.id}" ${t.id === opts.taskId ? 'selected' : ''}>${esc(t.title)}${t.project ? ` · ${esc(t.project)}` : ''}${t.status === 'done' ? ' (done)' : ''}</option>`).join('')}</select></div>
+      <div class="field full" ${ed ? 'hidden' : ''}><label>What was it?</label><div class="seg" style="align-self:flex-start"><button type="button" data-tt="task">Work on a task</button><button type="button" data-tt="act">Meeting or other activity</button></div></div>
+      <div class="field full" id="te-task-f"><label for="te-task">Task</label><select id="te-task" ${ed ? 'disabled' : ''}><option value="">Choose a task…</option>${tasks.map(t => `<option value="${t.id}" ${t.id === opts.taskId ? 'selected' : ''}>${esc(t.title)}${t.project ? ` · ${esc(t.project)}` : ''}${t.status === 'done' ? ' (done)' : ''}</option>`).join('')}</select></div>
       <div class="field" id="te-proj-f" hidden><label for="te-proj">Project <span class="task-sub" style="font-weight:400">(optional)</span></label><select id="te-proj" data-search><option value="">No project (internal)</option>${S.projects.filter(p => p.status !== 'completed').map(p => `<option value="${p.id}" ${p.id === opts.projectId ? 'selected' : ''}>${esc(p.name)}${p.client ? ` · ${esc(p.client)}` : ''}</option>`).join('')}</select></div>
       <div class="field" id="te-act-f" hidden><label for="te-act">Activity</label><input id="te-act" type="text" list="te-acts" value="${esc(opts.activity || '')}" placeholder="e.g. Client call"><datalist id="te-acts">${ACTIVITIES.map(a => `<option value="${a}">`).join('')}</datalist></div>
-      <div class="field"><label for="te-date">Date</label><input id="te-date" type="date" value="${opts.date || today}" max="${today}" ${isMgr() ? '' : `min="${addDays(today, -7)}"`}></div>
+      <div class="field"><label for="te-date">Date</label> <input id="te-date" type="date" value="${opts.date || today}" max="${today}" ${isMgr() ? '' : `min="${addDays(today, -7)}"`}></div>
       <div class="field"><label>Duration</label><div id="te-dur" style="padding:9px 0;font-weight:700">1h 00m</div></div>
-      <div class="field"><label for="te-from">From</label><input id="te-from" type="time" value="${hhmm(start)}"></div>
-      <div class="field"><label for="te-to">To</label><input id="te-to" type="time" value="${hhmm(end)}"></div>
-      <div class="field full"><label for="te-note">Note (optional)</label><input id="te-note" type="text" maxlength="500" placeholder="e.g. FSS weekly call with Sarah, agreed next steps"></div>
-      <div class="note full">Time can be added for the last 7 days. It must not overlap time you already logged.</div>
+      <div class="field"><label for="te-from">From</label><input id="te-from" type="time" value="${ed ? istHM(ed.started_at) : hhmm(start)}"></div>
+      <div class="field"><label for="te-to">To</label><input id="te-to" type="time" value="${ed ? istHM(ed.ended_at) : hhmm(end)}"></div>
+      <div class="field full"><label for="te-note">Note (optional)</label><input id="te-note" type="text" maxlength="500" value="${esc(ed?.note || '')}" placeholder="e.g. FSS weekly call with Sarah, agreed next steps"></div>
+      <div class="note full">${ed ? 'You can edit your own time from the last 7 days.' : 'Time can be added for the last 7 days.'} It must not overlap time you already logged.</div>
     </div>`,
-    footer: `<button class="btn" data-close>Cancel</button><button class="btn primary" id="te-save">Add time</button>`,
+    footer: `${ed ? '<button class="btn danger" id="te-del" style="margin-right:auto">Remove</button>' : ''}<button class="btn" data-close>Cancel</button><button class="btn primary" id="te-save">${ed ? 'Save changes' : 'Add time'}</button>`,
     onMount: (root, close) => {
       let type = opts.mode === 'act' || opts.activity ? 'act' : 'task';
       const sync = () => { $('#te-task-f', root).hidden = type !== 'task'; $('#te-act-f', root).hidden = type !== 'act'; $('#te-proj-f', root).hidden = type !== 'act'; $$('[data-tt]', root).forEach(b => b.classList.toggle('on', b.dataset.tt === type)); };
@@ -1024,6 +1026,7 @@ async function openTimeEntry(opts = {}) {
       const dur = () => { const a = toMin($('#te-from', root).value), b = toMin($('#te-to', root).value); $('#te-dur', root).textContent = b > a ? hm(b - a) : '—'; };
       $('#te-from', root).oninput = dur; $('#te-to', root).oninput = dur; dur();
       $('[data-close]', root).onclick = close;
+      $('#te-del', root) && ($('#te-del', root).onclick = () => { close(); removeTimeEntry(ed.id); });
       $('#te-save', root).onclick = async () => {
         const taskId = type === 'task' ? $('#te-task', root).value : null, act = type === 'act' ? $('#te-act', root).value.trim() : null;
         if (type === 'task' && !taskId) return toast('Choose a task', 'bad');
@@ -1031,6 +1034,10 @@ async function openTimeEntry(opts = {}) {
         const b = $('#te-save', root); b.disabled = true;
         try {
           const added = $('#te-dur', root).textContent;
+          if (ed) {
+            await q(sb.rpc('edit_time_entry', { p_id: ed.id, p_date: $('#te-date', root).value, p_start: $('#te-from', root).value, p_end: $('#te-to', root).value, p_note: $('#te-note', root).value.trim() || null, p_activity: ed.task_id ? null : act, p_project_id: ed.task_id ? null : ($('#te-proj', root).value || null) }));
+            close(); toast(`Saved · ${added}`); await refreshRunning(); if (opts.onSaved) opts.onSaved(); else route(); return;
+          }
           await q(sb.rpc('add_time_entry', { p_task_id: taskId, p_activity: act, p_date: $('#te-date', root).value, p_start: $('#te-from', root).value, p_end: $('#te-to', root).value, p_note: $('#te-note', root).value.trim() || null, p_project_id: type === 'act' ? ($('#te-proj', root).value || null) : null }));
           close(); toast(`Added ${added}`); await refreshRunning();
           if (opts.onSaved) opts.onSaved(); else route();
@@ -2068,10 +2075,17 @@ async function eodTodayData() {
 }
 
 async function loadEodInfo(reports) {
-  // live task details (description, checklist) for the tasks listed in EOD reports
-  const ids = [...new Set(reports.flatMap(r => (r.tasks || []).map(t => t.task_id)).filter(Boolean))];
-  const rows = ids.length ? await inChunks(ids, ch => sb.from('tasks').select('id,title,description,checklist,project_id,project,status,due_date').in('id', ch)).catch(() => []) : [];
-  return Object.fromEntries(rows.map(t => [t.id, t]));
+  // task details (description, checklist) for the tasks listed in EOD reports.
+  // Read through the report, so people also see tasks that are assigned to someone else.
+  const out = {};
+  for (const r of reports) {
+    if (!(r.tasks || []).some(t => t.task_id)) continue;
+    let rows = null;
+    try { rows = await q(sb.rpc('eod_task_info', { p_report_id: r.id })); } catch { }
+    if (!rows) { const ids = (r.tasks || []).map(t => t.task_id).filter(Boolean); rows = await q(sb.from('tasks').select('id,title,description,checklist,project,status').in('id', ids)).catch(() => []); }
+    (rows || []).forEach(t => out[t.id] = t);
+  }
+  return out;
 }
 function eodView(r, info = {}) {
   const tasks = Array.isArray(r.tasks) ? r.tasks : [];
@@ -2158,8 +2172,8 @@ VIEWS.eod = async el => {
       <div class="field"><label for="eod-sum">What did you get done today?</label><textarea id="eod-sum" rows="5" placeholder="Key work, results, meetings…">${esc(existing?.summary || '')}</textarea></div>
       <div class="field"><label for="eod-block">Blockers or help needed</label><textarea id="eod-block" rows="2" placeholder="Anything stopping you? Leave empty if none.">${esc(existing?.blockers || '')}</textarea></div>
       <div class="field"><label for="eod-next">Plan for tomorrow</label><textarea id="eod-next" rows="3">${esc(existing?.tomorrow || '')}</textarea></div>
-      <button class="btn primary" id="eod-send" style="padding:12px">${CONFIG.EOD_EMAIL ? 'Submit and email report' : 'Submit report'}</button>
-      <div class="task-sub">${CONFIG.EOD_EMAIL ? `Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you.` : 'Saved for your managers and project managers. You can edit it until the end of the day.'}</div>
+      <button class="btn primary" id="eod-send" style="padding:12px">${eodEmailOn() ? 'Submit and email report' : 'Submit report'}</button>
+      <div class="task-sub">${eodEmailOn() ? `Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id && !(S.settings.eod_recipients || '').toLowerCase().includes((profileOf(S.me.manager_id).email || '~').toLowerCase()) ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you. Replies come to you.` : 'Saved for your managers and project managers. You can edit it until the end of the day.'}</div>
     </div></div></div></div>`;
   $('#eod-addtime').onclick = () => openTimeEntry({ mode: 'act', onSaved: () => route() });
   $('#eod-send').onclick = async e => {
@@ -2172,12 +2186,12 @@ VIEWS.eod = async el => {
       const saved = existing ? await q(sb.from('eod_reports').update(row).eq('id', existing.id).select().single()) : await q(sb.from('eod_reports').insert(row).select().single());
       b.textContent = 'Sending email…';
       let sent = false;
-      let why = ''; if (CONFIG.EOD_EMAIL) { try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; if (!sent) why = await fnError(error, data, 'send-eod'); } catch (e) { why = e.message; } }
+      let why = ''; if (eodEmailOn()) { try { const { data, error } = await sb.functions.invoke('send-eod', { body: { report_id: saved.id } }); sent = !error && data?.ok; if (!sent) why = await fnError(error, data, 'send-eod'); } catch (e) { why = e.message; } }
       if (!sent && isAdmin() && why) console.warn('EOD email:', why);
       S.eodEdit = false;
-      toast(sent ? 'EOD report submitted and emailed' : CONFIG.EOD_EMAIL ? 'EOD report saved. The email could not be sent; managers can still read it in the app.' : 'EOD report submitted. Your managers can see it in the app.', sent || !CONFIG.EOD_EMAIL ? 'ok' : 'bad');
+      toast(sent ? 'EOD report submitted and emailed' : eodEmailOn() ? 'EOD report saved. The email could not be sent; managers can still read it in the app.' : 'EOD report submitted. Your managers can see it in the app.', sent || !eodEmailOn() ? 'ok' : 'bad');
       route();
-    } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = CONFIG.EOD_EMAIL ? 'Submit and email report' : 'Submit report'; }
+    } catch (err) { toast(err.message, 'bad'); b.disabled = false; b.textContent = eodEmailOn() ? 'Submit and email report' : 'Submit report'; }
   };
 };
 
@@ -2990,7 +3004,10 @@ function printPayslips(list) {
 }
 
 /* My payslips (everyone) */
+const payrollMissing = e => /schema cache|does not exist|payroll_details|salary_structures|payslips/i.test(e?.message || '');
+const payrollSetupNote = '<div class="card empty"><b>Payroll is not switched on yet.</b><br>An admin needs to run <b>update_v16.sql</b> in Supabase (SQL Editor → New query → Run), then refresh this page.</div>';
 VIEWS.payslips = async (el, param) => {
+  try { await q(sb.from('payslips').select('id', { head: true, count: 'exact' }).limit(1)); } catch (e) { if (payrollMissing(e)) { el.innerHTML = payrollSetupNote; return; } }
   const [mine, sal, det] = await Promise.all([
     q(sb.from('payslips').select('*').eq('employee_id', S.me.id).eq('status', 'published').order('period', { ascending: false })).catch(() => []),
     q(sb.from('salary_structures').select('*').eq('employee_id', S.me.id).maybeSingle()).catch(() => null),
@@ -3041,6 +3058,7 @@ function openPayrollDetails(empId, det, after) {
 
 /* Payroll (admins) */
 VIEWS.payroll = async el => {
+  try { await q(sb.from('salary_structures').select('employee_id', { head: true, count: 'exact' }).limit(1)); } catch (e) { if (payrollMissing(e)) { el.innerHTML = payrollSetupNote; return; } }
   const tab = S.prTab || 'run', today = istDate();
   const def = (() => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; })();
   el.innerHTML = `<div class="tabs">${[['run', 'Payslips'], ['salaries', 'Salaries & bank details'], ['settings', 'Payslip settings']].map(([v, l]) => `<button data-prt="${v}" class="${tab === v ? 'on' : ''}">${l}</button>`).join('')}</div><div id="pr-body"><div class="loading">Loading…</div></div>`;
@@ -3295,7 +3313,9 @@ VIEWS.settings = async el => {
         <button class="btn primary" id="st-drive-save" style="margin-top:12px">Save link</button></div></div>
       <div class="card"><div class="card-h"><h2>EOD report email</h2></div><div class="card-b">
         <div class="field"><label for="eod-to">Send every EOD report to</label><textarea id="eod-to" rows="2" placeholder="support@sharvii.com, mounika@sharvii.com">${esc(st.eod_recipients || '')}</textarea><span class="hint">Separate emails with commas. The person's manager is added automatically and they get a copy.</span></div>
-        <button class="btn primary" id="eod-to-save" style="margin-top:12px">Save recipients</button></div></div>
+        <label class="check" style="margin-top:12px"><input type="checkbox" id="eod-on" ${st.eod_email_enabled ? 'checked' : ''}> Email every EOD report automatically</label>
+        <span class="hint muted" style="display:block;font-size:12.5px;margin-top:4px">Goes to the people above, with the team member in CC. Replies go to the team member. Turn on only after the <b>send-eod</b> email function is set up.</span>
+        <button class="btn primary" id="eod-to-save" style="margin-top:12px">Save</button></div></div>
       <div class="card"><div class="card-h"><h2>Data backup</h2></div><div class="card-b">
         <p class="muted" style="margin-top:0">All data is saved in your Supabase database. On the free plan there are no automatic backups, so download a copy once a month and keep it in Google Drive.</p>
         <button class="btn primary" id="bk-run">${icon('download')}Download backup</button></div></div>
@@ -3320,7 +3340,7 @@ VIEWS.settings = async el => {
   })();
   $('#ai-on').onchange = async e => { try { await q(sb.from('settings').update({ ai_enabled: e.target.checked }).eq('id', 1)); toast(e.target.checked ? 'AI summary turned on' : 'AI summary turned off'); await loadDirectory(); } catch (err) { e.target.checked = !e.target.checked; toast(err.message, 'bad'); } };
   $('#st-drive-save').onclick = async () => { const u = $('#st-drive').value.trim(); if (u && !/^https?:\/\//i.test(u)) return toast('The link must start with https://', 'bad'); try { await q(sb.from('settings').update({ drive_url: u || null }).eq('id', 1)); toast('Drive link saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
-  $('#eod-to-save').onclick = async () => { try { await q(sb.from('settings').update({ eod_recipients: $('#eod-to').value.trim() }).eq('id', 1)); toast('EOD recipients saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
+  $('#eod-to-save').onclick = async () => { try { await q(sb.from('settings').update({ eod_recipients: $('#eod-to').value.trim(), eod_email_enabled: $('#eod-on').checked }).eq('id', 1)); await loadDirectory(); toast('EOD recipients saved'); route(); } catch (e) { toast(e.message, 'bad'); } };
   $('#bk-run').onclick = async e => { const b = e.currentTarget, h = b.innerHTML; b.disabled = true; b.textContent = 'Preparing…'; try { await downloadBackup(); toast('Backup downloaded. Keep it in Google Drive.'); } catch (err) { toast(err.message, 'bad'); } b.disabled = false; b.innerHTML = h; };
   $('#sh-save').onclick = async () => {
     const v = id => $(id).value;
@@ -3365,13 +3385,17 @@ VIEWS.tasks = async el => {
   let qb = sb.from('tasks').select('*').order('created_at', { ascending: false }).limit(150);
   qb = scope === 'mine' ? qb.eq('assigned_to', S.me.id) : scope === 'byme' ? qb.eq('created_by', S.me.id).neq('assigned_to', S.me.id) : qb.neq('assigned_to', S.me.id);
   if (filter === 'open') qb = qb.neq('status', 'done'); else if (filter === 'done') qb = qb.eq('status', 'done');
-  const [tasks, todayLogs] = await Promise.all([
+  const day = S.timeDay && S.timeDay <= today ? S.timeDay : today;
+  const [tasks, todayLogs, dayLogsAll] = await Promise.all([
     q(qb),
-    q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', `${today}T00:00:00+05:30`))
+    q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', `${today}T00:00:00+05:30`)),
+    day === today ? Promise.resolve(null) : q(sb.from('time_logs').select('*').eq('employee_id', S.me.id).gte('started_at', `${day}T00:00:00+05:30`).lt('started_at', `${addDays(day, 1)}T00:00:00+05:30`))
   ]);
+  const dayLogs = dayLogsAll || todayLogs;
+  const canEditDay = isMgr() || day >= addDays(today, -7);
   const logs = tasks.length ? await q(sb.from('time_logs').select('task_id,started_at,ended_at,minutes').in('task_id', tasks.map(t => t.id))) : [];
   const logTitles = Object.fromEntries(tasks.map(t => [t.id, t.title]));
-  const missingT = [...new Set(todayLogs.map(l => l.task_id).filter(id => id && !logTitles[id]))];
+  const missingT = [...new Set(dayLogs.map(l => l.task_id).filter(id => id && !logTitles[id]))];
   if (missingT.length) (await q(sb.from('tasks').select('id,title').in('id', missingT)).catch(() => [])).forEach(t => logTitles[t.id] = t.title);
   const spent = id => logs.filter(l => l.task_id === id).reduce((s, l) => s + logMinutes(l), 0);
   const order = { in_progress: 0, review: 1, todo: 2, done: 3 };
@@ -3404,14 +3428,14 @@ VIEWS.tasks = async el => {
         <td><span class="pill ${pc}">${pl}</span></td>
         <td><select class="mini" data-status="${t.id}" aria-label="Status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
         <td class="num">${running ? '<b data-live-timer style="color:var(--bad)">0:00:00</b>' : `${hm(spent(t.id))}${isPaused(t.id) ? ' <span class="pill warn">Paused</span>' : ''}`}</td>
-        <td style="text-align:right;white-space:nowrap">${mine && t.status !== 'done' ? timerButtons(t) : ''} <button class="btn sm" data-edit="${t.id}">Edit</button></td></tr>`; }).join('')
+        <td style="text-align:right;white-space:nowrap">${mine && t.status !== 'done' ? timerButtons(t) : ''} <button class="btn sm" data-edit="${t.id}">Edit</button>${t.created_by === S.me.id || isMgr() ? `<button class="x-btn" data-deltask="${t.id}" title="Delete task" aria-label="Delete task">${icon('trash')}</button>` : ''}</td></tr>`; }).join('')
       : `<tr><td colspan="7" class="empty">${filter === 'done' ? 'No finished tasks yet.' : 'No open tasks. Create one and press Start to track your time.'}</td></tr>`}</tbody></table></div></div>
-    <div class="card" style="margin-top:20px"><div class="card-h"><h2>My time today</h2><span class="sub">${hm(todayLogs.reduce((s, l) => s + logMinutes(l), 0))} logged</span><div class="right"><button class="btn sm" id="t-addtime2">${icon('plus')}Add time</button></div></div>
+    <div class="card" style="margin-top:20px"><div class="card-h"><h2>My time</h2><span class="sub">${hm(dayLogs.reduce((s, l) => s + logMinutes(l), 0))} logged${day === today ? ' today' : ` on ${fmtDate(day)}`}</span><div class="right"><input id="t-day" type="date" value="${day}" max="${today}" ${isMgr() ? '' : `min="${addDays(today, -7)}"`} aria-label="Choose day" style="width:auto"><button class="btn sm" id="t-addtime2">${icon('plus')}Add time</button></div></div>
       <div class="table-wrap"><table><thead><tr><th>From – to</th><th>Task or activity</th><th>How</th><th>Time</th><th></th></tr></thead><tbody>
-      ${todayLogs.sort((a, b) => a.started_at.localeCompare(b.started_at)).map(l => `<tr><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : '<b style="color:var(--bad)">running</b>'}${l.paused ? ' <span class="pill warn">paused</span>' : ''}</td>
+      ${dayLogs.sort((a, b) => a.started_at.localeCompare(b.started_at)).map(l => `<tr><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : '<b style="color:var(--bad)">running</b>'}${l.paused ? ' <span class="pill warn">paused</span>' : ''}</td>
         <td style="white-space:normal"><span class="task-title">${esc(l.task_id ? (logTitles[l.task_id] || 'Task') : l.activity || 'Activity')}</span>${!l.task_id && l.project_id ? `<div class="task-sub">${esc(S.projects.find(p => p.id === l.project_id)?.name || '')}</div>` : ''}${l.note ? `<div class="task-sub">${esc(l.note)}</div>` : ''}</td>
-        <td>${l.kind === 'manual' ? '<span class="pill info">Added</span>' : '<span class="pill muted">Timer</span>'}</td><td class="num">${hm(logMinutes(l))}</td>
-        <td style="text-align:right">${l.ended_at ? `<button class="x-btn" data-deltime="${l.id}" aria-label="Remove entry" title="Remove">&times;</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">Nothing logged yet today. Start a timer, or add time for a meeting.</td></tr>'}
+        <td>${l.kind === 'manual' ? '<span class="pill info">Added</span>' : '<span class="pill muted">Timer</span>'}${l.edited_at ? ' <span class="task-sub" title="Edited">✎ edited</span>' : ''}</td><td class="num">${hm(logMinutes(l))}</td>
+        <td style="text-align:right;white-space:nowrap">${l.ended_at && canEditDay ? `<button class="btn sm" data-edittime="${l.id}">Edit</button><button class="x-btn" data-deltime="${l.id}" aria-label="Remove entry" title="Remove">&times;</button>` : ''}</td></tr>`).join('') || `<tr><td colspan="5" class="empty">${day === today ? 'Nothing logged yet today. Start a timer, or add time for a meeting.' : 'Nothing logged on this day.'}</td></tr>`}
       </tbody></table></div></div>`;
 
   $$('[data-scope]', el).forEach(b => b.onclick = () => { S.taskScope = b.dataset.scope; route(); });
@@ -3419,7 +3443,14 @@ VIEWS.tasks = async el => {
   $('#t-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#t-rows tr[data-s]').forEach(r => r.style.display = r.dataset.s.includes(v) ? '' : 'none'); };
   $('#t-new').onclick = () => openTask(null);
   $('#t-addtime').onclick = () => openTimeEntry();
-  $('#t-addtime2').onclick = () => openTimeEntry();
+  $('#t-addtime2').onclick = () => openTimeEntry(day === today ? {} : { date: day });
+  $$('[data-deltask]', el).forEach(b => b.onclick = async () => {
+    const t = tasks.find(x => x.id === b.dataset.deltask);
+    if (!confirm(`Delete the task "${t.title}"?\n\nIts comments and time go with it. Admins can restore it from the Recycle bin.`)) return;
+    try { await q(sb.from('tasks').delete().eq('id', t.id)); toast('Task deleted'); await refreshRunning(); route(); } catch (e) { toast(e.message, 'bad'); }
+  });
+  $('#t-day').onchange = e => { S.timeDay = e.target.value; route(); };
+  $$('[data-edittime]', el).forEach(b => b.onclick = () => openTimeEntry({ entry: dayLogs.find(l => l.id === b.dataset.edittime) }));
   $$('[data-deltime]', el).forEach(b => b.onclick = () => removeTimeEntry(b.dataset.deltime));
   bindTimerButtons(el);
   $$('[data-edit]', el).forEach(b => b.onclick = () => openTask(tasks.find(t => t.id === b.dataset.edit)));
