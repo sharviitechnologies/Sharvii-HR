@@ -504,6 +504,21 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
 .demo-box .seg button{white-space:nowrap;padding:7px 10px;font-size:13px}
 .demo-nudge{border-left-color:#C2255C}
 
+/* ---------- Rich text ---------- */
+.rt{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.rt:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.rt-bar{display:flex;flex-wrap:wrap;gap:2px;padding:4px 6px;border-bottom:1px solid var(--line);background:var(--canvas)}
+.rt-bar button{border:none;background:none;border-radius:6px;padding:4px 8px;font:inherit;font-size:13px;color:var(--ink-2);cursor:pointer}
+.rt-bar button:hover{background:#fff;color:var(--ink)}
+.rt-sep{width:1px;background:var(--line);margin:3px 4px}
+.rt-area{padding:10px 12px;outline:none;font-size:14.5px;line-height:1.5;overflow-wrap:anywhere}
+.rt-area:empty::before{content:attr(data-ph);color:var(--ink-3)}
+.rt-area ul,.rt-area ol,.rich ul,.rich ol{margin:4px 0;padding-left:22px}
+.rich a,.rt-area a{color:var(--info)}
+.cm-text.rich{white-space:normal}.eod-desc.rich{white-space:normal}
+.client-tbl td.num,.client-tbl th{white-space:nowrap}
+.client-tbl tr.tot td{background:var(--canvas);font-weight:700}
+
 /* ---------- Approvals ---------- */
 .req{padding:18px 20px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:14px}
 .req:last-child{border-bottom:none}
@@ -1607,9 +1622,9 @@ async function workReports(el) {
     body.innerHTML = `<div class="stats"><div class="stat"><span>Present</span><b>${tot.present}/${people.length}</b></div><div class="stat"><span>Tasks completed</span><b>${tot.done}</b></div><div class="stat"><span>Time on tasks</span><b>${hm(tot.mins)}</b></div><div class="stat"><span>EOD reports</span><b>${tot.eod}/${tot.present || people.length}</b></div></div>
       <div class="wr-grid">${days.map(d => `<div class="card wr-card"><div class="card-h">${personLink(d.p, d.p.designation || '')}<div class="right" style="flex-wrap:wrap;justify-content:flex-end">${attChip(d)}${d.eod ? '<span class="pill ok">EOD ✓</span>' : ['P', 'LT', 'M'].includes(d.code) ? '<span class="pill warn">No EOD</span>' : ''}</div></div><div class="card-b">
         ${Object.keys(d.byProj).length ? `<div class="wr-projs">${Object.entries(d.byProj).sort((a, b) => b[1] - a[1]).map(([k, m]) => `<span class="chip" style="padding-right:12px">${esc(k)}${m ? ` · ${hm(m)}` : ''}</span>`).join('')}</div>` : ''}
-        <div class="wr-sec"><b>Completed (${d.done.length})</b>${d.done.length ? `<ul>${d.done.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(projName(x) || '')}</span>${x.description ? `<div class="task-sub eod-clamp">${esc(x.description)}</div>` : ''}</li>`).join('')}</ul>` : '<div class="muted">—</div>'}</div>
-        ${d.workedOn.length ? `<div class="wr-sec"><b>Also worked on</b><ul>${d.workedOn.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(TSTATUS[x.status])}</span>${x.description ? `<div class="task-sub eod-clamp">${esc(x.description)}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
-        ${(d.eod?.tasks || []).filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).length ? `<div class="wr-sec"><b>From EOD</b><ul>${d.eod.tasks.filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).map(t => `<li>${esc(t.title)} <span class="task-sub">${esc(t.status_label || '')}${t.project ? ` · ${esc(t.project)}` : ''}</span>${t.description ? `<div class="task-sub eod-clamp">${esc(t.description)}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
+        <div class="wr-sec"><b>Completed (${d.done.length})</b>${d.done.length ? `<ul>${d.done.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(projName(x) || '')}</span>${x.description ? `<div class="task-sub eod-clamp">${esc(richPlain(x.description))}</div>` : ''}</li>`).join('')}</ul>` : '<div class="muted">—</div>'}</div>
+        ${d.workedOn.length ? `<div class="wr-sec"><b>Also worked on</b><ul>${d.workedOn.map(x => `<li>${esc(x.title)} <span class="task-sub">${esc(TSTATUS[x.status])}</span>${x.description ? `<div class="task-sub eod-clamp">${esc(richPlain(x.description))}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
+        ${(d.eod?.tasks || []).filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).length ? `<div class="wr-sec"><b>From EOD</b><ul>${d.eod.tasks.filter(t => !d.done.some(x => x.id === t.task_id) && !d.workedOn.some(x => x.id === t.task_id)).map(t => `<li>${esc(t.title)} <span class="task-sub">${esc(t.status_label || '')}${t.project ? ` · ${esc(t.project)}` : ''}</span>${t.description ? `<div class="task-sub eod-clamp">${esc(richPlain(t.description))}</div>` : ''}</li>`).join('')}</ul></div>` : ''}
         ${d.eod ? `<div class="wr-sec"><b>Summary</b><div class="cm-text">${esc(d.eod.summary || '—')}</div></div><div class="wr-sec"><b>Plan for tomorrow</b><div class="cm-text">${esc(d.eod.tomorrow || '—')}</div></div>${d.eod.blockers ? `<div class="wr-sec"><b style="color:var(--bad)">Blockers</b><div class="cm-text" style="color:var(--bad)">${esc(d.eod.blockers)}</div></div>` : ''}` : ''}
       </div></div>`).join('')}</div>`;
     exportRows = () => ({ name: `Daily-work-report-${date}`, sheets: [['Daily report', [['Date', 'Employee', 'Attendance', 'Check in', 'Check out', 'Hours at work', 'Tasks completed', 'Completed tasks', 'Projects (time)', 'Time on tasks (min)', 'EOD submitted', 'Summary', 'Plan for tomorrow', 'Blockers'],
@@ -1884,15 +1899,16 @@ async function deleteProject(pr, after) {
 const PSTATUS = { active: ['ok', 'Active'], on_hold: ['warn', 'On hold'], completed: ['muted', 'Completed'] };
 const PCOLORS = ['#3A9A52', '#2D6CDF', '#7C4DDB', '#D9480F', '#C2255C', '#0B7285', '#B7791F', '#131C3F'];
 
-function projectStats(pr, tasks, logs, today, actLogs = []) {
+function projectStats(pr, tasks, logs, today, actLogs = []) {   // mins = task time only; meetings are separate
   const ts = tasks.filter(t => t.project_id === pr.id);
   const by = st => ts.filter(t => t.status === st).length;
   const done = by('done'), pct = ts.length ? Math.round(done / ts.length * 100) : 0;
   const ids = new Set(ts.map(t => t.id));
-  const mins = logs.filter(l => ids.has(l.task_id)).reduce((s, l) => s + logMinutes(l), 0) + actLogs.filter(l => l.project_id === pr.id).reduce((s, l) => s + logMinutes(l), 0);
+  const mins = logs.filter(l => ids.has(l.task_id)).reduce((s, l) => s + logMinutes(l), 0);
+  const meetL = actLogs.filter(l => l.project_id === pr.id), meetMins = meetL.reduce((s, l) => s + logMinutes(l), 0), meetN = meetL.length;
   const overdue = ts.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
   const people = [...new Set(ts.map(t => t.assigned_to))].map(profileOf).filter(p => p.id);
-  return { ts, done, pct, mins, overdue, people, todo: by('todo'), prog: by('in_progress'), review: by('review') };
+  return { ts, done, pct, mins, meetMins, meetN, overdue, people, todo: by('todo'), prog: by('in_progress'), review: by('review') };
 }
 const stackBar = st => { const total = st.ts.length || 1;
   return `<div class="stack">${['done', 'review', 'in_progress', 'todo'].map(k => { const n = k === 'done' ? st.done : k === 'review' ? st.review : k === 'in_progress' ? st.prog : st.todo; return n ? `<span style="width:${n / total * 100}%;background:${TCOLOR[k]}" title="${TSTATUS[k]}: ${n}"></span>` : ''; }).join('')}</div>`; };
@@ -1915,7 +1931,7 @@ VIEWS.projects = async el => {
       <div class="task-sub" style="margin-top:4px">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}</div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><b style="font-size:24px">${st.pct}%</b><span class="task-sub">${st.done} of ${st.ts.length} tasks done</span></div>
       ${stackBar(st)}
-      <div class="proj-meta"><span>${hm(st.mins)} logged</span><span>${pr.due_date ? `Due ${dueTxt(pr)}` : 'Ongoing'}</span></div>
+      <div class="proj-meta"><span>${hm(st.mins)} on tasks${st.meetN ? ` · ${hm(st.meetMins)} calls` : ''}</span><span>${pr.due_date ? `Due ${dueTxt(pr)}` : 'Ongoing'}</span></div>
       <div class="avs">${st.people.slice(0, 7).map(p => `<span class="avatar" title="${esc(p.full_name)}">${esc(initials(p.full_name || p.email))}</span>`).join('')}${st.overdue ? `<button class="numlink" data-tl="over:${pr.id}" style="margin-left:auto"><span class="pill bad">${st.overdue} overdue</span></button>` : ''}</div>
     </a>`; };
   const row = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
@@ -1924,7 +1940,7 @@ VIEWS.projects = async el => {
       <td>${pr.owner_id ? esc(nameOf(pr.owner_id)) : '<span class="muted">—</span>'}</td>
       <td style="min-width:170px"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1">${stackBar(st)}</div><b class="num">${st.pct}%</b></div></td>
       <td class="num"><button class="numlink" data-tl="all:${pr.id}" title="Show tasks">${st.done}/${st.ts.length}</button></td><td class="num">${st.overdue ? `<button class="numlink" data-tl="over:${pr.id}" title="Show overdue tasks"><span class="pill bad">${st.overdue}</span></button>` : '0'}</td>
-      <td class="num">${hm(st.mins)}</td><td class="num">${dueTxt(pr)}</td><td><span class="pill ${pc}">${pl}</span></td>${isAdmin() ? `<td style="text-align:right"><button class="x-btn" data-delproj="${pr.id}" title="Delete project" aria-label="Delete project ${esc(pr.name)}">${icon('trash')}</button></td>` : ''}</tr>`; };
+      <td class="num">${hm(st.mins)}</td><td class="num">${st.meetN ? `${hm(st.meetMins)} <span class="task-sub">(${st.meetN})</span>` : '—'}</td><td class="num">${dueTxt(pr)}</td><td><span class="pill ${pc}">${pl}</span></td>${isAdmin() ? `<td style="text-align:right"><button class="x-btn" data-delproj="${pr.id}" title="Delete project" aria-label="Delete project ${esc(pr.name)}">${icon('trash')}</button></td>` : ''}</tr>`; };
 
   el.innerHTML = `<div class="toolbar">
       <div class="field"><label>Show</label><div class="seg">${[['active', 'Active'], ['on_hold', 'On hold'], ['completed', 'Completed'], ['all', 'All']].map(([v, l]) => `<button data-pf="${v}" class="${filter === v ? 'on' : ''}">${l} (${counts(v)})</button>`).join('')}</div></div>
@@ -1939,7 +1955,7 @@ VIEWS.projects = async el => {
     </div>
     ${!list.length ? `<div class="card empty">${S.projects.length ? 'No projects here.' : 'No projects yet. Create your first project to organise tasks by client or website.'}</div>`
       : layout === 'cards' ? `<div class="proj-grid" id="pj-items">${list.map(card).join('')}</div>`
-      : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Project</th><th>Project manager</th><th>Progress</th><th>Tasks</th><th>Overdue</th><th>Time</th><th>Due</th><th>Status</th>${isAdmin() ? '<th></th>' : ''}</tr></thead><tbody id="pj-items">${list.map(row).join('')}</tbody></table></div></div>`}`;
+      : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Project</th><th>Project manager</th><th>Progress</th><th>Tasks</th><th>Overdue</th><th>Task time</th><th>Calls</th><th>Due</th><th>Status</th>${isAdmin() ? '<th></th>' : ''}</tr></thead><tbody id="pj-items">${list.map(row).join('')}</tbody></table></div></div>`}`;
   $$('[data-pf]', el).forEach(b => b.onclick = () => { S.projFilter = b.dataset.pf; route(); });
   $$('[data-pl]', el).forEach(b => b.onclick = () => { S.projLayout = b.dataset.pl; route(); });
   const inProj = t => t.project_id && S.projects.some(p => p.id === t.project_id);
@@ -2047,7 +2063,11 @@ VIEWS.project = async (el, id) => {
         <div class="stats" style="margin:16px 0 0;grid-template-columns:repeat(3,1fr)">
           <div class="stat"><span>${daysLeft == null ? 'Timeline' : daysLeft >= 0 ? 'Days left' : 'Days overdue'}</span><b class="${daysLeft != null && daysLeft < 0 && pr.status !== 'completed' ? 'overdue' : ''}">${daysLeft == null ? 'Ongoing' : Math.abs(daysLeft)}</b></div>
           <button class="stat stat-btn" id="pv-over"><span>Overdue tasks</span><b class="${st.overdue ? 'overdue' : ''}">${st.overdue}</b>${st.overdue ? '<small>View list →</small>' : ''}</button>
-          <div class="stat"><span>Time logged</span><b>${hm(st.mins)}</b></div></div>
+          <div class="stat"><span>Task time</span><b>${hm(st.mins)}</b></div></div>
+        <div class="stats" style="margin:12px 0 0;grid-template-columns:repeat(3,1fr)">
+          <div class="stat"><span>Meetings & calls</span><b>${st.meetN}</b></div>
+          <div class="stat"><span>Call time</span><b>${hm(st.meetMins)}</b></div>
+          <div class="stat"><span>Total effort</span><b>${hm(st.mins + st.meetMins)}</b><small class="task-sub">tasks + calls</small></div></div>
       </div></div>
       <div class="card"><div class="card-h"><h2>Team workload</h2></div>
         <div class="table-wrap"><table><thead><tr><th>Person</th><th>Open</th><th>Review</th><th>Done</th><th>Overdue</th><th>Time</th></tr></thead><tbody>
@@ -2065,6 +2085,8 @@ VIEWS.project = async (el, id) => {
         ${attention.filter(t => isMgr() || t.assigned_to === S.me.id || t.created_by === S.me.id).map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="dot" style="background:${TCOLOR[t.status]}"></span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}</div></div>${due(t)}</div>`).join('') || '<div class="empty">Nothing overdue or due this week.</div>'}
       </div></div></div>
       <div class="grid" style="align-content:start">
+      <div class="card"><div class="card-h"><h2>Meetings & calls</h2><span class="sub">${meetLogs.length} · ${hm(st.meetMins)}</span><div class="right"><button class="btn sm" id="pj-addcall">${icon('plus')}Log a call</button></div></div>
+        ${meetLogs.length ? `<div class="table-wrap" style="max-height:340px;overflow:auto"><table><thead><tr><th>Date</th><th>Who</th><th>Call / activity</th><th>Time</th></tr></thead><tbody>${meetLogs.slice().sort((a, b) => b.started_at.localeCompare(a.started_at)).map(l => `<tr><td class="num">${fmtShort(istDate(new Date(l.started_at)))}<div class="task-sub">${fmtTime(l.started_at)}</div></td><td>${esc(nameOf(l.employee_id))}</td><td style="white-space:normal"><b>${esc(l.activity || 'Meeting')}</b>${l.note ? `<div class="task-sub">${esc(l.note)}</div>` : ''}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="card-b"><div class="empty">No calls or meetings logged on this project yet. Use <b>Add time → Meeting or other activity</b> and choose this project.</div></div>'}</div>
       <div class="card"><div class="card-h"><h2>Documents</h2><span class="sub">Briefs, proposals, designs, credentials</span></div><div class="card-b" id="pj-docs"></div></div>
       <div class="card"><div class="card-h"><h2>Discussion</h2><span class="sub">Updates for the whole project</span></div><div class="card-b" id="pj-comments"></div></div></div>
     </div>`;
@@ -2091,6 +2113,7 @@ VIEWS.project = async (el, id) => {
       </tbody></table></div></div>`}`;
 
   $('#pv-edit') && ($('#pv-edit').onclick = () => openProject(pr));
+  $('#pj-addcall') && ($('#pj-addcall').onclick = () => openTimeEntry({ mode: 'act', projectId: pr.id, activity: 'Client call' }));
   $('#pv-del') && ($('#pv-del').onclick = () => deleteProject(pr, () => { location.hash = '#/projects'; }));
   $('#pv-over') && ($('#pv-over').onclick = () => taskListModal('Overdue tasks', tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date < today)));
   $('#pv-add').onclick = () => openTask(null, { projectId: id });
@@ -2141,7 +2164,7 @@ async function eodTodayData() {
   const lastLog = id => logs.filter(l => l.task_id === id).reduce((m, l) => (l.created_at || l.started_at) > m ? (l.created_at || l.started_at) : m, '');
   const items = all.map(t => ({ key: t.id, task_id: t.id, title: t.title, description: (t.description || '').slice(0, 1000), project: projName(t), status: t.status, status_label: TSTATUS[t.status], minutes: Math.round(mins(t.id)), auto: worked(t), last: [lastLog(t.id), t.completed_at || ''].sort().pop() }));
   const acts = {};   // meetings and other activities logged today
-  logs.filter(l => !l.task_id && l.activity).forEach(l => { const k = `act:${l.activity}|${l.note || ''}`; acts[k] = acts[k] || { key: k, task_id: null, title: l.activity, description: l.note || '', project: l.project_id ? (S.projects.find(p => p.id === l.project_id)?.name || '') : '', status: 'activity', status_label: 'Meeting / activity', minutes: 0, auto: true, last: '' }; acts[k].minutes += logMinutes(l); if ((l.created_at || l.started_at) > acts[k].last) acts[k].last = l.created_at || l.started_at; });
+  logs.filter(l => !l.task_id && l.activity).forEach(l => { const k = `act:${l.id}`; acts[k] = acts[k] || { key: k, log_id: l.id, ended: !!l.ended_at, task_id: null, title: l.activity, description: l.note || '', project: l.project_id ? (S.projects.find(p => p.id === l.project_id)?.name || '') : '', status: 'activity', status_label: 'Meeting / activity', minutes: 0, auto: true, last: '' }; acts[k].minutes += logMinutes(l); if ((l.created_at || l.started_at) > acts[k].last) acts[k].last = l.created_at || l.started_at; });
   Object.values(acts).forEach(a => { a.minutes = Math.round(a.minutes); items.push(a); });
   items.sort((a, b) => b.auto - a.auto || b.minutes - a.minutes);
   return { att, items };
@@ -2172,7 +2195,7 @@ function eodView(r, info = {}) {
     return `<div class="eod-item">
       <div class="eod-item-h"><b>${esc(t.title)}</b><span class="num eod-time">${t.minutes ? hm(t.minutes) : ''}</span></div>
       <div class="eod-tags">${isAct ? '<span class="pill info">Meeting / activity</span>' : `<span class="pill" style="background:${TCOLOR[t.status] || '#8A94A6'}1f;color:${TCOLOR[t.status] || '#8A94A6'}">${esc(t.status_label || TSTATUS[t.status] || '')}</span>`}${proj ? `<span class="pill muted">${esc(proj)}</span>` : ''}${ck.length ? `<span class="task-sub">Checklist ${ck.filter(x => x.done).length}/${ck.length}</span>` : ''}</div>
-      ${desc ? `<div class="eod-desc">${esc(desc)}</div>` : ''}
+      ${desc ? `<div class="eod-desc rich">${richHTML(desc)}</div>` : ''}
     </div>`;
   };
   return `<div class="eod-read">
@@ -2180,9 +2203,9 @@ function eodView(r, info = {}) {
     <div class="eod-grid">
       <div><div class="section-h"><b>Work done (${tasks.length})</b></div>${tasks.length ? `<div class="eod-list">${tasks.map(item).join('')}</div>` : '<div class="muted">No tasks listed.</div>'}</div>
       <div>
-        <div class="eod-box"><div class="section-h" style="margin-top:0"><b>Summary</b></div><div class="cm-text">${esc(r.summary || '—')}</div></div>
-        <div class="eod-box ${r.blockers ? 'warn' : ''}"><div class="section-h" style="margin-top:0"><b>Blockers / help needed</b></div><div class="cm-text">${esc(r.blockers || 'None')}</div></div>
-        <div class="eod-box"><div class="section-h" style="margin-top:0"><b>Plan for tomorrow</b></div><div class="cm-text">${esc(r.tomorrow || '—')}</div></div>
+        <div class="eod-box"><div class="section-h" style="margin-top:0"><b>Summary</b></div><div class="cm-text rich">${r.summary ? richHTML(r.summary) : '—'}</div></div>
+        <div class="eod-box ${r.blockers ? 'warn' : ''}"><div class="section-h" style="margin-top:0"><b>Blockers / help needed</b></div><div class="cm-text rich">${r.blockers ? richHTML(r.blockers) : 'None'}</div></div>
+        <div class="eod-box"><div class="section-h" style="margin-top:0"><b>Plan for tomorrow</b></div><div class="cm-text rich">${r.tomorrow ? richHTML(r.tomorrow) : '—'}</div></div>
       </div>
     </div></div>`;
 }
@@ -2243,25 +2266,28 @@ VIEWS.eod = async el => {
   body.innerHTML = `<div class="grid g-2">
     <div class="card"><div class="card-h"><h2>Tasks today</h2><span class="sub">Tasks you finished, timed, added or updated today are ticked. Untick anything that isn't today's work.</span></div><div class="card-b">
       ${items.length ? items.map((t, i) => `<label class="eod-task"><input type="checkbox" data-i="${i}" ${(existing ? prevIds.has(t.key) || (t.auto && t.last && t.last > existing.submitted_at) : t.auto) ? 'checked' : ''}>
-          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.task_id ? (t.project || 'No project') : (t.project ? `Meeting · ${t.project}` : 'Logged time'))}</div>${t.description ? `<div class="task-sub eod-clamp">${esc(t.description)}</div>` : ''}</div>
-          ${t.task_id ? `<span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span>` : '<span class="pill info">Meeting / activity</span>'}<span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
+          <div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(t.task_id ? (t.project || 'No project') : (t.project ? `Meeting · ${t.project}` : 'Logged time'))}</div>${t.description ? `<div class="task-sub eod-clamp">${esc(richPlain(t.description))}</div>` : ''}</div>
+          ${t.task_id ? `<span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span>` : `<span class="pill info">Meeting / activity</span>${t.log_id && t.ended ? `<button class="btn sm" type="button" data-eodedit="${t.log_id}">Edit</button><button class="x-btn" type="button" data-eoddel="${t.log_id}" title="Remove this entry" aria-label="Remove">${icon('trash')}</button>` : ''}`}<span class="num" style="min-width:64px;text-align:right">${t.minutes ? hm(t.minutes) : '—'}</span></label>`).join('')
         : '<div class="empty">No tasks tracked today. Use the timer on the Tasks page tomorrow, and it fills this in for you. For today, describe your work in the summary.</div>'}
       <div style="margin-top:12px"><button class="btn sm" type="button" id="eod-addtime">${icon('plus')}Add time for a meeting or call</button></div>
       <div class="task-sub" style="margin-top:10px">${att?.check_in ? `Checked in ${fmtTime(att.check_in)}${att.check_out ? ` · out ${fmtTime(att.check_out)}` : ''} · ${worked.toFixed(1)} h` : 'Not checked in today'}</div>
     </div></div>
     <div class="card"><div class="card-h"><h2>${fmtDate(today)}</h2></div><div class="card-b"><div class="form-grid" style="grid-template-columns:1fr">
-      <div class="field"><label for="eod-sum">What did you get done today?</label><textarea id="eod-sum" rows="5" placeholder="Key work, results, meetings…">${esc(existing?.summary || '')}</textarea></div>
-      <div class="field"><label for="eod-block">Blockers or help needed</label><textarea id="eod-block" rows="2" placeholder="Anything stopping you? Leave empty if none.">${esc(existing?.blockers || '')}</textarea></div>
-      <div class="field"><label for="eod-next">Plan for tomorrow</label><textarea id="eod-next" rows="3">${esc(existing?.tomorrow || '')}</textarea></div>
+      <div class="field"><label>What did you get done today?</label>${richEditor('eod-sum', existing?.summary || '', 'Key work, results, meetings…', 120)}</div>
+      <div class="field"><label>Blockers or help needed</label>${richEditor('eod-block', existing?.blockers || '', 'Anything stopping you? Leave empty if none.', 60)}</div>
+      <div class="field"><label>Plan for tomorrow</label>${richEditor('eod-next', existing?.tomorrow || '', '', 80)}</div>
       <button class="btn primary" id="eod-send" style="padding:12px">${eodEmailOn() ? 'Submit and email report' : 'Submit report'}</button>
       <div class="task-sub">${eodEmailOn() ? `Goes to ${esc((S.settings.eod_recipients || '').split(/[,;\s]+/).filter(Boolean).join(', ') || 'your managers')}${S.me.manager_id && !(S.settings.eod_recipients || '').toLowerCase().includes((profileOf(S.me.manager_id).email || '~').toLowerCase()) ? ` and ${esc(nameOf(S.me.manager_id))}` : ''}, with a copy to you. Replies come to you.` : 'Saved for your managers and project managers. You can edit it until the end of the day.'}</div>
     </div></div></div></div>`;
+  bindRich(body);
   $('#eod-addtime').onclick = () => openTimeEntry({ mode: 'act', onSaved: () => route() });
+  $$('[data-eodedit]', body).forEach(b => b.onclick = async e => { e.preventDefault(); e.stopPropagation(); const l = await q(sb.from('time_logs').select('*').eq('id', b.dataset.eodedit).maybeSingle()).catch(() => null); if (l) openTimeEntry({ entry: l, onSaved: () => route() }); });
+  $$('[data-eoddel]', body).forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); removeTimeEntry(b.dataset.eoddel); });
   $('#eod-send').onclick = async e => {
-    const b = e.currentTarget, summary = $('#eod-sum').value.trim();
+    const b = e.currentTarget, summary = getRich(body, 'eod-sum');
     if (!summary) return toast('Write a short summary of your day', 'bad');
     const picked = $$('[data-i]', body).filter(c => c.checked).map(c => { const t = items[+c.dataset.i]; return { key: t.key, task_id: t.task_id, title: t.title, description: t.description || '', project: t.project, status: t.status, status_label: t.status_label, minutes: t.minutes }; });
-    const row = { employee_id: S.me.id, report_date: today, tasks: picked, summary, blockers: $('#eod-block').value.trim() || null, tomorrow: $('#eod-next').value.trim() || null, hours: worked ? +worked.toFixed(2) : null, submitted_at: new Date().toISOString() };
+    const row = { employee_id: S.me.id, report_date: today, tasks: picked, summary, blockers: getRich(body, 'eod-block') || null, tomorrow: getRich(body, 'eod-next') || null, hours: worked ? +worked.toFixed(2) : null, submitted_at: new Date().toISOString() };
     b.disabled = true; b.textContent = 'Submitting…';
     try {
       const saved = existing ? await q(sb.from('eod_reports').update(row).eq('id', existing.id).select().single()) : await q(sb.from('eod_reports').insert(row).select().single());
@@ -2813,6 +2839,50 @@ function refreshBellBadgeOnly() {
   $$('[data-bell]').forEach(b => { b.hidden = !unread; b.textContent = unread > 9 ? '9+' : unread; });
 }
 
+/* ---------- Rich text: bold, italic, underline, lists, links ---------- */
+const RT_OK = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'UL', 'OL', 'LI', 'BR', 'P', 'DIV', 'A']);
+function sanitizeRich(html) {
+  const t = document.createElement('template'); t.innerHTML = String(html || '');
+  const clean = node => {
+    for (const c of [...node.childNodes]) {
+      if (c.nodeType === 3) continue;
+      if (c.nodeType !== 1 || ['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'SVG', 'MATH', 'TEMPLATE'].includes(c.tagName)) { c.remove(); continue; }
+      clean(c);
+      if (!RT_OK.has(c.tagName)) { c.replaceWith(...c.childNodes); continue; }
+      for (const a of [...c.attributes]) if (!(c.tagName === 'A' && a.name === 'href' && /^(https?:|mailto:)/i.test(a.value.trim()))) c.removeAttribute(a.name);
+      if (c.tagName === 'A') { c.setAttribute('target', '_blank'); c.setAttribute('rel', 'noopener'); }
+    }
+  };
+  clean(t.content); return t.innerHTML;
+}
+const isRich = v => /<(b|strong|i|em|u|ul|ol|li|br|p|div|a)\b/i.test(String(v || ''));
+const richHTML = v => isRich(v) ? sanitizeRich(v) : esc(v || '').replace(/\n/g, '<br>');
+const richPlain = v => { if (!isRich(v)) return String(v || ''); const d = document.createElement('div'); d.innerHTML = sanitizeRich(String(v).replace(/<(ul|ol|li|p|div)\b/gi, '\n<$1').replace(/<\/(p|div|li)>/gi, '</$1>\n').replace(/<br\s*\/?>/gi, '\n')); return d.textContent.replace(/\n{3,}/g, '\n\n').trim(); };
+function richEditor(id, value, placeholder = '', minH = 110) {
+  return `<div class="rt"><div class="rt-bar" role="toolbar" aria-label="Formatting">
+      <button type="button" data-rt="bold" title="Bold"><b>B</b></button><button type="button" data-rt="italic" title="Italic"><i>I</i></button><button type="button" data-rt="underline" title="Underline"><u>U</u></button>
+      <span class="rt-sep"></span><button type="button" data-rt="insertUnorderedList" title="Bullet list">• List</button><button type="button" data-rt="insertOrderedList" title="Numbered list">1. List</button>
+      <span class="rt-sep"></span><button type="button" data-rt="link" title="Add link">Link</button><button type="button" data-rt="removeFormat" title="Clear formatting">Clear</button></div>
+    <div class="rt-area" id="${id}" contenteditable="true" role="textbox" aria-multiline="true" data-ph="${esc(placeholder)}" style="min-height:${minH}px">${richHTML(value)}</div></div>`;
+}
+function bindRich(root) {
+  $$('.rt', root).forEach(box => {
+    if (box.dataset.bound) return; box.dataset.bound = '1';
+    const area = $('.rt-area', box);
+    $$('[data-rt]', box).forEach(b => b.onmousedown = e => {
+      e.preventDefault(); area.focus();
+      if (b.dataset.rt === 'link') { const u = prompt('Link address (https://…)'); if (u && /^(https?:|mailto:)/i.test(u.trim())) document.execCommand('createLink', false, u.trim()); else if (u) toast('Links must start with https://', 'bad'); }
+      else document.execCommand(b.dataset.rt, false, null);
+    });
+    area.addEventListener('paste', e => {
+      e.preventDefault(); const cd = e.clipboardData;
+      const html = cd.getData('text/html'), text = cd.getData('text/plain');
+      document.execCommand('insertHTML', false, html ? sanitizeRich(html) : esc(text).replace(/\n/g, '<br>'));
+    });
+  });
+}
+const getRich = (root, id) => { const a = $('#' + id, root); if (!a) return ''; const html = sanitizeRich(a.innerHTML).trim(); return a.textContent.trim() ? html : ''; };
+
 /* ---------- Searchable dropdowns: any list with 6+ options gets a search box ---------- */
 function enhanceSelect(sel) {
   if (sel.dataset.enh || sel.multiple || sel.classList.contains('mini') || sel.dataset.nosearch !== undefined || (sel.options.length < 6 && sel.dataset.search === undefined)) return;
@@ -2874,6 +2944,12 @@ VIEWS.clients = async (el, param) => {
   if (param) return clientPage(el, param);
   const clients = await loadClients(), filter = S.cliFilter || 'active';
   const projects = await q(sb.from('projects').select('id,client_id,status')).catch(() => []);
+  const mStart = `${istDate().slice(0, 7)}-01T00:00:00+05:30`;
+  const mLogs = await allRows(() => sb.from('time_logs').select('task_id,project_id,started_at,ended_at,minutes').gte('started_at', mStart)).catch(() => []);
+  const mTaskIds = [...new Set(mLogs.map(l => l.task_id).filter(Boolean))];
+  const tProj = mTaskIds.length ? Object.fromEntries((await inChunks(mTaskIds, ch => sb.from('tasks').select('id,project_id').in('id', ch)).catch(() => [])).map(t => [t.id, t.project_id])) : {};
+  const clientOf = pid => projects.find(p => p.id === pid)?.client_id;
+  const cliM = cid => { let t = 0, c2 = 0; mLogs.forEach(l => { if (l.task_id) { if (clientOf(tProj[l.task_id]) === cid) t += logMinutes(l); } else if (l.project_id && clientOf(l.project_id) === cid) c2 += logMinutes(l); }); return [t, c2]; };
   const list = clients.filter(c => filter === 'all' || c.status === filter);
   const count = k => clients.filter(c => k === 'all' || c.status === k).length;
   el.innerHTML = `<div class="toolbar">
@@ -2885,6 +2961,7 @@ VIEWS.clients = async (el, param) => {
         <div class="cl-top"><span class="avatar">${esc(initials(c.name))}</span><div style="flex:1;min-width:0"><b>${esc(c.name)}</b><div class="task-sub">${esc([c.kind, c.city, c.country].filter(Boolean).join(' · ') || '—')}</div></div><span class="pill ${pc}">${pl}</span></div>
         ${(c.services || []).length ? `<div style="display:flex;flex-wrap:wrap;gap:5px">${c.services.slice(0, 4).map(t => `<span class="tag-chip static sm">${esc(t)}</span>`).join('')}${c.services.length > 4 ? `<span class="task-sub">+${c.services.length - 4}</span>` : ''}</div>` : ''}
         ${c.contact_name || c.email || c.phone ? `<div class="cl-contact">${c.contact_name ? `<div>${icon('people')}${esc(c.contact_name)}</div>` : ''}${c.email ? `<div>${icon('mail')}${esc(c.email)}</div>` : ''}${c.phone ? `<div>${icon('phone')}${esc(c.phone)}</div>` : ''}</div>` : ''}
+        ${(() => { const [tm, cm] = cliM(c.id); return tm || cm ? `<div class="task-sub">This month: <b>${hm(tm)}</b> tasks · <b>${hm(cm)}</b> calls</div>` : ''; })()}
         <div class="cl-foot"><div class="socs">${socialLinks(c)}</div><span class="task-sub">${ps.filter(p => p.status !== 'completed').length} open project${ps.filter(p => p.status !== 'completed').length === 1 ? '' : 's'}</span></div></div>`; }).join('')}</div>`
     : `<div class="card empty">${clients.length ? 'No clients here.' : 'No clients yet. Add your first client to keep contacts, links and projects together.'}</div>`}`;
   $$('[data-cf]', el).forEach(b => b.onclick = () => { S.cliFilter = b.dataset.cf; route(); });
@@ -2898,8 +2975,26 @@ async function clientPage(el, id) {
   if (!c) { el.innerHTML = '<div class="card empty">Client not found. <a href="#/clients">Back to clients</a></div>'; return; }
   $('#page-title').textContent = c.name;
   const projects = await q(sb.from('projects').select('*').eq('client_id', id).order('created_at', { ascending: false }));
-  const tasks = projects.length ? await q(sb.from('tasks').select('id,project_id,status,due_date').in('project_id', projects.map(p => p.id))).catch(() => []) : [];
+  const pids = projects.map(p => p.id);
+  const tasks = pids.length ? await inChunks(pids, ch => sb.from('tasks').select('id,title,project_id,status,due_date,completed_at,assigned_to').in('project_id', ch)).catch(() => []) : [];
+  const tids = tasks.map(t => t.id);
+  const tlogs = tids.length ? await inChunks(tids, ch => sb.from('time_logs').select('task_id,employee_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
+  const clogs = pids.length ? await inChunks(pids, ch => sb.from('time_logs').select('*').in('project_id', ch).is('task_id', null)).catch(() => []) : [];
   const [pc, pl] = CSTATUS[c.status] || CSTATUS.active, today = istDate();
+  const month = S.cliMonth?.[id] || '';   // '' = all time, else 'YYYY-MM'
+  const inM = ts => !month || istDate(new Date(ts)).startsWith(month);
+  const TL = tlogs.filter(l => inM(l.started_at)), CL = clogs.filter(l => inM(l.started_at));
+  const taskProj = Object.fromEntries(tasks.map(t => [t.id, t.project_id]));
+  const sumM = arr => arr.reduce((a, l) => a + logMinutes(l), 0);
+  const prow = projects.map(p => {
+    const ts = tasks.filter(t => t.project_id === p.id), tl = TL.filter(l => taskProj[l.task_id] === p.id), cl = CL.filter(l => l.project_id === p.id);
+    const worked = new Set(tl.map(l => l.task_id)).size, completed = ts.filter(t => t.completed_at && inM(t.completed_at)).length;
+    return { p, total: ts.length, open: ts.filter(t => t.status !== 'done').length, done: ts.filter(t => t.status === 'done').length, worked, completed, taskM: sumM(tl), calls: cl.length, callM: sumM(cl) };
+  });
+  const tot = prow.reduce((a, r) => ({ total: a.total + r.total, open: a.open + r.open, done: a.done + r.done, worked: a.worked + r.worked, completed: a.completed + r.completed, taskM: a.taskM + r.taskM, calls: a.calls + r.calls, callM: a.callM + r.callM }), { total: 0, open: 0, done: 0, worked: 0, completed: 0, taskM: 0, calls: 0, callM: 0 });
+  const people = [...new Set([...TL, ...CL].map(l => l.employee_id))].map(pid => ({ pid, taskM: sumM(TL.filter(l => l.employee_id === pid)), callM: sumM(CL.filter(l => l.employee_id === pid)) })).sort((a, b) => (b.taskM + b.callM) - (a.taskM + a.callM));
+  const months = Array.from({ length: 12 }, (_, i) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; });
+  const mLabel = m => m ? dObj(m + '-01').toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : 'All time';
   const row = (k, v) => v ? `<div><dt>${k}</dt><dd>${v}</dd></div>` : '';
   el.innerHTML = `<a class="back" href="#/clients">${icon('back')}All clients</a>
     <div class="card person-head"><span class="avatar lg">${esc(initials(c.name))}</span>
@@ -2915,11 +3010,38 @@ async function clientPage(el, id) {
         ${c.notes ? `<div class="section-h"><b>Notes</b></div><div class="cm-text">${esc(c.notes)}</div>` : ''}
       </div></div>
       <div class="card"><div class="card-h"><h2>Projects</h2><span class="sub">${projects.length}</span><div class="right"><button class="btn sm" id="cp-proj">${icon('plus')}New project</button></div></div><div class="card-b">
-        ${projects.map(p => { const ts = tasks.filter(t => t.project_id === p.id), d = ts.filter(t => t.status === 'done').length, pct = ts.length ? Math.round(d / ts.length * 100) : 0, od = ts.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length, [sc, sl] = PSTATUS[p.status] || PSTATUS.active;
-          return `<a class="list-row plink" href="#/project/${p.id}" style="align-items:center"><span class="dot" style="background:${esc(p.color || '#3A9A52')}"></span><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="task-sub">${d}/${ts.length} tasks · ${pct}%${od ? ` · <span class="overdue">${od} overdue</span>` : ''} · ${p.due_date ? 'due ' + fmtShort(p.due_date) : 'Ongoing'}</div></div><span class="pill ${sc}">${sl}</span></a>`; }).join('') || '<div class="empty">No projects for this client yet.</div>'}
+        ${projects.map(p => { const r = prow.find(x => x.p.id === p.id), [sc, sl] = PSTATUS[p.status] || PSTATUS.active;
+          return `<a class="list-row plink" href="#/project/${p.id}" style="align-items:center"><span class="dot" style="background:${esc(p.color || '#3A9A52')}"></span><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="task-sub">${r.done}/${r.total} tasks done · ${p.due_date ? 'due ' + fmtShort(p.due_date) : 'Ongoing'}</div></div><span class="pill ${sc}">${sl}</span></a>`; }).join('') || '<div class="empty">No projects for this client yet.</div>'}
+      </div></div>
+    </div>
+    <div class="card" style="margin-top:20px"><div class="card-h"><h2>Effort report</h2><span class="sub">Task time and calls are counted separately</span>
+      <div class="right"><select id="cp-month" class="mini" data-nosearch aria-label="Month"><option value="">All time</option>${months.map(m => `<option value="${m}" ${m === month ? 'selected' : ''}>${mLabel(m)}</option>`).join('')}</select><button class="btn sm" id="cp-xls">${icon('download')}Excel</button></div></div>
+      <div class="stats" style="margin:14px 16px 0;grid-template-columns:repeat(5,1fr)">
+        <div class="stat"><span>${month ? 'Tasks worked on' : 'Tasks'}</span><b>${month ? tot.worked : tot.total}</b><small class="task-sub">${month ? `${tot.completed} completed` : `${tot.open} open · ${tot.done} done`}</small></div>
+        <div class="stat"><span>Task time</span><b>${hm(tot.taskM)}</b></div>
+        <div class="stat"><span>Calls & meetings</span><b>${tot.calls}</b></div>
+        <div class="stat"><span>Call time</span><b>${hm(tot.callM)}</b></div>
+        <div class="stat"><span>Total effort</span><b>${hm(tot.taskM + tot.callM)}</b></div></div>
+      <div class="table-wrap" style="margin-top:14px"><table class="client-tbl"><thead><tr><th>Project</th>${month ? '<th>Tasks worked</th><th>Completed</th>' : '<th>Tasks</th><th>Open</th><th>Done</th>'}<th>Task time</th><th>Calls</th><th>Call time</th><th>Total effort</th></tr></thead><tbody>
+        ${prow.map(r => `<tr><td><a class="plink" href="#/project/${r.p.id}"><b>${esc(r.p.name)}</b></a></td>${month ? `<td class="num">${r.worked}</td><td class="num">${r.completed}</td>` : `<td class="num">${r.total}</td><td class="num">${r.open}</td><td class="num">${r.done}</td>`}<td class="num">${hm(r.taskM)}</td><td class="num">${r.calls}</td><td class="num">${hm(r.callM)}</td><td class="num"><b>${hm(r.taskM + r.callM)}</b></td></tr>`).join('') || `<tr><td colspan="8" class="empty">No projects yet.</td></tr>`}
+        ${prow.length > 1 ? `<tr class="tot"><td>Total</td>${month ? `<td class="num">${tot.worked}</td><td class="num">${tot.completed}</td>` : `<td class="num">${tot.total}</td><td class="num">${tot.open}</td><td class="num">${tot.done}</td>`}<td class="num">${hm(tot.taskM)}</td><td class="num">${tot.calls}</td><td class="num">${hm(tot.callM)}</td><td class="num">${hm(tot.taskM + tot.callM)}</td></tr>` : ''}
+      </tbody></table></div>
+      <div class="grid g-2" style="padding:16px;gap:16px">
+        <div><div class="section-h" style="margin-top:0"><b>By person</b></div>${people.length ? `<div class="table-wrap"><table class="client-tbl"><thead><tr><th>Person</th><th>Task time</th><th>Call time</th><th>Total</th></tr></thead><tbody>${people.map(x => `<tr><td>${esc(nameOf(x.pid))}</td><td class="num">${hm(x.taskM)}</td><td class="num">${hm(x.callM)}</td><td class="num"><b>${hm(x.taskM + x.callM)}</b></td></tr>`).join('')}</tbody></table></div>` : '<div class="muted">No time logged in this period.</div>'}</div>
+        <div><div class="section-h" style="margin-top:0"><b>Calls & meetings</b> <span class="task-sub">${CL.length}</span></div>${CL.length ? `<div class="table-wrap" style="max-height:300px;overflow:auto"><table class="client-tbl"><thead><tr><th>Date</th><th>Who</th><th>Project · call</th><th>Time</th></tr></thead><tbody>${CL.slice().sort((a, b) => b.started_at.localeCompare(a.started_at)).map(l => `<tr><td class="num">${fmtShort(istDate(new Date(l.started_at)))}</td><td>${esc(nameOf(l.employee_id))}</td><td style="white-space:normal"><b>${esc(l.activity || 'Meeting')}</b><div class="task-sub">${esc(projects.find(p => p.id === l.project_id)?.name || '')}${l.note ? ' · ' + esc(l.note) : ''}</div></td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="muted">No calls logged in this period. Log one with <b>Add time → Meeting or other activity</b> and pick one of this client\'s projects.</div>'}</div>
       </div></div>
     </div>`;
   $('#cp-edit').onclick = () => openClient(c);
+  $('#cp-month').onchange = e => { S.cliMonth = { ...(S.cliMonth || {}), [id]: e.target.value }; route(); };
+  $('#cp-xls').onclick = async () => {
+    try {
+      await loadXLSX(); const X = window.XLSX, wb = X.utils.book_new(), h = m => +(m / 60).toFixed(2);
+      X.utils.book_append_sheet(wb, X.utils.json_to_sheet(prow.map(r => ({ Project: r.p.name, ...(month ? { 'Tasks worked': r.worked, Completed: r.completed } : { Tasks: r.total, Open: r.open, Done: r.done }), 'Task hours': h(r.taskM), Calls: r.calls, 'Call hours': h(r.callM), 'Total hours': h(r.taskM + r.callM) })).concat([{ Project: 'TOTAL', 'Task hours': h(tot.taskM), Calls: tot.calls, 'Call hours': h(tot.callM), 'Total hours': h(tot.taskM + tot.callM) }])), 'Projects');
+      X.utils.book_append_sheet(wb, X.utils.json_to_sheet(people.map(x => ({ Person: nameOf(x.pid), 'Task hours': h(x.taskM), 'Call hours': h(x.callM), 'Total hours': h(x.taskM + x.callM) }))), 'People');
+      X.utils.book_append_sheet(wb, X.utils.json_to_sheet(CL.map(l => ({ Date: istDate(new Date(l.started_at)), Person: nameOf(l.employee_id), Project: projects.find(p => p.id === l.project_id)?.name || '', Call: l.activity || '', Note: l.note || '', Hours: h(logMinutes(l)) }))), 'Calls');
+      X.writeFile(wb, `Sharvii-${c.name.replace(/[^\w]+/g, '-')}-${month || 'all-time'}.xlsx`);
+    } catch (e) { toast(e.message, 'bad'); }
+  };
   $('#cp-del') && ($('#cp-del').onclick = async () => {
     if (!confirm(`Delete the client "${c.name}"?\n\nTheir projects are kept (without a client), and an admin can restore the client from Leave & holidays → Recycle bin.`)) return;
     try { await q(sb.from('clients').delete().eq('id', c.id)); toast('Client deleted. It can be restored from the Recycle bin.'); location.hash = '#/clients'; } catch (e) { toast(e.message, 'bad'); }
@@ -3717,7 +3839,7 @@ VIEWS.tasks = async el => {
         return `<tr data-row="${t.id}">
           <td data-l="Task" class="t-main"><button class="t-title" data-edit="${t.id}">${esc(t.title)}</button>
             <div class="task-sub">${esc(projName(t) || 'No project')}${ck.length ? ` · ☑ ${ck.filter(x => x.done).length}/${ck.length}` : ''}${t.status === 'done' && t.completed_at ? ` · done ${fmtShort(istDate(new Date(t.completed_at)))}` : ''} ${sopBadge(t)}</div>
-            ${t.description ? `<div class="t-desc">${esc(t.description)}</div>` : ''}</td>
+            ${t.description ? `<div class="t-desc">${esc(richPlain(t.description))}</div>` : ''}</td>
           ${showWho ? `<td data-l="Assigned to"><div class="who-mini"><span class="avatar sm">${esc(initials(nameOf(t.assigned_to)))}</span>${esc(nameOf(t.assigned_to))}</div></td>` : ''}
           <td data-l="Due" class="num">${dueTxt(t)}</td>
           <td data-l="Priority"><span class="pill ${pc}">${pl}</span></td>
@@ -3852,6 +3974,13 @@ async function openTask(task, opts = {}) {
           <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
           <div class="field">${isNew ? '' : `<label>Time logged</label><div style="padding:6px 0;font-weight:600;display:flex;gap:10px;align-items:center">${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}<button class="btn sm" type="button" id="tk-addtime">${icon('plus')}Add time</button></div>`}</div>
+          <div class="field full"><label>Description</label>${richEditor('tk-desc', t.description || '', 'What needs to be done? Links, notes…', 120)}</div>
+        </div>
+        <div class="section-h"><b>Checklist</b><span class="task-sub" id="ck-count"></span></div>
+        <div class="ck-bar"><span id="ck-fill"></span></div>
+        <div id="ck-list"></div>
+        <div class="ck-add"><input id="ck-new" type="text" placeholder="Add an item and press Enter"><button class="btn sm" id="ck-add" type="button">${icon('plus')}Add</button></div>
+        <div class="form-grid" style="margin-top:16px">
           <div class="field full sop-box"><label>SOP <span class="task-sub" style="font-weight:400">· how this work is done, so anyone can repeat it</span></label>
             <label class="check"><input type="radio" name="tk-sop" value="existing" ${sopMode === 'existing' ? 'checked' : ''}> Follow an existing SOP</label>
             <div class="sop-pick" style="display:flex;gap:8px;margin:2px 0 6px 26px"><select id="tk-sopid" style="flex:1"><option value="">Choose an SOP…</option>${arts.map(a => `<option value="${a.id}" ${a.id === t.sop_article_id ? 'selected' : ''}>${esc(a.title)}${a.status !== 'published' ? ` (${a.status === 'review' ? 'in review' : 'draft'})` : ''}</option>`).join('')}</select>${t.sop_article_id ? `<a class="btn sm" href="#/kb/${t.sop_article_id}" target="_blank" rel="noopener">Open SOP</a>` : ''}</div>
@@ -3859,12 +3988,7 @@ async function openTask(task, opts = {}) {
             ${!isNew && sopMode === 'needed' ? '<button class="btn sm" type="button" id="tk-writesop" style="margin:2px 0 6px 26px;align-self:flex-start">Write the SOP now</button>' : ''}
             <label class="check"><input type="radio" name="tk-sop" value="none" ${sopMode === 'none' ? 'checked' : ''}> One-off, no SOP needed</label>
           </div>
-          <div class="field full"><label for="tk-desc">Description</label><textarea id="tk-desc" placeholder="What needs to be done? Links, notes…">${esc(t.description || '')}</textarea></div>
         </div>
-        <div class="section-h"><b>Checklist</b><span class="task-sub" id="ck-count"></span></div>
-        <div class="ck-bar"><span id="ck-fill"></span></div>
-        <div id="ck-list"></div>
-        <div class="ck-add"><input id="ck-new" type="text" placeholder="Add an item and press Enter"><button class="btn sm" id="ck-add" type="button">${icon('plus')}Add</button></div>
         ${isNew ? '' : '<div class="section-h"><b>Attachments</b></div><div id="tk-docs"></div>'}
         ${logs.length ? `<details style="margin-top:16px"><summary class="task-sub" style="cursor:pointer">Time log (${logs.length})</summary><div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}${l.kind === 'manual' ? ' <span class="pill info">added</span>' : ''}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
       </div>
@@ -3893,6 +4017,7 @@ async function openTask(task, opts = {}) {
       $('#ck-add', root).onclick = addCk;
       $('#ck-new', root).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCk(); } });
       renderCk();
+      bindRich(root);
       const syncSop = () => { const m = $('input[name=tk-sop]:checked', root)?.value; $('.sop-pick', root).style.opacity = m === 'existing' ? '1' : '.5'; $('#tk-sopid', root).disabled = m !== 'existing'; };
       $$('input[name=tk-sop]', root).forEach(r => r.onchange = syncSop); syncSop();
       $('#tk-sopid', root).onchange = () => { if ($('#tk-sopid', root).value) { $('input[name=tk-sop][value=existing]', root).checked = true; syncSop(); } };
@@ -3907,7 +4032,7 @@ async function openTask(task, opts = {}) {
         const pid = v('#tk-project') || null;
         const mode = $('input[name=tk-sop]:checked', root)?.value || 'needed', sopId = $('#tk-sopid', root).value || null;
         if (mode === 'existing' && !sopId) return toast('Choose the SOP to follow, or pick another SOP option', 'bad');
-        const row = { title: v('#tk-title'), project_id: pid, project: S.projects.find(p => p.id === pid)?.name || null, assigned_to: v('#tk-who') || S.me.id, status: v('#tk-status'), due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: v('#tk-desc') || null, checklist,
+        const row = { title: v('#tk-title'), project_id: pid, project: S.projects.find(p => p.id === pid)?.name || null, assigned_to: v('#tk-who') || S.me.id, status: v('#tk-status'), due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: getRich(root, 'tk-desc') || null, checklist,
           sop_needed: mode !== 'none', sop_article_id: mode === 'existing' ? sopId : mode === 'needed' ? (t.sop_article_id || null) : null };
         if (!row.title) return toast('Enter a task name', 'bad');
         try {
