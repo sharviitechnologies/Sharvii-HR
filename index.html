@@ -630,6 +630,70 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
   .auth-brand .foot{display:none}
   th,td{padding:10px 12px}
 }
+
+/* ---------- v21: projects by client, go-live, timeline, work log, sessions ---------- */
+.pg-tbl td,.pg-tbl th{padding:10px 14px}
+.pg-tbl tr.grp td{background:#F7F9FB;border-bottom:1px solid var(--line);padding:9px 14px}
+.pg-tbl tr.grp .grp-in{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pg-tbl tr.grp .grp-tog{border:none;background:none;cursor:pointer;padding:2px;display:inline-flex;color:var(--ink-3);transition:transform .15s;transform:rotate(90deg)}
+.pg-tbl tr.grp.shut .grp-tog{transform:none}
+.pg-tbl tr.grp b{font-size:14.5px}
+.pg-tbl tr.grp .grp-meta{color:var(--ink-3);font-size:12.5px}
+.pg-tbl tr.grp .grp-meta b{font-size:12.5px;color:var(--ink-2)}
+.pg-tbl tr.prow td:first-child{padding-left:38px}
+.pg-tbl tr.prow{cursor:pointer}
+.pg-tbl tr.prow:hover td{background:#FBFCFD}
+.gl{display:inline-flex;flex-direction:column;line-height:1.25}
+.gl small{font-size:11.5px;color:var(--ink-3)}
+.budget{display:flex;flex-direction:column;gap:4px;min-width:110px}
+.budget .bb{height:5px;border-radius:99px;background:var(--muted-soft);overflow:hidden}
+.budget .bb i{display:block;height:100%;background:var(--brand)}
+.budget .bb i.over{background:var(--bad)}
+.budget small{font-size:11.5px;color:var(--ink-3)}
+.must{color:var(--bad);font-weight:700;margin-left:2px}
+.facts-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.fact>span{font-size:12.5px;color:var(--ink-3);font-weight:600}
+.fact>b{font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums}
+.fact>small{font-size:12.5px;color:var(--ink-3)}
+.fact.bad{border-color:color-mix(in srgb,var(--bad) 40%,#fff);background:var(--bad-soft)}
+.fact.bad>b{color:var(--bad)}
+.fact.warn{border-color:color-mix(in srgb,var(--warn) 40%,#fff);background:var(--warn-soft)}
+.fact.ok>b{color:var(--ok)}
+@media (max-width:860px){.facts-row{grid-template-columns:1fr 1fr}}
+.est{font-variant-numeric:tabular-nums}
+.est.over{color:var(--bad);font-weight:600}
+.est-bar{position:relative;height:8px;border-radius:99px;background:var(--muted-soft);overflow:hidden;margin-top:6px}
+.est-bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ok)}
+.est-bar i.over{background:var(--bad)}
+.hm-in{display:flex;gap:6px;align-items:center}
+.hm-in input{width:72px}
+.hm-in span{color:var(--ink-3);font-size:13px}
+/* Timeline */
+.gantt{display:grid;grid-template-columns:minmax(180px,260px) 1fr;font-size:13px}
+.gantt .gh{position:sticky;top:0;background:#FAFBFC;border-bottom:1px solid var(--line);height:34px;z-index:1}
+.gantt .gname{padding:8px 14px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.gantt .gname small{display:block;color:var(--ink-3);font-size:11.5px}
+.gantt .glane{position:relative;border-bottom:1px solid var(--line);border-left:1px solid var(--line);min-height:46px}
+.gantt .gbar{position:absolute;top:13px;height:20px;border-radius:6px;min-width:6px;cursor:pointer;display:flex;align-items:center;padding:0 8px;color:#fff;font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+.gantt .gbar.nostart{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.25) 0 6px,transparent 6px 12px)}
+.gantt .gtick{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line);font-size:11px;color:var(--ink-3);padding:9px 0 0 4px;white-space:nowrap}
+.gantt .gnow{position:absolute;top:0;bottom:0;border-left:2px solid var(--info);z-index:2}
+.gantt .glive{position:absolute;top:0;bottom:0;border-left:2px solid var(--bad);z-index:2}
+.gantt .gh .gnow::after,.gantt .gh .glive::after{position:absolute;top:2px;left:4px;white-space:nowrap;font-size:10.5px;font-weight:700;background:#fff;padding:0 3px;border-radius:3px}
+.gantt .gh .gnow::after{content:"Today";color:var(--info)}
+.gantt .gh .glive::after{content:"Go-live";color:var(--bad)}
+.gantt-wrap{overflow:auto;max-height:640px}
+.gantt .gh.glane{min-height:34px}
+/* Session note dialog */
+.sess-sum{display:flex;align-items:center;gap:12px;background:var(--canvas);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.sess-sum b.num{font-size:22px;margin-left:auto}
+.sess-ck{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}
+.sess-ck label{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer}
+.sess-list td{vertical-align:top}
+.sess-note{white-space:pre-line;color:var(--ink-2)}
+.sess-note.empty{color:var(--ink-3);font-style:italic}
+.rep-opts{display:flex;flex-direction:column;gap:14px}
 </style>
 </head>
 <body>
@@ -719,6 +783,7 @@ const isMissed = (a, date) => !!a?.check_in && !a.check_out && (date < istDate()
 const hms = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 3600)}:${pad2(Math.floor(s / 60) % 60)}:${pad2(s % 60)}`; };
 const hm = mins => { const m = Math.round(mins || 0); return `${Math.floor(m / 60)}h ${pad2(m % 60)}m`; };
 async function allRows(make) { const out = []; for (let f = 0; ; f += 1000) { const d = await q(make().range(f, f + 999)); out.push(...d); if (d.length < 1000) break; } return out; }
+async function inChunksAll(ids, make) { const out = []; for (let i = 0; i < ids.length; i += 100) { const ch = ids.slice(i, i + 100); out.push(...await allRows(() => make(ch).order('id'))); } return out; }   // every row, past the 1000-row page limit
 async function inChunks(ids, make) { const out = []; for (let i = 0; i < ids.length; i += 100) out.push(...await q(make(ids.slice(i, i + 100)))); return out; }
 const projName = t => S.projects.find(p => p.id === t.project_id)?.name || t.project || '';
 const personLink = (p, sub = '') => `<a class="plink who" href="#/person/${p.id}"><span class="avatar">${esc(initials(p.full_name || p.email))}</span><div><b>${esc(p.full_name || p.email)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div></a>`;
@@ -1106,10 +1171,6 @@ async function refreshRunning() {
   paintTimer();
 }
 const isPaused = id => (S.paused || []).some(x => x.task_id === id);
-async function pauseTimer() {
-  try { await q(sb.rpc('pause_timer')); await refreshRunning(); toast('Paused. Resume any time from Tasks or Home.'); route(); }
-  catch (e) { toast(e.message, 'bad'); }
-}
 async function discardPause(taskId) {
   try { await q(sb.rpc('discard_pause', { p_task_id: taskId })); await refreshRunning(); route(); }
   catch (e) { toast(e.message, 'bad'); }
@@ -1196,12 +1257,85 @@ function paintTimer() {
 }
 async function startTimer(taskId) {
   const resumed = isPaused(taskId);
+  if (S.running && S.running.task_id !== taskId) return finishSession(false, () => startTimer(taskId));   // switching: describe the current session first
+  if (!resumed) {   // the person doing the work gives the estimate before the first session
+    const t = await q(sb.from('tasks').select('id,title,estimate_minutes').eq('id', taskId).maybeSingle()).catch(() => null);
+    if (t && 'estimate_minutes' in t && t.estimate_minutes == null) return askEstimate(t, () => startTimer(taskId));
+  }
   try { await q(sb.rpc('start_timer', { p_task_id: taskId })); await refreshRunning(); toast(resumed ? 'Resumed' : 'Timer started'); route(); }
   catch (e) { toast(e.message, 'bad'); }
 }
-async function stopTimer() {
-  try { await q(sb.rpc('stop_timer')); await refreshRunning(); toast('Timer stopped'); route(); }
-  catch (e) { toast(e.message, 'bad'); }
+/* Estimate input (hours + minutes) */
+const hmField = (id, mins) => `<div class="hm-in"><input id="${id}-h" type="number" min="0" max="999" step="1" inputmode="numeric" value="${mins != null ? Math.floor(mins / 60) : ''}" placeholder="0" aria-label="Hours"><span>h</span><input id="${id}-m" type="number" min="0" max="59" step="5" inputmode="numeric" value="${mins != null ? mins % 60 : ''}" placeholder="0" aria-label="Minutes"><span>m</span></div>`;
+const readHM = (root, id) => { const h = $(`#${id}-h`, root)?.value ?? '', m = $(`#${id}-m`, root)?.value ?? ''; if (h === '' && m === '') return null; return Math.max(0, Math.round((+h || 0) * 60 + (+m || 0))); };
+const estCell = (spentM, estM) => estM ? `<span class="est ${spentM > estM ? 'over' : ''}" title="Time spent / estimate">${hm(spentM)} <span class="task-sub">/ ${hm(estM)}</span></span>` : (spentM ? hm(spentM) : '—');
+function askEstimate(t, then) {
+  openModal({
+    title: 'How long will this take?',
+    body: `<p style="margin-top:0">Before you start “<b>${esc(t.title)}</b>”, add your estimate. It is compared with the time you actually log, so planning gets better every week.</p>
+      <div class="field"><label>Your estimate</label>${hmField('ae', null)}</div>`,
+    footer: '<button class="btn" data-close>Cancel</button><button class="btn primary" id="ae-save">Save and start timer</button>',
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#ae-save', root).onclick = async () => {
+        const m = readHM(root, 'ae');
+        if (!m) return toast('Enter how many hours or minutes you expect', 'bad');
+        try { await q(sb.from('tasks').update({ estimate_minutes: m }).eq('id', t.id)); close(); then(); } catch (e) { toast(e.message, 'bad'); }
+      };
+    }
+  });
+}
+/* Stop / pause: every session records what was completed */
+async function pauseTimer() { return finishSession(true); }
+async function stopTimer() { return finishSession(false); }
+async function finishSession(pause, after) {
+  const run = S.running;
+  if (!run) { await refreshRunning(); return route(); }
+  const mins = (Date.now() - new Date(run.started_at)) / 60000, needNote = mins >= 2;
+  const task = run.task_id ? await q(sb.from('tasks').select('id,title,checklist').eq('id', run.task_id).maybeSingle()).catch(() => null) : null;
+  const open = (Array.isArray(task?.checklist) ? task.checklist : []).map((x, i) => ({ ...x, i })).filter(x => !x.done);
+  openModal({
+    title: after ? 'Switch task: stop the current timer' : pause ? 'Pause timer' : 'Stop timer',
+    body: `<div class="sess-sum"><div style="min-width:0"><div class="task-sub">This session, ${fmtTime(run.started_at)} to now</div><b>${esc(task?.title || run.activity || 'Task')}</b></div><b class="num">${hm(mins)}</b></div>
+      ${open.length ? `<div class="field"><label>Finished any checklist items in this session?</label><div class="sess-ck">${open.map(x => `<label><input type="checkbox" data-sck="${x.i}"><span>${esc(x.text)}</span></label>`).join('')}</div></div>` : ''}
+      <div class="field"><label for="ss-note">What did you complete in this session? ${needNote ? '<span class="must">*</span>' : ''}</label>
+        <textarea id="ss-note" maxlength="420" style="min-height:96px" placeholder="e.g. Built the donation form layout. Mobile view still pending.">${esc(run.note || '')}</textarea>
+        <span class="hint">Saved with this session. It shows on the task, in the project work log and in the client report.</span></div>`,
+    footer: `<button class="btn" data-close>Keep it running</button><button class="btn ${pause ? 'primary' : 'danger'}" id="ss-save">${pause ? icon('pause') + 'Pause timer' : icon('stop') + 'Stop timer'}</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      setTimeout(() => $('#ss-note', root)?.focus(), 30);
+      $('#ss-save', root).onclick = async () => {
+        const ticked = $$('[data-sck]:checked', root).map(c => +c.dataset.sck);
+        let note = $('#ss-note', root).value.trim();
+        if (ticked.length) note = [note, ...ticked.map(i => '✓ ' + task.checklist[i].text)].filter(Boolean).join('\n').slice(0, 500);
+        if (needNote && !note) { toast('Write a line about what you completed', 'bad'); return $('#ss-note', root).focus(); }
+        const b = $('#ss-save', root); b.disabled = true;
+        try {
+          try { await q(sb.rpc('finish_timer', { p_note: note || null, p_pause: pause })); }
+          catch (e) { if (!/finish_timer|schema cache|Could not find the function/i.test(e.message)) throw e; await q(sb.rpc(pause ? 'pause_timer' : 'stop_timer')); }   // before update_v21
+          if (ticked.length && task) await q(sb.from('tasks').update({ checklist: task.checklist.map((x, i) => ticked.includes(i) ? { ...x, done: true } : x) }).eq('id', task.id)).catch(() => {});
+          close(); await refreshRunning(); toast(pause ? 'Paused. Resume any time from Tasks or Home.' : `Timer stopped. ${hm(mins)} saved.`); after ? after() : route();
+        } catch (e) { toast(e.message, 'bad'); b.disabled = false; }
+      };
+    }
+  });
+}
+/* Add "what was done" to an earlier session */
+function openSessionNote(l, after) {
+  openModal({
+    title: 'What was done in this session?',
+    body: `<div class="sess-sum"><div class="task-sub">${fmtDate(istDate(new Date(l.started_at)))}, ${fmtTime(l.started_at)} – ${fmtTime(l.ended_at)}</div><b class="num">${hm(logMinutes(l))}</b></div>
+      <div class="field"><label for="sn-note">What did you complete?</label><textarea id="sn-note" maxlength="500" style="min-height:96px">${esc(l.note || '')}</textarea></div>`,
+    footer: '<button class="btn" data-close>Cancel</button><button class="btn primary" id="sn-save">Save</button>',
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#sn-save', root).onclick = async () => {
+        try { await q(sb.rpc('set_session_note', { p_id: l.id, p_note: $('#sn-note', root).value.trim() })); close(); toast('Saved'); after ? after() : route(); }
+        catch (e) { toast(/set_session_note|schema cache/i.test(e.message) ? 'Ask an admin to run update_v21.sql first' : e.message, 'bad'); }
+      };
+    }
+  });
 }
 
 VIEWS.home = async el => {
@@ -1245,6 +1379,12 @@ VIEWS.home = async el => {
   const byTask = {}; tLogs.forEach(l => { const k = l.task_id || ('act:' + (l.activity || 'Meeting')); byTask[k] = byTask[k] || { k, task: tTitles[l.task_id], act: l.activity, mins: 0, last: '' }; byTask[k].mins += logMinutes(l); if (l.started_at > byTask[k].last) byTask[k].last = l.started_at; });
   const todayRows = Object.values(byTask).sort((a, b) => b.mins - a.mins), todayTotal = tLogs.reduce((a, l) => a + logMinutes(l), 0);
   const lastTask = Object.values(byTask).filter(x => x.task && x.task.status !== 'done' && x.task.id !== S.running?.task_id).sort((a, b) => b.last.localeCompare(a.last))[0]?.task;
+  let goLive = [];   // project managers: go-lives due in 2 days, today or missed
+  if (isMgr()) {
+    if (isAdmin() && S.glChecked !== today) { S.glChecked = today; sb.rpc('check_go_live').then(() => refreshBell(), () => {}); }   // backup for the 9 AM job
+    goLive = await q(sb.from('projects').select('id,name,client,go_live_date,live_on,status,owner_id').is('live_on', null).neq('status', 'completed').not('go_live_date', 'is', null).lte('go_live_date', addDays(today, 2)).order('go_live_date')).catch(() => []);
+    if (!isAdmin()) goLive = goLive.filter(p => p.owner_id === S.me.id);
+  }
   const upcoming = [];
   for (let i = 0; i < 120 && upcoming.length < 5; i++) { const d = addDays(today, i), r = offReason(d); if (r && r !== 'Sunday') upcoming.push({ d, r }); }
 
@@ -1279,6 +1419,7 @@ VIEWS.home = async el => {
   </section>`}
 
   ${!S._eodDone && !off && istMin() >= toMin(st.shift_end) - 60 ? `<div class="nudge"><div><b>Time for your EOD report</b><div class="task-sub">Your tasks for today are already filled in. It takes a minute.</div></div><a class="btn primary sm" href="#/eod">Write EOD report</a></div>` : ''}
+  ${goLive.length ? `<div class="nudge" style="border-left-color:var(--bad)"><div style="font-size:24px">🚀</div><div style="flex:1;min-width:0"><b>${goLive.some(p => p.go_live_date < today) ? 'Go-live missed or due' : 'Go-live coming up'}</b><div class="task-sub">${goLive.map(p => { const g = goLiveInfo(p, today); return `<a class="plink" href="#/project/${p.id}"><b>${esc(p.name)}</b></a> <span class="pill ${g.cls}">${esc(g.txt)}</span>`; }).join(' &nbsp; ')}</div></div><a class="btn sm" href="#/projects">Open projects</a></div>` : ''}
   ${(S.homeDemos || []).length ? `<div class="nudge demo-nudge"><div style="font-size:24px">🎥</div><div style="flex:1"><b>Demo${S.homeDemos.length > 1 ? 's' : ''} coming up</b><div class="task-sub">${S.homeDemos.map(l => `${esc(l.organisation || l.name)} · ${esc(demoTxt(l))}`).join(' &nbsp;·&nbsp; ')}</div></div><a class="btn sm" href="#/leads">Open leads</a></div>` : ''}
   ${(S.bdays || []).length ? `<div class="nudge bday-nudge"><div style="font-size:26px">🎂</div><div style="flex:1"><b>${S.bdays.filter(b => b.days_away === 0).length ? `Happy birthday, ${esc(S.bdays.filter(b => b.days_away === 0).map(b => b.full_name.split(' ')[0]).join(' and '))}!` : 'Birthdays this week'}</b><div class="task-sub">${S.bdays.map(b => `${esc(b.full_name)} · ${b.days_away === 0 ? 'today' : b.days_away === 1 ? 'tomorrow' : dObj(b.birthday).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}`).join(' &nbsp;·&nbsp; ')}</div></div></div>` : ''}
   ${missing.length ? `<div class="nudge"><div><b>Complete your profile</b><div class="task-sub">Add your ${missing.map(k => ({ phone: 'phone number', emergency_contact: 'emergency contact', date_of_birth: 'date of birth' })[k]).join(', ')} so the team can reach you.</div></div><button class="btn primary sm" id="nudge-btn">Add details</button></div>` : ''}
@@ -1974,60 +2115,122 @@ function projectStats(pr, tasks, logs, today, actLogs = []) {   // mins = task t
   const by = st => ts.filter(t => t.status === st).length;
   const done = by('done'), pct = ts.length ? Math.round(done / ts.length * 100) : 0;
   const ids = new Set(ts.map(t => t.id));
-  const mins = logs.filter(l => ids.has(l.task_id)).reduce((s, l) => s + logMinutes(l), 0);
+  const tMins = {}; logs.forEach(l => { if (ids.has(l.task_id)) tMins[l.task_id] = (tMins[l.task_id] || 0) + logMinutes(l); });
+  const mins = Object.values(tMins).reduce((a, b) => a + b, 0);
   const meetL = actLogs.filter(l => l.project_id === pr.id), meetMins = meetL.reduce((s, l) => s + logMinutes(l), 0), meetN = meetL.length;
   const overdue = ts.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length;
   const people = [...new Set(ts.map(t => t.assigned_to))].map(profileOf).filter(p => p.id);
-  return { ts, done, pct, mins, meetMins, meetN, overdue, people, todo: by('todo'), prog: by('in_progress'), review: by('review') };
+  const withEst = ts.filter(t => t.estimate_minutes), est = withEst.reduce((s, t) => s + t.estimate_minutes, 0), estSpent = withEst.reduce((s, t) => s + (tMins[t.id] || 0), 0);
+  return { ts, done, pct, mins, meetMins, meetN, overdue, people, est, estSpent, estN: withEst.length, tMins, todo: by('todo'), prog: by('in_progress'), review: by('review') };
 }
 const stackBar = st => { const total = st.ts.length || 1;
   return `<div class="stack">${['done', 'review', 'in_progress', 'todo'].map(k => { const n = k === 'done' ? st.done : k === 'review' ? st.review : k === 'in_progress' ? st.prog : st.todo; return n ? `<span style="width:${n / total * 100}%;background:${TCOLOR[k]}" title="${TSTATUS[k]}: ${n}"></span>` : ''; }).join('')}</div>`; };
+const daysBetween = (a, b) => Math.round((dObj(b) - dObj(a)) / 864e5);
+function goLiveInfo(pr, today = istDate()) {
+  if (pr.live_on) return { cls: 'ok', txt: 'Live', sub: fmtShort(pr.live_on), state: 'live' };
+  if (!pr.go_live_date) return { cls: 'muted', txt: 'Not set', sub: '', state: 'none' };
+  const d = daysBetween(today, pr.go_live_date);
+  if (pr.status === 'completed') return { cls: 'muted', txt: fmtShort(pr.go_live_date), sub: 'closed', state: 'closed', d };
+  if (d < 0) return { cls: 'bad', txt: `Missed by ${-d}d`, sub: fmtShort(pr.go_live_date), state: 'missed', d };
+  if (d === 0) return { cls: 'bad', txt: 'Today', sub: fmtShort(pr.go_live_date), state: 'today', d };
+  if (d <= 2) return { cls: 'warn', txt: `In ${d} day${d === 1 ? '' : 's'}`, sub: fmtShort(pr.go_live_date), state: 'soon', d };
+  if (d <= 7) return { cls: 'info', txt: `In ${d} days`, sub: fmtShort(pr.go_live_date), state: 'week', d };
+  return { cls: 'muted', txt: fmtShort(pr.go_live_date), sub: `in ${d} days`, state: 'later', d };
+}
+const goLiveCell = g => `<span class="gl"><span class="pill ${g.cls}">${esc(g.txt)}</span>${g.sub ? `<small>${esc(g.sub)}</small>` : ''}</span>`;
+function projHealth(pr, st, today) {
+  if (pr.status === 'completed') return ['muted', 'Closed'];
+  if (pr.status === 'on_hold') return ['muted', 'On hold'];
+  const g = goLiveInfo(pr, today), used = st.mins + st.meetMins, budget = Number(pr.budget_hours || 0) * 60;
+  if (g.state === 'missed' || (pr.due_date && pr.due_date < today)) return ['bad', 'Off track'];
+  if (budget && used > budget) return ['bad', 'Over budget'];
+  if (st.overdue > 0 || (['today', 'soon', 'week'].includes(g.state) && st.pct < 80) || (budget && used > budget * 0.85)) return ['warn', 'At risk'];
+  return ['ok', 'On track'];
+}
+const budgetCell = (pr, st) => { const used = st.mins + st.meetMins, b = Number(pr.budget_hours || 0) * 60;
+  return b ? `<div class="budget"><span class="num"><b>${hm(used)}</b> <span class="task-sub">of ${num(pr.budget_hours)}h</span></span><div class="bb"><i class="${used > b ? 'over' : ''}" style="width:${Math.min(100, Math.round(used / b * 100))}%"></i></div></div>`
+    : `<div class="budget"><b class="num">${hm(used)}</b><small>${st.meetN ? `incl. ${hm(st.meetMins)} calls` : 'no budget set'}</small></div>`; };
+function projectListModal(title, list, today) {
+  openModal({ title: `${title} (${list.length})`, wide: true,
+    body: list.length ? `<div class="table-wrap"><table><thead><tr><th>Project</th><th>Client</th><th>Project manager</th><th>Go-live</th></tr></thead><tbody>${list.map(p => `<tr data-go="${p.id}" style="cursor:pointer"><td><span class="dot" style="background:${esc(p.color)}"></span> <b>${esc(p.name)}</b></td><td>${esc(p.client || 'Internal')}</td><td>${p.owner_id ? esc(nameOf(p.owner_id)) : '—'}</td><td>${goLiveCell(goLiveInfo(p, today))}</td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Nothing here. 🎉</div>',
+    onMount: (root, close) => $$('[data-go]', root).forEach(r => r.onclick = () => { close(); location.hash = `#/project/${r.dataset.go}`; }) });
+}
 
 VIEWS.projects = async el => {
   S.projects = await q(sb.from('projects').select('*').order('name'));
-  const filter = S.projFilter, layout = S.projLayout || 'cards', today = istDate();
+  if (!S.projLayout) { try { S.projLayout = localStorage.getItem('sp-proj-layout') || 'list'; } catch { S.projLayout = 'list'; } }
+  const filter = S.projFilter, layout = S.projLayout === 'cards' ? 'cards' : 'list', today = istDate();
   const tasks = await allRows(() => sb.from('tasks').select('*'));
   const pIds = tasks.filter(t => t.project_id).map(t => t.id);
-  const logs = pIds.length ? await inChunks(pIds, ch => sb.from('time_logs').select('task_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
-  const list = S.projects.filter(p => filter === 'all' || p.status === filter);
+  const logs = pIds.length ? await inChunksAll(pIds, ch => sb.from('time_logs').select('id,task_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
   const actLogs = await allRows(() => sb.from('time_logs').select('project_id,started_at,ended_at,minutes').is('task_id', null).not('project_id', 'is', null)).catch(() => []);
+  const clients = isMgr() ? await loadClients() : [];
+  const list = S.projects.filter(p => filter === 'all' || p.status === filter);
   const stats = Object.fromEntries(S.projects.map(p => [p.id, projectStats(p, tasks, logs, today, actLogs)]));
   const counts = k => S.projects.filter(p => k === 'all' || p.status === k).length;
-  const dueTxt = pr => pr.due_date ? `<span class="${pr.due_date < today && pr.status !== 'completed' ? 'overdue' : ''}">${fmtShort(pr.due_date)}</span>` : '<span class="pill info">Ongoing</span>';
+  const openP = S.projects.filter(p => p.status !== 'completed');
+  const glSoon = openP.filter(p => { const g = goLiveInfo(p, today); return ['today', 'soon', 'week'].includes(g.state); });
+  const glMissed = openP.filter(p => goLiveInfo(p, today).state === 'missed');
+  const glNone = openP.filter(p => !p.go_live_date && !p.live_on);
+  const sKey = pr => esc((pr.name + ' ' + (pr.client || '') + ' ' + (pr.owner_id ? nameOf(pr.owner_id) : '')).toLowerCase());
 
-  const card = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
-    return `<a class="proj" href="#/project/${pr.id}" style="--pc:${esc(pr.color || '#3A9A52')}" data-s="${esc((pr.name + ' ' + (pr.client || '')).toLowerCase())}">
-      <div class="proj-top"><b>${esc(pr.name)}</b><span class="pill ${pc}">${pl}</span></div>
+  // group projects under their client (clients are the top level)
+  const groups = {};
+  list.forEach(pr => { const c = clients.find(x => x.id === pr.client_id), key = pr.client_id || (pr.client ? 'n:' + pr.client.toLowerCase() : 'internal');
+    groups[key] = groups[key] || { key, id: c?.id || pr.client_id || null, name: c?.name || pr.client || 'Internal (no client)', status: c?.status, items: [] };
+    groups[key].items.push(pr); });
+  const gList = Object.values(groups).sort((a, b) => (a.key === 'internal') - (b.key === 'internal') || a.name.localeCompare(b.name));
+  S.projShut = S.projShut || new Set();
+
+  const card = pr => { const st = stats[pr.id], [hc, hl] = projHealth(pr, st, today), g = goLiveInfo(pr, today);
+    return `<a class="proj" href="#/project/${pr.id}" style="--pc:${esc(pr.color || '#3A9A52')}" data-s="${sKey(pr)}">
+      <div class="proj-top"><b>${esc(pr.name)}</b><span class="pill ${hc}">${hl}</span></div>
       <div class="task-sub" style="margin-top:4px">${esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}</div>
       <div style="display:flex;align-items:baseline;gap:8px;margin-top:14px"><b style="font-size:24px">${st.pct}%</b><span class="task-sub">${st.done} of ${st.ts.length} tasks done</span></div>
       ${stackBar(st)}
-      <div class="proj-meta"><span>${hm(st.mins)} on tasks${st.meetN ? ` · ${hm(st.meetMins)} calls` : ''}</span><span>${pr.due_date ? `Due ${dueTxt(pr)}` : 'Ongoing'}</span></div>
+      <div class="proj-meta"><span>${hm(st.mins + st.meetMins)}${pr.budget_hours ? ` of ${num(pr.budget_hours)}h` : ''}</span><span>Go-live <span class="pill ${g.cls}">${esc(g.txt)}</span></span></div>
       <div class="avs">${st.people.slice(0, 7).map(p => `<span class="avatar" title="${esc(p.full_name)}">${esc(initials(p.full_name || p.email))}</span>`).join('')}${st.overdue ? `<button class="numlink" data-tl="over:${pr.id}" style="margin-left:auto"><span class="pill bad">${st.overdue} overdue</span></button>` : ''}</div>
     </a>`; };
-  const row = pr => { const st = stats[pr.id], [pc, pl] = PSTATUS[pr.status] || PSTATUS.active;
-    return `<tr data-open="${pr.id}" data-s="${esc((pr.name + ' ' + (pr.client || '')).toLowerCase())}" style="cursor:pointer">
-      <td style="white-space:normal;min-width:220px"><div style="display:flex;gap:10px;align-items:center"><span class="dot" style="background:${esc(pr.color)}"></span><div><div class="task-title">${esc(pr.name)}</div><div class="task-sub">${esc(pr.client || 'Internal')}</div></div></div></td>
+  const cols = 8 + (isAdmin() ? 1 : 0);
+  const row = (pr, gk) => { const st = stats[pr.id], [hc, hl] = projHealth(pr, st, today);
+    return `<tr class="prow" data-open="${pr.id}" data-g="${esc(gk)}" data-s="${sKey(pr)}" ${S.projShut.has(gk) ? 'hidden' : ''}>
+      <td style="white-space:normal;min-width:200px"><div style="display:flex;gap:10px;align-items:center"><span class="dot" style="background:${esc(pr.color)}"></span><div class="task-title">${esc(pr.name)}</div></div></td>
       <td>${pr.owner_id ? esc(nameOf(pr.owner_id)) : '<span class="muted">—</span>'}</td>
-      <td style="min-width:170px"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1">${stackBar(st)}</div><b class="num">${st.pct}%</b></div></td>
-      <td class="num"><button class="numlink" data-tl="all:${pr.id}" title="Show tasks">${st.done}/${st.ts.length}</button></td><td class="num">${st.overdue ? `<button class="numlink" data-tl="over:${pr.id}" title="Show overdue tasks"><span class="pill bad">${st.overdue}</span></button>` : '0'}</td>
-      <td class="num">${hm(st.mins)}</td><td class="num">${st.meetN ? `${hm(st.meetMins)} <span class="task-sub">(${st.meetN})</span>` : '—'}</td><td class="num">${dueTxt(pr)}</td><td><span class="pill ${pc}">${pl}</span></td>${isAdmin() ? `<td style="text-align:right"><button class="x-btn" data-delproj="${pr.id}" title="Delete project" aria-label="Delete project ${esc(pr.name)}">${icon('trash')}</button></td>` : ''}</tr>`; };
+      <td>${goLiveCell(goLiveInfo(pr, today))}</td>
+      <td style="min-width:150px"><div style="display:flex;align-items:center;gap:10px"><div style="flex:1">${stackBar(st)}</div><b class="num">${st.pct}%</b></div></td>
+      <td class="num"><button class="numlink" data-tl="all:${pr.id}" title="Show tasks">${st.done}/${st.ts.length}</button></td>
+      <td class="num">${st.overdue ? `<button class="numlink" data-tl="over:${pr.id}" title="Show overdue tasks"><span class="pill bad">${st.overdue}</span></button>` : '0'}</td>
+      <td>${budgetCell(pr, st)}</td>
+      <td><span class="pill ${hc}">${hl}</span></td>
+      ${isAdmin() ? `<td style="text-align:right"><button class="x-btn" data-delproj="${pr.id}" title="Delete project" aria-label="Delete project ${esc(pr.name)}">${icon('trash')}</button></td>` : ''}</tr>`; };
+  const grpRow = g => { const its = g.items.map(p => stats[p.id]), eff = its.reduce((s, x) => s + x.mins + x.meetMins, 0), open = its.reduce((s, x) => s + x.ts.length - x.done, 0), late = its.reduce((s, x) => s + x.overdue, 0);
+    return `<tr class="grp ${S.projShut.has(g.key) ? 'shut' : ''}" data-grp="${esc(g.key)}"><td colspan="${cols}"><div class="grp-in">
+      <button class="grp-tog" data-tog="${esc(g.key)}" aria-label="Show or hide ${esc(g.name)} projects" aria-expanded="${!S.projShut.has(g.key)}">${icon('next')}</button>
+      ${g.id && isMgr() ? `<a class="plink" href="#/clients/${g.id}"><b>${esc(g.name)}</b></a>` : `<b>${esc(g.name)}</b>`}
+      ${g.status && g.status !== 'active' ? `<span class="pill ${(CSTATUS[g.status] || CSTATUS.active)[0]}">${(CSTATUS[g.status] || CSTATUS.active)[1]}</span>` : ''}
+      <span class="grp-meta"><b>${g.items.length}</b> project${g.items.length === 1 ? '' : 's'}, <b>${open}</b> open tasks${late ? `, <b style="color:var(--bad)">${late} overdue</b>` : ''}, <b>${hm(eff)}</b> logged</span>
+      ${isMgr() && g.id ? `<button class="btn sm" data-newfor="${g.id}" style="margin-left:auto">${icon('plus')}Project</button>` : ''}</div></td></tr>`; };
 
   el.innerHTML = `<div class="toolbar">
       <div class="field"><label>Show</label><div class="seg">${[['active', 'Active'], ['on_hold', 'On hold'], ['completed', 'Completed'], ['all', 'All']].map(([v, l]) => `<button data-pf="${v}" class="${filter === v ? 'on' : ''}">${l} (${counts(v)})</button>`).join('')}</div></div>
-      <div class="field"><label>Layout</label><div class="seg"><button data-pl="cards" class="${layout === 'cards' ? 'on' : ''}">Cards</button><button data-pl="table" class="${layout === 'table' ? 'on' : ''}">Table</button></div></div>
-      <div class="field grow"><label for="pj-search">Search</label><input id="pj-search" type="text" placeholder="Project or client"></div>
+      <div class="field"><label>View</label><div class="seg"><button data-pl="list" class="${layout === 'list' ? 'on' : ''}">By client</button><button data-pl="cards" class="${layout === 'cards' ? 'on' : ''}">Cards</button></div></div>
+      <div class="field grow"><label for="pj-search">Search</label><input id="pj-search" type="text" placeholder="Project, client or project manager"></div>
       ${isMgr() ? `<button class="btn primary" id="pj-new">${icon('plus')}New project</button>` : ''}</div>
     <div class="stats">
       <div class="stat"><span>Active projects</span><b>${counts('active')}</b></div>
+      <button class="stat stat-btn" data-gl="soon"><span>Go-live in 7 days</span><b class="${glSoon.some(p => goLiveInfo(p, today).d <= 2) ? 'overdue' : ''}">${glSoon.length}</b><small>View list →</small></button>
+      <button class="stat stat-btn" data-gl="missed"><span>Go-live missed</span><b class="${glMissed.length ? 'overdue' : ''}">${glMissed.length}</b><small>View list →</small></button>
       <button class="stat stat-btn" data-tl="open"><span>Open tasks</span><b>${tasks.filter(t => t.project_id && t.status !== 'done').length}</b><small>View list →</small></button>
-      <button class="stat stat-btn" data-tl="review"><span>Waiting for review</span><b>${tasks.filter(t => t.project_id && t.status === 'review').length}</b><small>View list →</small></button>
       <button class="stat stat-btn" data-tl="over"><span>Overdue tasks</span><b class="${tasks.some(t => t.project_id && t.status !== 'done' && t.due_date && t.due_date < today) ? 'overdue' : ''}">${tasks.filter(t => t.project_id && t.status !== 'done' && t.due_date && t.due_date < today).length}</b><small>View list →</small></button>
+      <button class="stat stat-btn" data-tl="review"><span>Waiting for review</span><b>${tasks.filter(t => t.project_id && t.status === 'review').length}</b><small>View list →</small></button>
     </div>
-    ${!list.length ? `<div class="card empty">${S.projects.length ? 'No projects here.' : 'No projects yet. Create your first project to organise tasks by client or website.'}</div>`
+    ${isMgr() && glNone.length ? `<div class="nudge" style="border-left-color:var(--warn)"><div style="flex:1"><b>${glNone.length} open project${glNone.length === 1 ? ' has' : 's have'} no go-live date</b><div class="task-sub">${glNone.slice(0, 6).map(p => esc(p.name)).join(', ')}${glNone.length > 6 ? ` and ${glNone.length - 6} more` : ''}. Add one so admins are alerted before it is due.</div></div><button class="btn sm" data-gl="none">Review</button></div>` : ''}
+    ${!list.length ? `<div class="card empty">${S.projects.length ? 'No projects here.' : 'No projects yet. Add a client, then create its first project.'}</div>`
       : layout === 'cards' ? `<div class="proj-grid" id="pj-items">${list.map(card).join('')}</div>`
-      : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Project</th><th>Project manager</th><th>Progress</th><th>Tasks</th><th>Overdue</th><th>Task time</th><th>Calls</th><th>Due</th><th>Status</th>${isAdmin() ? '<th></th>' : ''}</tr></thead><tbody id="pj-items">${list.map(row).join('')}</tbody></table></div></div>`}`;
+      : `<div class="card"><div class="table-wrap"><table class="pg-tbl"><thead><tr><th>Client / project</th><th>Project manager</th><th>Go-live</th><th>Progress</th><th>Tasks</th><th>Overdue</th><th>Effort</th><th>Health</th>${isAdmin() ? '<th></th>' : ''}</tr></thead><tbody id="pj-items">${gList.map(g => grpRow(g) + g.items.map(pr => row(pr, g.key)).join('')).join('')}</tbody></table></div></div>`}`;
   $$('[data-pf]', el).forEach(b => b.onclick = () => { S.projFilter = b.dataset.pf; route(); });
-  $$('[data-pl]', el).forEach(b => b.onclick = () => { S.projLayout = b.dataset.pl; route(); });
+  $$('[data-pl]', el).forEach(b => b.onclick = () => { S.projLayout = b.dataset.pl; try { localStorage.setItem('sp-proj-layout', S.projLayout); } catch { } route(); });
+  $$('[data-gl]', el).forEach(b => b.onclick = () => { const k = b.dataset.gl; projectListModal(k === 'soon' ? 'Go-live in the next 7 days' : k === 'missed' ? 'Go-live missed' : 'No go-live date', k === 'soon' ? glSoon : k === 'missed' ? glMissed : glNone, today); });
   const inProj = t => t.project_id && S.projects.some(p => p.id === t.project_id);
   const late = t => t.status !== 'done' && t.due_date && t.due_date < today;
   $$('[data-tl]', el).forEach(b => b.onclick = e => {
@@ -2039,9 +2242,15 @@ VIEWS.projects = async el => {
     if (kind === 'over') taskListModal(pid ? `Overdue in ${pname}` : 'Overdue tasks', base.filter(late));
     if (kind === 'all') taskListModal(`Tasks in ${pname}`, base);
   });
+  $$('[data-tog]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const k = b.dataset.tog, shut = !S.projShut.has(k); shut ? S.projShut.add(k) : S.projShut.delete(k);
+    b.closest('tr').classList.toggle('shut', shut); b.setAttribute('aria-expanded', !shut); $$(`#pj-items tr.prow`).filter(r => r.dataset.g === k).forEach(r => r.hidden = shut); });
+  $$('[data-newfor]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const c = clients.find(x => x.id === b.dataset.newfor); openProject(null, { client_id: c.id, client: c.name, drive_url: c.drive_url || '' }); });
   $$('[data-delproj]', el).forEach(b => b.onclick = e => { e.stopPropagation(); deleteProject(S.projects.find(p => p.id === b.dataset.delproj)); });
-  $$('#pj-items [data-open]', el).forEach(r => r.onclick = () => { location.hash = `#/project/${r.dataset.open}`; });
-  $('#pj-search').oninput = e => { const v = e.target.value.toLowerCase(); $$('#pj-items [data-s]').forEach(c => c.style.display = c.dataset.s.includes(v) ? '' : 'none'); };
+  $$('#pj-items [data-open]', el).forEach(r => r.onclick = e => { if (e.target.closest('a,button')) return; location.hash = `#/project/${r.dataset.open}`; });
+  $('#pj-search').oninput = e => { const v = e.target.value.toLowerCase().trim();
+    $$('#pj-items [data-s]').forEach(c => c.style.display = c.dataset.s.includes(v) ? '' : 'none');
+    $$('#pj-items tr.prow').forEach(r => { if (v) r.hidden = false; else r.hidden = S.projShut.has(r.dataset.g); });
+    $$('#pj-items tr.grp').forEach(g => { const k = g.dataset.grp; g.style.display = !v || $$('#pj-items tr.prow').some(r => r.dataset.g === k && r.style.display !== 'none') ? '' : 'none'; }); };
   $('#pj-new') && ($('#pj-new').onclick = () => openProject(null));
 };
 
@@ -2052,10 +2261,13 @@ async function openProject(pr, prefill = {}) {
   openModal({
     title: isNew ? 'New project' : 'Edit project',
     body: `<div class="form-grid">
-      <div class="field full"><label for="pr-name">Project name</label><input id="pr-name" type="text" value="${esc(p.name || '')}" placeholder="e.g. Navdrushti website redesign"></div>
-      <div class="field"><label for="pr-client">Client</label><div style="display:flex;gap:8px;align-items:stretch"><div style="flex:1;min-width:0"><select id="pr-client" data-search><option value="">Internal (no client)</option>${clients.map(c => `<option value="${c.id}" ${c.id === p.client_id || (!p.client_id && p.client && c.name.toLowerCase() === String(p.client).toLowerCase()) ? 'selected' : ''}>${esc(c.name)}${c.status === 'past' ? ' (past)' : ''}</option>`).join('')}</select></div><button class="btn sm" type="button" id="pr-newclient" title="Add a new client">${icon('plus')}New</button></div></div>
+      <div class="field full"><label for="pr-client">Client <span class="task-sub" style="font-weight:400">· every project belongs to a client, or is internal</span></label><div style="display:flex;gap:8px;align-items:stretch"><div style="flex:1;min-width:0"><select id="pr-client" data-search><option value="">Internal (no client)</option>${clients.map(c => `<option value="${c.id}" ${c.id === p.client_id || (!p.client_id && p.client && c.name.toLowerCase() === String(p.client).toLowerCase()) ? 'selected' : ''}>${esc(c.name)}${c.status === 'past' ? ' (past)' : ''}</option>`).join('')}</select></div><button class="btn sm" type="button" id="pr-newclient" title="Add a new client">${icon('plus')}New</button></div></div>
+      <div class="field full"><label for="pr-name">Project name <span class="must">*</span></label><input id="pr-name" type="text" value="${esc(p.name || '')}" placeholder="e.g. Navdrushti website redesign"></div>
       <div class="field"><label for="pr-owner">Project manager</label><select id="pr-owner"><option value="">None</option>${pms.map(m => `<option value="${m.id}" ${m.id === p.owner_id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
-      <div class="field"><label for="pr-start">Start date</label><input id="pr-start" type="date" value="${esc(p.start_date || '')}"></div>
+      <div class="field"><label for="pr-start">Start date</label><input id="pr-start" type="date" value="${esc(p.start_date || istDate())}"></div>
+      <div class="field"><label for="pr-golive">Go-live date ${isNew || !p.live_on ? '<span class="must">*</span>' : ''}</label><input id="pr-golive" type="date" value="${esc(p.go_live_date || '')}"><span class="hint">Admins and the PM are alerted 2 days before, on the day, and every day after if it is missed.</span></div>
+      <div class="field"><label for="pr-budget">Budget hours <span class="task-sub" style="font-weight:400">(optional)</span></label><input id="pr-budget" type="number" min="0" step="0.5" value="${p.budget_hours ?? ''}" placeholder="e.g. 120"><span class="hint">Effort is compared with this on the dashboard.</span></div>
+      ${isNew ? '' : `<div class="field"><label for="pr-live">Went live on</label><input id="pr-live" type="date" value="${esc(p.live_on || '')}" max="${istDate()}"><span class="hint">Leave empty until the work is actually live.</span></div>`}
       <div class="field full"><label>Type of work</label><div class="seg" style="align-self:flex-start"><button type="button" data-pt="ongoing" class="${!isNew && !p.due_date ? 'on' : ''}">Ongoing client (live site, SEO, maintenance, retainer)</button><button type="button" data-pt="fixed" class="${isNew || p.due_date ? 'on' : ''}">Fixed project with a deadline</button></div></div>
       <div class="field" id="pr-due-f"><label for="pr-due">Due date <span class="task-sub" style="font-weight:400">(optional)</span></label><input id="pr-due" type="date" value="${esc(p.due_date || '')}"></div>
       <div class="field"><label for="pr-status">Status</label><select id="pr-status">${Object.entries(PSTATUS).map(([v, [, l]]) => `<option value="${v}" ${p.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
@@ -2079,12 +2291,18 @@ async function openProject(pr, prefill = {}) {
         const drive = v('#pr-drive');
         if (drive && !/^https?:\/\//i.test(drive)) return toast('The Drive link must start with https://', 'bad');
         const cid = $('#pr-client', root).value || null;
-        const row = { drive_url: drive, name: v('#pr-name'), client_id: cid, client: (S.clients || []).find(c => c.id === cid)?.name || null, owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc') };
+        const row = { drive_url: drive, name: v('#pr-name'), client_id: cid, client: (S.clients || []).find(c => c.id === cid)?.name || null, owner_id: v('#pr-owner'), start_date: v('#pr-start'), due_date: v('#pr-due'), status: v('#pr-status'), color: $('input[name=pr-color]:checked', root)?.value || PCOLORS[0], description: v('#pr-desc'),
+          go_live_date: v('#pr-golive'), budget_hours: v('#pr-budget') != null ? Number(v('#pr-budget')) : null };
+        if (!isNew) row.live_on = v('#pr-live');
         if (!row.name) return toast('Enter a project name', 'bad');
+        if (isNew && !row.go_live_date) { $('#pr-golive', root).focus(); return toast('Go-live date is required for new projects', 'bad'); }
+        if (!isNew && !row.go_live_date && p.go_live_date && !row.live_on) return toast('Keep a go-live date until the project is live', 'bad');
+        if (row.go_live_date && row.start_date && row.go_live_date < row.start_date) return toast('Go-live date cannot be before the start date', 'bad');
+        if (row.due_date && row.start_date && row.due_date < row.start_date) return toast('Due date cannot be before the start date', 'bad');
         try {
           if (isNew) { const created = await q(sb.from('projects').insert({ ...row, created_by: S.me.id }).select().single()); S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => S.projects); close(); toast('Project created'); location.hash = `#/project/${created.id}`; }
           else { await q(sb.from('projects').update(row).eq('id', p.id)); await q(sb.from('tasks').update({ project: row.name }).eq('project_id', p.id)).catch(() => {}); S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => S.projects); close(); toast('Project saved'); route(); }
-        } catch (e) { toast(e.message, 'bad'); }
+        } catch (e) { toast(/go_live_date|budget_hours|live_on/.test(e.message) && /column|schema/i.test(e.message) ? 'Ask an admin to run update_v21.sql in Supabase first' : e.message, 'bad'); }
       };
       $('#pr-del', root) && ($('#pr-del', root).onclick = async () => {
         if (!confirm('Delete this project and its discussion? Tasks and time logs are kept but will no longer belong to a project.')) return;
@@ -2095,6 +2313,17 @@ async function openProject(pr, prefill = {}) {
   });
 }
 
+function markLive(pr) {
+  openModal({ title: `Mark ${pr.name} as live`,
+    body: `<p style="margin-top:0">${pr.go_live_date ? `Planned go-live was <b>${fmtDate(pr.go_live_date)}</b>.` : ''} Admins and the project manager get a notification.</p>
+      <div class="field"><label for="ml-date">Went live on</label><input id="ml-date" type="date" value="${istDate()}" max="${istDate()}"></div>`,
+    footer: '<button class="btn" data-close>Cancel</button><button class="btn ok" id="ml-save">🚀 Mark as live</button>',
+    onMount: (root, close) => { $('[data-close]', root).onclick = close;
+      $('#ml-save', root).onclick = async () => { const d = $('#ml-date', root).value; if (!d) return toast('Choose the date it went live', 'bad');
+        try { await q(sb.from('projects').update({ live_on: d }).eq('id', pr.id)); close(); toast(`${pr.name} is live 🎉`); route(); }
+        catch (e) { toast(/live_on/.test(e.message) ? 'Ask an admin to run update_v21.sql in Supabase first' : e.message, 'bad'); } }; } });
+}
+
 VIEWS.project = async (el, id) => {
   const pr = await q(sb.from('projects').select('*').eq('id', id).maybeSingle());
   if (!pr) { el.innerHTML = '<div class="card empty">Project not found. <a href="#/projects">Back to projects</a></div>'; return; }
@@ -2103,7 +2332,7 @@ VIEWS.project = async (el, id) => {
   const tasks = await q(sb.from('tasks').select('*').eq('project_id', id).order('created_at'));
   const members = (await q(sb.from('project_members').select('employee_id').eq('project_id', id)).catch(() => [])).map(m => profileOf(m.employee_id)).filter(p => p.id);
   const [logs, cmts] = await Promise.all([
-    tasks.length ? inChunks(tasks.map(t => t.id), ch => sb.from('time_logs').select('task_id,employee_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [],
+    tasks.length ? inChunksAll(tasks.map(t => t.id), ch => sb.from('time_logs').select('*').in('task_id', ch)).catch(() => []) : [],
     q(sb.from('comments').select('task_id').eq('project_id', id).not('task_id', 'is', null)).catch(() => [])
   ]);
   const spent = tid => logs.filter(l => l.task_id === tid).reduce((s, l) => s + logMinutes(l), 0);
@@ -2118,14 +2347,62 @@ VIEWS.project = async (el, id) => {
   const cc = t => ccount(t.id) ? `<span title="Comments">${icon('chat')}${ccount(t.id)}</span>` : '';
   const tcard = t => { const [qc, ql] = PRIORITY[t.priority] || PRIORITY.medium, a = profileOf(t.assigned_to), m = spent(t.id);
     return `<div class="tcard" draggable="true" data-id="${t.id}"><div class="task-title">${esc(t.title)}</div>
-      <div class="tcard-meta"><span class="pill ${qc}">${ql}</span>${due(t)}${sopBadge(t)}<span class="sp"></span>${ck(t)}${cc(t)}${m ? `<span>${hm(m)}</span>` : ''}<span class="avatar sm" title="${esc(a.full_name || '')}">${esc(initials(a.full_name || a.email))}</span></div></div>`; };
+      <div class="tcard-meta"><span class="pill ${qc}">${ql}</span>${due(t)}${sopBadge(t)}<span class="sp"></span>${ck(t)}${cc(t)}${m || t.estimate_minutes ? `<span>${estCell(m, t.estimate_minutes)}</span>` : ''}<span class="avatar sm" title="${esc(a.full_name || '')}">${esc(initials(a.full_name || a.email))}</span></div></div>`; };
   const daysLeft = pr.due_date ? Math.round((dObj(pr.due_date) - dObj(today)) / 864e5) : null;
 
+  const facts = () => {
+    const g = goLiveInfo(pr, today), [hc, hl] = projHealth(pr, st, today), used = st.mins + st.meetMins, budget = Number(pr.budget_hours || 0) * 60;
+    const estPct = st.est ? Math.round(st.estSpent / st.est * 100) : 0;
+    return `<div class="facts-row">
+      <div class="fact ${g.state === 'missed' || g.state === 'today' ? 'bad' : g.state === 'soon' ? 'warn' : g.state === 'live' ? 'ok' : ''}"><span>Go-live</span><b>${g.state === 'live' ? `Live` : g.state === 'none' ? 'Not set' : esc(g.txt)}</b><small>${g.state === 'live' ? `on ${fmtDate(pr.live_on)}${pr.go_live_date ? (pr.live_on > pr.go_live_date ? `, ${daysBetween(pr.go_live_date, pr.live_on)}d after plan` : ', on time') : ''}` : pr.go_live_date ? `Planned ${fmtDate(pr.go_live_date)}` : isMgr() ? 'Edit the project to add it' : ''}</small></div>
+      <div class="fact ${hc === 'bad' ? 'bad' : hc === 'warn' ? 'warn' : hc === 'ok' ? 'ok' : ''}"><span>Health</span><b>${hl}</b><small>${st.overdue ? `${st.overdue} overdue task${st.overdue === 1 ? '' : 's'}` : `${st.pct}% of tasks done`}</small></div>
+      <div class="fact ${budget && used > budget ? 'bad' : ''}"><span>Effort${budget ? ' vs budget' : ''}</span><b>${hm(used)}</b><small>${budget ? `of ${num(pr.budget_hours)}h budget (${Math.round(used / budget * 100)}%)` : `${hm(st.mins)} tasks + ${hm(st.meetMins)} calls`}</small>${budget ? `<div class="est-bar"><i class="${used > budget ? 'over' : ''}" style="width:${Math.min(100, Math.round(used / budget * 100))}%"></i></div>` : ''}</div>
+      <div class="fact ${st.est && st.estSpent > st.est ? 'warn' : ''}"><span>Estimate vs actual</span><b>${st.est ? `${estPct}%` : '—'}</b><small>${st.est ? `${hm(st.estSpent)} spent of ${hm(st.est)} estimated (${st.estN} task${st.estN === 1 ? '' : 's'})` : 'No task estimates yet'}</small>${st.est ? `<div class="est-bar"><i class="${st.estSpent > st.est ? 'over' : ''}" style="width:${Math.min(100, estPct)}%"></i></div>` : ''}</div>
+    </div>`;
+  };
+  const timeline = () => {
+    const dated = shown.filter(t => t.due_date || t.start_date), undated = shown.filter(t => !t.due_date && !t.start_date);
+    if (!dated.length) return `<div class="card empty">No task has a start or due date yet. Add dates to tasks to see them on the timeline.</div>`;
+    const startOf = t => t.start_date || (t.created_at ? istDate(new Date(t.created_at)) : t.due_date), endOf = t => t.due_date || t.start_date;
+    const pts = dated.flatMap(t => [startOf(t), endOf(t)]).concat([today, pr.go_live_date, pr.start_date].filter(Boolean)).sort();
+    let a = addDays(pts[0], -2), b = addDays(pts[pts.length - 1], 3);
+    if (daysBetween(a, b) > 240) a = addDays(b, -240);
+    const span = Math.max(1, daysBetween(a, b)), pos = d => Math.max(0, Math.min(100, daysBetween(a, d) / span * 100));
+    const step = span > 120 ? 30 : span > 45 ? 7 : span > 14 ? 3 : 1;
+    const ticks = []; for (let d = a; d <= b; d = addDays(d, step)) ticks.push(d);
+    const marks = `${today >= a && today <= b ? `<div class="gnow" style="left:${pos(today)}%"></div>` : ''}${pr.go_live_date && !pr.live_on && pr.go_live_date >= a && pr.go_live_date <= b ? `<div class="glive" style="left:${pos(pr.go_live_date)}%"></div>` : ''}`;
+    const sorted = dated.slice().sort((x, y) => startOf(x).localeCompare(startOf(y)));
+    return `<div class="card"><div class="legend"><span><span class="dot" style="background:${TCOLOR.todo}"></span>To do</span><span><span class="dot" style="background:${TCOLOR.in_progress}"></span>In progress</span><span><span class="dot" style="background:${TCOLOR.review}"></span>Review</span><span><span class="dot" style="background:${TCOLOR.done}"></span>Done</span><span><span class="dot" style="background:var(--bad)"></span>Overdue</span><span class="task-sub">Striped bars have no start date yet (shown from the day they were created).</span></div>
+      <div class="gantt-wrap"><div class="gantt">
+        <div class="gh"></div><div class="gh glane" style="border-left:1px solid var(--line)">${ticks.map(d => `<div class="gtick" style="left:${pos(d)}%">${fmtShort(d)}</div>`).join('')}${marks}</div>
+        ${sorted.map(t => { const s0 = startOf(t), e0 = endOf(t), late = t.status !== 'done' && t.due_date && t.due_date < today, col = late ? 'var(--bad)' : TCOLOR[t.status], l = pos(s0 < a ? a : s0), w = Math.max(1.2, pos(e0) - l + 100 / span);
+          return `<div class="gname" data-open="${t.id}" title="${esc(t.title)}">${esc(t.title)}<small>${esc(nameOf(t.assigned_to))}${t.estimate_minutes ? ` · est ${hm(t.estimate_minutes)}` : ''}</small></div>
+            <div class="glane">${ticks.map(d => `<div class="gtick" style="left:${pos(d)}%"></div>`).join('')}${marks}<div class="gbar ${t.start_date ? '' : 'nostart'}" data-open="${t.id}" style="left:${l}%;width:${Math.min(100 - l, w)}%;background:${col}" title="${esc(t.title)}: ${fmtShort(s0)} → ${fmtShort(e0)}">${t.status === 'done' ? '✓ ' : ''}${fmtShort(s0)} → ${fmtShort(e0)}</div></div>`; }).join('')}
+      </div></div>
+      ${undated.length ? `<div class="card-b task-sub">${undated.length} task${undated.length === 1 ? ' has' : 's have'} no dates: ${undated.slice(0, 8).map(t => `<button class="btn link" data-open="${t.id}">${esc(t.title)}</button>`).join(', ')}${undated.length > 8 ? '…' : ''}</div>` : ''}</div>`;
+  };
+  const worklog = () => {
+    const tt = Object.fromEntries(tasks.map(t => [t.id, t]));
+    const all = logs.map(l => ({ ...l, _t: tt[l.task_id] })).concat(meetLogs).filter(l => !who || l.employee_id === who).sort((x, y) => y.started_at.localeCompare(x.started_at));
+    const noted = all.filter(l => l.note).length;
+    if (!all.length) return '<div class="card empty">No time logged on this project yet.</div>';
+    let lastDay = '';
+    return `<div class="card"><div class="card-h"><h2>Every session</h2><span class="sub">${all.length} sessions, ${hm(all.reduce((s, l) => s + logMinutes(l), 0))}. ${noted} of ${all.length} say what was done.</span></div>
+      <div class="table-wrap"><table class="sess-list"><thead><tr><th>When</th><th>Who</th><th>Task or call</th><th>Time</th><th>What was done</th></tr></thead><tbody>
+      ${all.map(l => { const d = istDate(new Date(l.started_at)), head = d !== lastDay; lastDay = d;
+        return `${head ? `<tr><td colspan="5" style="background:var(--canvas);font-weight:700;font-size:13px;padding:7px 16px">${dayName(d)}, ${fmtDate(d)}</td></tr>` : ''}<tr>
+        <td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : '<b style="color:var(--bad)">running</b>'}</td>
+        <td>${esc(nameOf(l.employee_id))}</td>
+        <td style="white-space:normal;min-width:180px">${l.task_id ? `<button class="btn link" data-open="${l.task_id}" style="text-align:left">${esc(l._t?.title || 'Task')}</button>` : `<b>${esc(l.activity || 'Meeting')}</b> <span class="pill info">call</span>`}</td>
+        <td class="num"><b>${hm(logMinutes(l))}</b></td>
+        <td style="white-space:normal;min-width:240px"><div class="sess-note ${l.note ? '' : 'empty'}">${l.note ? esc(l.note) : 'No note'}</div>${!l.note && l.ended_at && l.employee_id === S.me.id && l.id ? `<button class="btn link" data-snote="${l.id}" style="font-size:13px">Add what you did</button>` : ''}</td></tr>`; }).join('')}
+      </tbody></table></div></div>`;
+  };
   const overview = () => {
     const work = st.people.map(p => { const mine = tasks.filter(t => t.assigned_to === p.id);
       return { p, open: mine.filter(t => t.status !== 'done').length, review: mine.filter(t => t.status === 'review').length, done: mine.filter(t => t.status === 'done').length, late: mine.filter(t => t.status !== 'done' && t.due_date && t.due_date < today).length, mins: mine.reduce((s, t) => s + spent(t.id), 0) }; });
     const attention = tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date <= soon).sort((a, b) => a.due_date.localeCompare(b.due_date));
-    return `<div class="grid g-2">
+    return `${facts()}<div class="grid g-2">
       <div class="card"><div class="card-h"><h2>Progress</h2></div><div class="card-b">
         <div style="display:flex;align-items:baseline;gap:10px"><b style="font-size:44px;line-height:1">${st.pct}%</b><span class="muted">${st.done} of ${st.ts.length} tasks done</span></div>
         ${stackBar(st)}
@@ -2166,23 +2443,28 @@ VIEWS.project = async (el, id) => {
     <div class="card proj-head" style="--pc:${esc(pr.color || '#3A9A52')}">
       <div style="min-width:0;flex:1">
         <h2>${esc(pr.name)}</h2>
-        <div class="muted">${pr.client_id && isMgr() ? `<a class="plink" href="#/clients/${pr.client_id}"><b>${esc(pr.client || 'Client')}</b></a>` : esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}</div>
+        <div class="muted">${pr.client_id && isMgr() ? `<a class="plink" href="#/clients/${pr.client_id}"><b>${esc(pr.client || 'Client')}</b></a>` : esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}${pr.go_live_date || pr.live_on ? ` · Go-live ${pr.live_on ? fmtShort(pr.live_on) : fmtShort(pr.go_live_date)} <span class="pill ${goLiveInfo(pr, today).cls}">${esc(goLiveInfo(pr, today).txt)}</span>` : ''}</div>
         ${pr.description ? `<p style="margin:10px 0 0;color:var(--ink-2);white-space:pre-line">${esc(pr.description)}</p>` : ''}
       </div>
-      <div class="right"><span class="pill ${pc}">${pl}</span>${pr.drive_url ? `<a class="btn" href="${esc(pr.drive_url)}" target="_blank" rel="noopener">📁 Drive folder</a>` : ''}${isMgr() ? '<button class="btn" id="pv-edit">Edit project</button>' : ''}${isAdmin() ? `<button class="btn danger" id="pv-del" title="Delete project">${icon('trash')}</button>` : ''}<button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
+      <div class="right"><span class="pill ${pc}">${pl}</span>${pr.drive_url ? `<a class="btn" href="${esc(pr.drive_url)}" target="_blank" rel="noopener">📁 Drive folder</a>` : ''}${isMgr() && !pr.live_on && pr.status !== 'completed' ? `<button class="btn ok" id="pv-live">🚀 Mark as live</button>` : ''}${isMgr() ? `<button class="btn" id="pv-report">${icon('download')}Report</button>` : ''}${isMgr() ? '<button class="btn" id="pv-edit">Edit project</button>' : ''}${isAdmin() ? `<button class="btn danger" id="pv-del" title="Delete project">${icon('trash')}</button>` : ''}<button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
     </div>
-    <div class="tabs" role="tablist">${[['overview', 'Overview'], ['board', 'Board'], ['list', 'List']].map(([v, l]) => `<button data-pv="${v}" class="${view === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <div class="tabs" role="tablist">${[['overview', 'Overview'], ['board', 'Board'], ['list', 'List'], ['timeline', 'Timeline'], ['log', 'Work log']].map(([v, l]) => `<button data-pv="${v}" class="${view === v ? 'on' : ''}">${l}</button>`).join('')}</div>
     ${view !== 'overview' ? `<div class="toolbar"><div class="field" style="min-width:200px"><label for="pv-who">Assignee</label><select id="pv-who"><option value="">Everyone</option>${st.people.map(p => `<option value="${p.id}" ${who === p.id ? 'selected' : ''}>${esc(p.full_name || p.email)}</option>`).join('')}</select></div></div>` : ''}
     ${view === 'overview' ? overview()
+    : view === 'timeline' ? timeline()
+    : view === 'log' ? worklog()
     : view === 'board' ? `<div class="board">${Object.entries(TSTATUS).map(([s, label]) => { const ts = shown.filter(t => t.status === s);
         return `<div class="col" data-col="${s}"><div class="col-h"><span class="dot" style="background:${TCOLOR[s]}"></span>${label} <span class="n">${ts.length}</span><button class="btn sm" data-add="${s}" aria-label="Add task to ${label}">${icon('plus')}</button></div>${ts.map(tcard).join('')}</div>`; }).join('')}</div>
       <p class="muted" style="font-size:13px">Drag cards between columns to change status, or click a card to open it.</p>`
-    : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assigned to</th><th>Due</th><th>Priority</th><th>Status</th><th>Checklist</th><th>Time</th></tr></thead><tbody>
+    : `<div class="card"><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assigned to</th><th>Start</th><th>Due</th><th>Priority</th><th>Status</th><th>Checklist</th><th>Spent / estimate</th></tr></thead><tbody>
       ${Object.keys(TSTATUS).flatMap(s => shown.filter(t => t.status === s)).map(t => { const [qc, ql] = PRIORITY[t.priority] || PRIORITY.medium, c = Array.isArray(t.checklist) ? t.checklist : [];
-        return `<tr data-open="${t.id}" style="cursor:pointer"><td style="white-space:normal"><span class="task-title">${esc(t.title)}</span>${ccount(t.id) ? ` <span class="task-sub">${icon('chat')}${ccount(t.id)}</span>` : ''}</td><td>${esc(nameOf(t.assigned_to))}</td><td class="num">${due(t) || '—'}</td><td><span class="pill ${qc}">${ql}</span></td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td><td class="num">${c.length ? `${c.filter(x => x.done).length}/${c.length}` : '—'}</td><td class="num">${hm(spent(t.id))}</td></tr>`; }).join('') || '<tr><td colspan="7" class="empty">No tasks yet. Click Add task.</td></tr>'}
+        return `<tr data-open="${t.id}" style="cursor:pointer"><td style="white-space:normal"><span class="task-title">${esc(t.title)}</span>${ccount(t.id) ? ` <span class="task-sub">${icon('chat')}${ccount(t.id)}</span>` : ''}</td><td>${esc(nameOf(t.assigned_to))}</td><td class="num">${t.start_date ? fmtShort(t.start_date) : '—'}</td><td class="num">${due(t) || '—'}</td><td><span class="pill ${qc}">${ql}</span></td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td><td class="num">${c.length ? `${c.filter(x => x.done).length}/${c.length}` : '—'}</td><td class="num">${estCell(spent(t.id), t.estimate_minutes)}</td></tr>`; }).join('') || '<tr><td colspan="8" class="empty">No tasks yet. Click Add task.</td></tr>'}
       </tbody></table></div></div>`}`;
 
   $('#pv-edit') && ($('#pv-edit').onclick = () => openProject(pr));
+  $('#pv-report') && ($('#pv-report').onclick = () => openEffortReport({ title: pr.name, clientName: pr.client || 'Internal', projects: [pr] }));
+  $('#pv-live') && ($('#pv-live').onclick = () => markLive(pr));
+  $$('[data-snote]', el).forEach(b => b.onclick = () => openSessionNote([...logs, ...meetLogs].find(l => l.id === b.dataset.snote)));
   $('#pj-addcall') && ($('#pj-addcall').onclick = () => openTimeEntry({ mode: 'act', projectId: pr.id, activity: 'Client call' }));
   $('#pv-del') && ($('#pv-del').onclick = () => deleteProject(pr, () => { location.hash = '#/projects'; }));
   $('#pv-over') && ($('#pv-over').onclick = () => taskListModal('Overdue tasks', tasks.filter(t => t.status !== 'done' && t.due_date && t.due_date < today)));
@@ -2888,7 +3170,7 @@ async function refreshBell() {
 function paintBell() {
   const p = $('#bell-pop'); if (!p) return;
   const notes = S.notes || [], bdays = S.bdays || [];
-  const ico = k => k === 'task_assigned' ? icon('tasks') : k === 'payslip' ? icon('wallet') : icon('folder');
+  const ico = k => k === 'task_assigned' ? icon('tasks') : k === 'payslip' ? icon('wallet') : k === 'go_live_missed' ? '⚠️' : k === 'go_live_due' ? '⏰' : k === 'go_live_done' ? '🚀' : icon('folder');
   p.innerHTML = `<div class="bell-h"><b>Notifications</b>${notes.some(n => !n.read_at) ? '<button class="btn link" id="bell-all">Mark all read</button>' : ''}</div>
     ${bdays.length ? `<div class="bell-sec">🎂 Birthdays</div>${bdays.map(b => `<div class="bell-item bday${b.days_away === 0 ? ' unread' : ''}"><span class="avatar sm">${esc(initials(b.full_name))}</span><div><b>${esc(b.full_name)}</b><div class="task-sub">${b.days_away === 0 ? 'Today! Wish them a happy birthday 🎉' : b.days_away === 1 ? 'Tomorrow' : `${dObj(b.birthday).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}`}</div></div></div>`).join('')}` : ''}
     <div class="bell-sec">Updates</div>
@@ -3013,7 +3295,7 @@ async function loadClients() { S.clients = await q(sb.from('clients').select('*'
 VIEWS.clients = async (el, param) => {
   if (param) return clientPage(el, param);
   const clients = await loadClients(), filter = S.cliFilter || 'active';
-  const projects = await q(sb.from('projects').select('id,client_id,status')).catch(() => []);
+  const projects = await q(sb.from('projects').select('*')).catch(() => []);
   const mStart = `${istDate().slice(0, 7)}-01T00:00:00+05:30`;
   const mLogs = await allRows(() => sb.from('time_logs').select('task_id,project_id,started_at,ended_at,minutes').gte('started_at', mStart)).catch(() => []);
   const mTaskIds = [...new Set(mLogs.map(l => l.task_id).filter(Boolean))];
@@ -3032,6 +3314,9 @@ VIEWS.clients = async (el, param) => {
         ${(c.services || []).length ? `<div style="display:flex;flex-wrap:wrap;gap:5px">${c.services.slice(0, 4).map(t => `<span class="tag-chip static sm">${esc(t)}</span>`).join('')}${c.services.length > 4 ? `<span class="task-sub">+${c.services.length - 4}</span>` : ''}</div>` : ''}
         ${c.contact_name || c.email || c.phone ? `<div class="cl-contact">${c.contact_name ? `<div>${icon('people')}${esc(c.contact_name)}</div>` : ''}${c.email ? `<div>${icon('mail')}${esc(c.email)}</div>` : ''}${c.phone ? `<div>${icon('phone')}${esc(c.phone)}</div>` : ''}</div>` : ''}
         ${(() => { const [tm, cm] = cliM(c.id); return tm || cm ? `<div class="task-sub">This month: <b>${hm(tm)}</b> tasks · <b>${hm(cm)}</b> calls</div>` : ''; })()}
+        ${(() => { const td = istDate(), gl = ps.filter(p => p.status !== 'completed' && !p.live_on && p.go_live_date).sort((a, b) => a.go_live_date.localeCompare(b.go_live_date)); if (!gl.length) return '';
+          const g = goLiveInfo(gl[0], td), missed = gl.filter(p => p.go_live_date < td).length;
+          return `<div class="task-sub">${missed ? `<span class="pill bad">${missed} go-live missed</span>` : `Next go-live: <b>${esc(gl[0].name)}</b> <span class="pill ${g.cls}">${esc(g.txt)}</span>`}</div>`; })()}
         <div class="cl-foot"><div class="socs">${socialLinks(c)}</div><span class="task-sub">${ps.filter(p => p.status !== 'completed').length} open project${ps.filter(p => p.status !== 'completed').length === 1 ? '' : 's'}</span></div></div>`; }).join('')}</div>`
     : `<div class="card empty">${clients.length ? 'No clients here.' : 'No clients yet. Add your first client to keep contacts, links and projects together.'}</div>`}`;
   $$('[data-cf]', el).forEach(b => b.onclick = () => { S.cliFilter = b.dataset.cf; route(); });
@@ -3048,8 +3333,8 @@ async function clientPage(el, id) {
   const pids = projects.map(p => p.id);
   const tasks = pids.length ? await inChunks(pids, ch => sb.from('tasks').select('id,title,project_id,status,due_date,completed_at,assigned_to').in('project_id', ch)).catch(() => []) : [];
   const tids = tasks.map(t => t.id);
-  const tlogs = tids.length ? await inChunks(tids, ch => sb.from('time_logs').select('task_id,employee_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
-  const clogs = pids.length ? await inChunks(pids, ch => sb.from('time_logs').select('*').in('project_id', ch).is('task_id', null)).catch(() => []) : [];
+  const tlogs = tids.length ? await inChunksAll(tids, ch => sb.from('time_logs').select('id,task_id,employee_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
+  const clogs = pids.length ? await inChunksAll(pids, ch => sb.from('time_logs').select('*').in('project_id', ch).is('task_id', null)).catch(() => []) : [];
   const [pc, pl] = CSTATUS[c.status] || CSTATUS.active, today = istDate();
   const month = S.cliMonth?.[id] || '';   // '' = all time, else 'YYYY-MM'
   const inM = ts => !month || istDate(new Date(ts)).startsWith(month);
@@ -3073,7 +3358,7 @@ async function clientPage(el, id) {
       <div class="right">${c.email ? `<a class="btn" href="mailto:${esc(c.email)}">${icon('mail')}Email</a>` : ''}${c.phone ? `<a class="btn" href="tel:${esc(c.phone)}">${icon('phone')}Call</a>` : ''}${c.whatsapp || c.phone ? `<a class="btn" href="${waLink(c.whatsapp || c.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ''}<button class="btn primary" id="cp-edit">Edit</button>${isAdmin() ? `<button class="btn danger" id="cp-del" title="Delete client">${icon('trash')}</button>` : ''}</div></div>
     <div class="card effort-card">
       <div class="card-h"><h2>Effort</h2><span class="sub">${esc(mLabel(month))}</span>
-        <div class="right"><select id="cp-month" class="mini" data-nosearch aria-label="Period"><option value="">All time</option>${months.map(m => `<option value="${m}" ${m === month ? 'selected' : ''}>${mLabel(m)}</option>`).join('')}</select><button class="btn sm" id="cp-xls">${icon('download')}Excel</button></div></div>
+        <div class="right"><select id="cp-month" class="mini" data-nosearch aria-label="Period"><option value="">All time</option>${months.map(m => `<option value="${m}" ${m === month ? 'selected' : ''}>${mLabel(m)}</option>`).join('')}</select><button class="btn sm primary" id="cp-xls">${icon('download')}Download report</button></div></div>
       ${(() => { const total = tot.taskM + tot.callM, tp = total ? Math.round(tot.taskM / total * 100) : 0, rows = prow.slice().sort((x, y) => (y.taskM + y.callM) - (x.taskM + x.callM)), maxT = Math.max(1, ...rows.map(r => r.taskM + r.callM));
         return `<div class="eff-top">
           <div class="eff-total"><span>Total effort</span><b>${hm(total)}</b><small>${projects.length} project${projects.length === 1 ? '' : 's'}</small></div>
@@ -3097,23 +3382,148 @@ async function clientPage(el, id) {
       </div></div>
       <div class="card"><div class="card-h"><h2>Projects</h2><span class="sub">${projects.length}</span><div class="right"><button class="btn sm" id="cp-proj">${icon('plus')}New project</button></div></div><div class="card-b">
         ${projects.map(p => { const r = prow.find(x => x.p.id === p.id), [sc, sl] = PSTATUS[p.status] || PSTATUS.active;
-          return `<a class="list-row plink" href="#/project/${p.id}" style="align-items:center"><span class="dot" style="background:${esc(p.color || '#3A9A52')}"></span><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="task-sub">${r.done}/${r.total} tasks done · ${p.due_date ? 'due ' + fmtShort(p.due_date) : 'Ongoing'}</div></div><span class="pill ${sc}">${sl}</span></a>`; }).join('') || '<div class="empty">No projects for this client yet.</div>'}
+          return `<a class="list-row plink" href="#/project/${p.id}" style="align-items:center"><span class="dot" style="background:${esc(p.color || '#3A9A52')}"></span><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="task-sub">${r.done}/${r.total} tasks done · ${p.due_date ? 'due ' + fmtShort(p.due_date) : 'Ongoing'}${p.go_live_date || p.live_on ? ` · go-live ${esc(goLiveInfo(p, today).txt.toLowerCase())}` : ''}</div></div><span class="pill ${sc}">${sl}</span></a>`; }).join('') || '<div class="empty">No projects for this client yet.</div>'}
       </div></div>
     </div>`;
   $('#cp-edit').onclick = () => openClient(c);
   $('#cp-month').onchange = e => { S.cliMonth = { ...(S.cliMonth || {}), [id]: e.target.value }; route(); };
-  $('#cp-xls').onclick = async () => {
-    try {
-      await loadXLSX(); const X = window.XLSX, wb = X.utils.book_new(), h = m => +(m / 60).toFixed(2);
-      X.utils.book_append_sheet(wb, X.utils.json_to_sheet(prow.map(r => ({ Project: r.p.name, 'Task hours': h(r.taskM), 'Calls & meetings hours': h(r.callM), 'Total hours': h(r.taskM + r.callM) })).concat([{ Project: 'TOTAL', 'Task hours': h(tot.taskM), 'Calls & meetings hours': h(tot.callM), 'Total hours': h(tot.taskM + tot.callM) }])), 'Effort');
-      X.writeFile(wb, `Sharvii-${c.name.replace(/[^\w]+/g, '-')}-${month || 'all-time'}.xlsx`);
-    } catch (e) { toast(e.message, 'bad'); }
-  };
+  $('#cp-xls').onclick = () => openEffortReport({ title: c.name, clientName: c.name, projects, month });
   $('#cp-del') && ($('#cp-del').onclick = async () => {
     if (!confirm(`Delete the client "${c.name}"?\n\nTheir projects are kept (without a client), and an admin can restore the client from Leave & holidays → Recycle bin.`)) return;
     try { await q(sb.from('clients').delete().eq('id', c.id)); toast('Client deleted. It can be restored from the Recycle bin.'); location.hash = '#/clients'; } catch (e) { toast(e.message, 'bad'); }
   });
   $('#cp-proj').onclick = () => openProject(null, { client_id: c.id, client: c.name, drive_url: c.drive_url || '' });
+}
+
+/* ---------- Detailed work report (client or project): Excel + PDF ---------- */
+async function reportData(projects, from, to) {
+  const pids = projects.map(p => p.id);
+  const tasks = pids.length ? await inChunksAll(pids, ch => sb.from('tasks').select('*').in('project_id', ch)) : [];
+  const tids = tasks.map(t => t.id);
+  const [ta, tlogs, clogs] = await Promise.all([
+    tids.length ? inChunks(tids, ch => sb.from('task_assignees').select('task_id,employee_id').in('task_id', ch)).catch(() => []) : [],
+    tids.length ? inChunksAll(tids, ch => sb.from('time_logs').select('*').in('task_id', ch)) : [],
+    pids.length ? inChunksAll(pids, ch => sb.from('time_logs').select('*').in('project_id', ch).is('task_id', null)).catch(() => []) : []
+  ]);
+  const all = !from && !to;
+  const inR = v => { if (!v) return false; const d = v.length > 10 ? istDate(new Date(v)) : v; return (!from || d >= from) && (!to || d <= to); };
+  const pOf = id => projects.find(p => p.id === id), tOf = Object.fromEntries(tasks.map(t => [t.id, t]));
+  const sum = a => a.reduce((s, l) => s + logMinutes(l), 0), byStart = (a, b) => a.started_at.localeCompare(b.started_at);
+  const TL = tlogs.filter(l => inR(l.started_at)), CL = clogs.filter(l => inR(l.started_at));
+  const taskRows = tasks.map(t => {
+    const mine = tlogs.filter(l => l.task_id === t.id).sort(byStart), inP = mine.filter(l => inR(l.started_at)), lastL = mine[mine.length - 1];
+    return { t, p: pOf(t.project_id), owner: nameOf(t.assigned_to), others: ta.filter(x => x.task_id === t.id && x.employee_id !== t.assigned_to).map(x => nameOf(x.employee_id)),
+      periodM: sum(inP), totalM: sum(mine), sessions: inP.length, first: mine[0]?.started_at, last: lastL ? (lastL.ended_at || lastL.started_at) : null,
+      workers: [...new Set(inP.map(l => nameOf(l.employee_id)))] };
+  }).filter(r => all || r.sessions || inR(r.t.completed_at) || inR(r.t.created_at) || inR(r.t.due_date) || inR(r.t.start_date))
+    .sort((a, b) => (a.p?.name || '').localeCompare(b.p?.name || '') || (a.t.start_date || a.t.created_at || '').localeCompare(b.t.start_date || b.t.created_at || ''));
+  const sessions = TL.map(l => ({ ...l, _t: tOf[l.task_id], _p: pOf(tOf[l.task_id]?.project_id), type: l.kind === 'manual' ? 'Added by hand' : 'Timer' }))
+    .concat(CL.map(l => ({ ...l, _p: pOf(l.project_id), type: 'Call / meeting' }))).sort(byStart);
+  const projRows = projects.map(p => { const allT = tasks.filter(t => t.project_id === p.id), tr = taskRows.filter(r => r.t.project_id === p.id);
+    return { p, tasks: allT.length, done: allT.filter(t => t.status === 'done').length, open: allT.filter(t => t.status !== 'done').length,
+      completedInP: allT.filter(t => inR(t.completed_at)).length, est: tr.reduce((s, r) => s + (r.t.estimate_minutes || 0), 0),
+      taskM: sum(TL.filter(l => tOf[l.task_id]?.project_id === p.id)), callM: sum(CL.filter(l => l.project_id === p.id)) }; });
+  const people = [...new Set(sessions.map(l => l.employee_id))].map(id => { const mine = sessions.filter(l => l.employee_id === id);
+    return { name: nameOf(id), tasks: new Set(mine.filter(l => l.task_id).map(l => l.task_id)).size, sessions: mine.length, taskM: sum(mine.filter(l => l.task_id)), callM: sum(mine.filter(l => !l.task_id)) }; })
+    .sort((a, b) => (b.taskM + b.callM) - (a.taskM + a.callM));
+  return { taskRows, sessions, projRows, people, totals: { taskM: sum(TL), callM: sum(CL), completed: tasks.filter(t => inR(t.completed_at)).length } };
+}
+const rDate = d => d ? fmtDate(d.length > 10 ? istDate(new Date(d)) : d) : '';
+const rH = m => +(Number(m || 0) / 60).toFixed(2);
+
+function openEffortReport({ title, clientName, projects, month = '' }) {
+  const months = Array.from({ length: 12 }, (_, i) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; });
+  const mLabel = m => dObj(m + '-01').toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+  openModal({
+    title: 'Download work report',
+    body: `<div class="rep-opts">
+      <p style="margin:0">Report for <b>${esc(title)}</b>${projects.length > 1 ? ` (${projects.length} projects)` : ''}: every task with its owner, start, due and completion dates, estimate against time spent, and every work session with what was done.</p>
+      <div class="field"><label for="rp-period">Period</label><select id="rp-period" data-nosearch><option value="">All time</option>${months.map(m => `<option value="${m}" ${m === month ? 'selected' : ''}>${mLabel(m)}</option>`).join('')}<option value="custom">Custom dates…</option></select></div>
+      <div class="form-grid" id="rp-custom" hidden><div class="field"><label for="rp-from">From</label><input id="rp-from" type="date" value="${istDate().slice(0, 8)}01"></div><div class="field"><label for="rp-to">To</label><input id="rp-to" type="date" value="${istDate()}"></div></div>
+      <label class="check"><input type="checkbox" id="rp-log" checked> Include the session-by-session work log</label>
+      <label class="check"><input type="checkbox" id="rp-people" checked> Include hours by team member</label>
+    </div>`,
+    footer: `<button class="btn" data-close>Cancel</button><button class="btn" id="rp-pdf">${icon('download')}PDF (to send)</button><button class="btn primary" id="rp-xls">${icon('download')}Excel (full detail)</button>`,
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      const per = $('#rp-period', root); per.onchange = () => { $('#rp-custom', root).hidden = per.value !== 'custom'; };
+      const range = () => { const v = per.value; if (!v) return [null, null, 'All time'];
+        if (v === 'custom') { const a = $('#rp-from', root).value || null, b = $('#rp-to', root).value || null; return [a, b, `${a ? fmtDate(a) : 'Start'} – ${b ? fmtDate(b) : 'today'}`]; }
+        const mb = monthBounds(v); return [mb.first, mb.last, mLabel(v)]; };
+      const go = async (kind, btn) => {
+        const [from, to, label] = range(), opts = { log: $('#rp-log', root).checked, people: $('#rp-people', root).checked };
+        if (from && to && from > to) return toast('The start date must be before the end date', 'bad');
+        const w = kind === 'pdf' ? window.open('', '_blank') : null;
+        if (kind === 'pdf' && !w) return toast('Allow pop-ups for this site to create the PDF', 'bad');
+        if (w) w.document.write('<p style="font-family:Arial,sans-serif;padding:30px;color:#555">Preparing the report…</p>');
+        btn.disabled = true;
+        try {
+          const R = { ...(await reportData(projects, from, to)), title, clientName, label, opts, file: `Sharvii-${title.replace(/[^\w]+/g, '-')}-${(per.value === 'custom' ? `${from || 'start'}-to-${to || 'today'}` : per.value || 'all-time')}` };
+          if (kind === 'pdf') reportPDF(w, R); else await reportExcel(R);
+          close();
+        } catch (e) { if (w) w.close(); toast(e.message, 'bad'); btn.disabled = false; }
+      };
+      $('#rp-xls', root).onclick = e => go('xls', e.currentTarget);
+      $('#rp-pdf', root).onclick = e => go('pdf', e.currentTarget);
+    }
+  });
+}
+
+async function reportExcel(R) {
+  await loadXLSX(); const X = window.XLSX, wb = X.utils.book_new(), T = R.totals;
+  const sum = [[`${R.title}: work report`], ['Client', R.clientName], ['Period', R.label], ['Prepared', `${fmtDate(istDate())} by ${S.me.full_name || S.me.email}`], [],
+    ['Total hours', rH(T.taskM + T.callM)], ['Task hours', rH(T.taskM)], ['Calls & meetings hours', rH(T.callM)], ['Tasks completed in period', T.completed], ['Work sessions', R.sessions.length], [],
+    ['Project', 'Status', 'Project manager', 'Start date', 'Go-live (planned)', 'Went live', 'Due date', 'Budget (h)', 'Tasks', 'Done', 'Open', 'Completed in period', 'Estimate (h)', 'Task hours', 'Calls hours', 'Total hours'],
+    ...R.projRows.map(r => [r.p.name, (PSTATUS[r.p.status] || PSTATUS.active)[1], r.p.owner_id ? nameOf(r.p.owner_id) : '', rDate(r.p.start_date), rDate(r.p.go_live_date), rDate(r.p.live_on), rDate(r.p.due_date), r.p.budget_hours ?? '', r.tasks, r.done, r.open, r.completedInP, rH(r.est), rH(r.taskM), rH(r.callM), rH(r.taskM + r.callM)])];
+  X.utils.book_append_sheet(wb, xsheet(sum, [34, 14, 20, 14, 16, 14, 14, 11, 8, 8, 8, 12, 12, 11, 11, 11]), 'Summary');
+  const today = istDate();
+  X.utils.book_append_sheet(wb, xsheet([['Project', 'Task', 'Owner', 'Also on task', 'Status', 'Priority', 'Created', 'Start date', 'Due date', 'Completed on', 'Estimate (h)', 'Hours in period', 'Total hours (all time)', 'Over (+) / under (−) estimate (h)', 'Sessions in period', 'Time logged by', 'First worked', 'Last worked', 'Overdue']]
+    .concat(R.taskRows.map(r => [r.p?.name || '', r.t.title, r.owner, r.others.join(', '), TSTATUS[r.t.status] || r.t.status, (PRIORITY[r.t.priority] || PRIORITY.medium)[1], rDate(r.t.created_at), rDate(r.t.start_date), rDate(r.t.due_date), rDate(r.t.completed_at),
+      r.t.estimate_minutes ? rH(r.t.estimate_minutes) : '', rH(r.periodM), rH(r.totalM), r.t.estimate_minutes ? rH(r.totalM - r.t.estimate_minutes) : '', r.sessions, r.workers.join(', '), r.first ? `${rDate(r.first)} ${fmtTime(r.first)}` : '', r.last ? `${rDate(r.last)} ${fmtTime(r.last)}` : '',
+      r.t.status !== 'done' && r.t.due_date && r.t.due_date < today ? `${daysBetween(r.t.due_date, today)} days` : ''])), [24, 40, 18, 22, 12, 9, 13, 13, 13, 13, 11, 12, 13, 14, 10, 24, 20, 20, 10]), 'Tasks');
+  if (R.opts.log) X.utils.book_append_sheet(wb, xsheet([['Date', 'Day', 'Project', 'Task / activity', 'Type', 'Person', 'Started', 'Ended', 'Hours', 'What was done']]
+    .concat(R.sessions.map(l => { const d = istDate(new Date(l.started_at)); return [rDate(d), dayName(d), l._p?.name || '', l.task_id ? (l._t?.title || 'Task') : (l.activity || 'Meeting'), l.type, nameOf(l.employee_id), fmtTime(l.started_at), l.ended_at ? fmtTime(l.ended_at) : 'running', rH(logMinutes(l)), l.note || '']; })), [13, 6, 24, 40, 14, 18, 10, 10, 8, 70]), 'Work log');
+  const calls = R.sessions.filter(l => !l.task_id);
+  if (calls.length) X.utils.book_append_sheet(wb, xsheet([['Date', 'Project', 'Call / meeting', 'Person', 'Started', 'Ended', 'Hours', 'Notes']]
+    .concat(calls.map(l => [rDate(istDate(new Date(l.started_at))), l._p?.name || '', l.activity || 'Meeting', nameOf(l.employee_id), fmtTime(l.started_at), l.ended_at ? fmtTime(l.ended_at) : '', rH(logMinutes(l)), l.note || '']))
+    .concat([['TOTAL', '', `${calls.length} calls`, '', '', '', rH(calls.reduce((s, l) => s + logMinutes(l), 0)), '']]), [13, 24, 24, 18, 10, 10, 8, 60]), 'Calls & meetings');
+  if (R.opts.people) X.utils.book_append_sheet(wb, xsheet([['Person', 'Tasks worked on', 'Sessions', 'Task hours', 'Calls & meetings hours', 'Total hours']]
+    .concat(R.people.map(p => [p.name, p.tasks, p.sessions, rH(p.taskM), rH(p.callM), rH(p.taskM + p.callM)])), [24, 14, 10, 11, 18, 11]), 'By person');
+  X.writeFile(wb, `${R.file}.xlsx`);
+  toast('Report downloaded');
+}
+
+function reportPDF(w, R) {
+  const T = R.totals, today = istDate(), tot = T.taskM + T.callM;
+  const css = `*{box-sizing:border-box}body{font-family:Figtree,Arial,sans-serif;color:#1B2430;margin:0;padding:32px 36px;font-size:12.5px;line-height:1.45}
+    .hd{display:flex;align-items:center;gap:18px;border-bottom:3px solid #131C3F;padding-bottom:16px;margin-bottom:20px}.hd img{height:42px;background:#131C3F;padding:6px 10px;border-radius:6px}
+    h1{font-size:22px;margin:0}h2{font-size:15px;margin:26px 0 8px;padding-bottom:6px;border-bottom:1px solid #E3E7EC}.sub{color:#5B6577}
+    .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 8px}.tile{border:1px solid #E3E7EC;border-radius:8px;padding:10px 12px}.tile span{display:block;color:#5B6577;font-size:11.5px}.tile b{font-size:20px}
+    table{width:100%;border-collapse:collapse;margin-top:6px}th{text-align:left;background:#F4F6F8;font-size:11px;color:#4A5565;padding:6px 8px;border-bottom:1px solid #E3E7EC}td{padding:6px 8px;border-bottom:1px solid #EEF0F3;vertical-align:top}
+    td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.over{color:#B53A2B;font-weight:600}.st{font-size:11px;font-weight:600;white-space:nowrap}
+    tr.day td{background:#F7F9FB;font-weight:700;font-size:11.5px}.note{white-space:pre-line;color:#4A5565}tr{page-break-inside:avoid}
+    .hint{text-align:center;color:#5B6577;font-size:13px;padding:8px;background:#FCF1DE;border-radius:6px;margin-bottom:16px}@media print{.hint{display:none}body{padding:0}}`;
+  const h = m => hm(m);
+  const projSec = R.projRows.filter(r => R.taskRows.some(x => x.t.project_id === r.p.id) || r.callM).map(r => {
+    const tr = R.taskRows.filter(x => x.t.project_id === r.p.id);
+    return `<h2>${esc(r.p.name)} <span class="sub" style="font-weight:400;font-size:12px">· ${h(r.taskM + r.callM)} in period${r.p.go_live_date ? ` · go-live ${r.p.live_on ? `done ${fmtDate(r.p.live_on)}` : fmtDate(r.p.go_live_date)}` : ''}</span></h2>
+      ${tr.length ? `<table><thead><tr><th>Task</th><th>Owner</th><th>Start</th><th>Due</th><th>Completed</th><th>Status</th><th class="n">Estimate</th><th class="n">Time in period</th></tr></thead><tbody>
+      ${tr.map(x => `<tr><td>${esc(x.t.title)}${x.others.length ? `<div class="sub">with ${esc(x.others.join(', '))}</div>` : ''}</td><td>${esc(x.owner)}</td><td>${x.t.start_date ? fmtShort(x.t.start_date) : '—'}</td><td>${x.t.due_date ? `<span class="${x.t.status !== 'done' && x.t.due_date < today ? 'over' : ''}">${fmtShort(x.t.due_date)}</span>` : '—'}</td><td>${x.t.completed_at ? fmtShort(istDate(new Date(x.t.completed_at))) : '—'}</td><td class="st" style="color:${TCOLOR[x.t.status]}">${TSTATUS[x.t.status]}</td><td class="n">${x.t.estimate_minutes ? h(x.t.estimate_minutes) : '—'}</td><td class="n ${x.t.estimate_minutes && x.totalM > x.t.estimate_minutes ? 'over' : ''}">${h(x.periodM)}</td></tr>`).join('')}
+      </tbody></table>` : '<p class="sub">No task work in this period; calls only.</p>'}`; }).join('');
+  let lastDay = '';
+  const log = R.opts.log && R.sessions.length ? `<h2>Work log: what was done, session by session</h2><table><thead><tr><th>Time</th><th>Person</th><th>Project · task or call</th><th class="n">Hours</th><th>What was done</th></tr></thead><tbody>
+    ${R.sessions.map(l => { const d = istDate(new Date(l.started_at)), head = d !== lastDay; lastDay = d;
+      return `${head ? `<tr class="day"><td colspan="5">${dayName(d)}, ${fmtDate(d)}</td></tr>` : ''}<tr><td style="white-space:nowrap">${fmtTime(l.started_at)}–${l.ended_at ? fmtTime(l.ended_at) : '…'}</td><td>${esc(nameOf(l.employee_id))}</td><td>${R.projRows.length > 1 ? `<span class="sub">${esc(l._p?.name || '')} · </span>` : ''}${esc(l.task_id ? (l._t?.title || 'Task') : `${l.activity || 'Meeting'} (call)`)}</td><td class="n">${h(logMinutes(l))}</td><td class="note">${esc(l.note || '—')}</td></tr>`; }).join('')}</tbody></table>` : '';
+  const ppl = R.opts.people && R.people.length ? `<h2>Hours by team member</h2><table><thead><tr><th>Person</th><th class="n">Tasks</th><th class="n">Sessions</th><th class="n">Task time</th><th class="n">Calls</th><th class="n">Total</th></tr></thead><tbody>${R.people.map(p => `<tr><td>${esc(p.name)}</td><td class="n">${p.tasks}</td><td class="n">${p.sessions}</td><td class="n">${h(p.taskM)}</td><td class="n">${h(p.callM)}</td><td class="n"><b>${h(p.taskM + p.callM)}</b></td></tr>`).join('')}</tbody></table>` : '';
+  w.document.open();
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(R.file)}</title><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet"><style>${css}</style></head><body>
+    <div class="hint">In the print window, choose <b>Save as PDF</b> as the destination.</div>
+    <div class="hd"><img src="${esc(CONFIG.LOGO_URL)}" alt="" onerror="this.remove()"><div><h1>${esc(R.title)}: work report</h1><div class="sub">${esc(R.clientName)} · ${esc(R.label)} · prepared ${fmtDate(today)} by ${esc(CONFIG.COMPANY)}</div></div></div>
+    <div class="tiles"><div class="tile"><span>Total time</span><b>${h(tot)}</b></div><div class="tile"><span>Task work</span><b>${h(T.taskM)}</b></div><div class="tile"><span>Calls & meetings</span><b>${h(T.callM)}</b></div><div class="tile"><span>Tasks completed</span><b>${T.completed}</b></div></div>
+    ${R.projRows.length > 1 ? `<h2>Projects</h2><table><thead><tr><th>Project</th><th>Status</th><th>Go-live</th><th class="n">Tasks done</th><th class="n">Task time</th><th class="n">Calls</th><th class="n">Total</th></tr></thead><tbody>${R.projRows.map(r => `<tr><td>${esc(r.p.name)}</td><td>${(PSTATUS[r.p.status] || PSTATUS.active)[1]}</td><td>${r.p.live_on ? `Live ${fmtShort(r.p.live_on)}` : r.p.go_live_date ? fmtShort(r.p.go_live_date) : '—'}</td><td class="n">${r.done}/${r.tasks}</td><td class="n">${h(r.taskM)}</td><td class="n">${h(r.callM)}</td><td class="n"><b>${h(r.taskM + r.callM)}</b></td></tr>`).join('')}</tbody></table>` : ''}
+    ${projSec || '<p class="sub">No work recorded in this period.</p>'}${log}${ppl}
+    <script>window.onload=()=>setTimeout(()=>window.print(),500)<\/script></body></html>`);
+  w.document.close();
 }
 
 function openClient(c0, prefill = {}) {
@@ -3899,19 +4309,19 @@ VIEWS.tasks = async el => {
     const [pa, pb] = periodRange();
     list.innerHTML = `<div class="card">
       <div class="t-listhead"><b>${total} task${total === 1 ? '' : 's'}</b>${pa || pb ? `<span class="pill info">${esc(PERIODS.find(x => x[0] === f.period)?.[1] || '')}${f.period === 'custom' ? `: ${pa ? fmtShort(pa) : '…'} – ${pb ? fmtShort(pb) : '…'}` : ''} · by ${f.dateField === 'completed' ? 'completed date' : f.dateField === 'created' ? 'created date' : 'due date'}</span>` : ''}<span class="sp"></span><span class="task-sub">${total ? `Showing ${from + 1}–${Math.min(total, to + 1)}` : ''}</span></div>
-      <div class="table-wrap"><table class="t-table"><thead><tr><th>Task</th>${showWho ? '<th>Assigned to</th>' : ''}<th>Due</th><th>Priority</th><th>Status</th><th>Time</th><th></th></tr></thead><tbody id="t-rows">
+      <div class="table-wrap"><table class="t-table"><thead><tr><th>Task</th>${showWho ? '<th>Assigned to</th>' : ''}<th>Due</th><th>Priority</th><th>Status</th><th>Spent / est.</th><th></th></tr></thead><tbody id="t-rows">
       ${tasks.map(t => {
         const mine = isMine(t), running = S.running?.task_id === t.id, [pc, pl] = PRIORITY[t.priority] || PRIORITY.medium;
         const ck = Array.isArray(t.checklist) ? t.checklist : [];
         return `<tr data-row="${t.id}">
           <td data-l="Task" class="t-main"><button class="t-title" data-edit="${t.id}">${esc(t.title)}</button>
-            <div class="task-sub">${esc(projName(t) || 'No project')}${ck.length ? ` · ☑ ${ck.filter(x => x.done).length}/${ck.length}` : ''}${t.status === 'done' && t.completed_at ? ` · done ${fmtShort(istDate(new Date(t.completed_at)))}` : ''} ${sopBadge(t)}</div>
+            <div class="task-sub">${esc(projName(t) || 'No project')}${ck.length ? ` · ☑ ${ck.filter(x => x.done).length}/${ck.length}` : ''}${t.status === 'done' && t.completed_at ? ` · done ${fmtShort(istDate(new Date(t.completed_at)))}` : t.start_date && t.start_date > today ? ` · starts ${fmtShort(t.start_date)}` : ''} ${sopBadge(t)}</div>
             ${t.description ? `<div class="t-desc">${esc(richPlain(t.description))}</div>` : ''}</td>
           ${showWho ? `<td data-l="Assigned to"><div class="who-mini"><span class="avatar sm">${esc(initials(nameOf(t.assigned_to)))}</span>${esc(nameOf(t.assigned_to))}${(t._extra || 0) ? ` <span class="pill muted" title="More people on this task">+${t._extra}</span>` : ''}</div></td>` : ''}
           <td data-l="Due" class="num">${dueTxt(t)}</td>
           <td data-l="Priority"><span class="pill ${pc}">${pl}</span></td>
           <td data-l="Status"><select class="mini" data-status="${t.id}" aria-label="Status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
-          <td data-l="Time" class="num">${running ? '<b data-live-timer style="color:var(--bad)">0:00:00</b>' : `${spent(t.id) ? hm(spent(t.id)) : '—'}${isPaused(t.id) ? ' <span class="pill warn">Paused</span>' : ''}`}</td>
+          <td data-l="Time" class="num">${running ? '<b data-live-timer style="color:var(--bad)">0:00:00</b>' : `${estCell(spent(t.id), t.estimate_minutes)}${isPaused(t.id) ? ' <span class="pill warn">Paused</span>' : ''}`}</td>
           <td class="t-act">${mine && t.status !== 'done' ? timerButtons(t) : ''}${t.created_by === S.me.id || isMgr() ? `<button class="x-btn" data-deltask="${t.id}" title="Delete task" aria-label="Delete task">${icon('trash')}</button>` : ''}</td></tr>`; }).join('')
       || `<tr><td colspan="7" class="empty">${(f.q || f.project || f.priority || f.due || f.period || (f.view !== 'mine' && f.assignee)) ? 'No tasks match these filters. <button class="btn link" data-clear2>Clear filters</button>' : f.status === 'done' ? 'No finished tasks yet.' : 'No open tasks. Create one with <b>New task</b>.'}</td></tr>`}
       </tbody></table></div>
@@ -3967,7 +4377,7 @@ async function timesheet(box) {
     <div class="card" style="margin-top:16px"><div class="card-h"><h2>${day === today ? 'Today' : fmtDate(day)}</h2><span class="sub">${hm(dayLogs.reduce((s, l) => s + logMinutes(l), 0))} logged</span>${!canEdit ? '<span class="task-sub">Older than 7 days: ask your manager to change it</span>' : ''}</div>
       <div class="table-wrap"><table class="t-table"><thead><tr><th>From – to</th><th>Task or activity</th><th>How</th><th>Time</th><th></th></tr></thead><tbody>
       ${dayLogs.map(l => `<tr><td data-l="From – to" class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : '<b style="color:var(--bad)">running</b>'}${l.paused ? ' <span class="pill warn">paused</span>' : ''}</td>
-        <td data-l="Task" class="t-main"><b>${esc(l.task_id ? (titles[l.task_id]?.title || 'Task') : l.activity || 'Activity')}</b><div class="task-sub">${esc(l.task_id ? (titles[l.task_id]?.project || '') : (S.projects.find(p => p.id === l.project_id)?.name || 'Meeting / activity'))}</div>${l.note ? `<div class="t-desc">${esc(l.note)}</div>` : ''}</td>
+        <td data-l="Task" class="t-main"><b>${esc(l.task_id ? (titles[l.task_id]?.title || 'Task') : l.activity || 'Activity')}</b><div class="task-sub">${esc(l.task_id ? (titles[l.task_id]?.project || '') : (S.projects.find(p => p.id === l.project_id)?.name || 'Meeting / activity'))}</div>${l.note ? `<div class="t-desc sess-note">${esc(l.note)}</div>` : l.ended_at ? `<button class="btn link" data-snote="${l.id}" style="font-size:13px">Add what you did</button>` : ''}</td>
         <td data-l="How">${l.kind === 'manual' ? '<span class="pill info">Added</span>' : '<span class="pill muted">Timer</span>'}${l.edited_at ? ` <span class="task-sub" title="${esc(l.edit_reason || '')}">✎ edited</span>` : ''}${l.auto_stopped ? ' <span class="pill warn" title="The timer was still running after 11 PM and was stopped automatically">Auto-stopped · confirm end time</span>' : ''}</td>
         <td data-l="Time" class="num"><b>${hm(logMinutes(l))}</b></td>
         <td class="t-act">${l.ended_at && canEdit ? `<button class="btn sm" data-edittime="${l.id}">Edit</button><button class="x-btn" data-deltime="${l.id}" aria-label="Remove entry" title="Remove">&times;</button>` : ''}</td></tr>`).join('')
@@ -3989,6 +4399,7 @@ async function timesheet(box) {
   $('#ts-add').onclick = () => openTimeEntry(day === today ? {} : { date: day });
   $$('[data-edittime]', box).forEach(b => b.onclick = () => openTimeEntry({ entry: dayLogs.find(l => l.id === b.dataset.edittime) }));
   $$('[data-deltime]', box).forEach(b => b.onclick = () => removeTimeEntry(b.dataset.deltime));
+  $$('[data-snote]', box).forEach(b => b.onclick = () => openSessionNote(dayLogs.find(l => l.id === b.dataset.snote)));
 }
 
 /* ---------- SOP flow: every task follows an SOP, or produces one ---------- */
@@ -4056,8 +4467,10 @@ async function openTask(task, opts = {}) {
           ${S.hasAssignees ? `<div class="field full"><label for="tk-addp">Also working on it <span class="task-sub" style="font-weight:400">· each person gets their own timer</span></label><div class="chips-row" id="tk-extra"></div><select id="tk-addp" data-search><option value="">Add a person…</option>${people.map(p => `<option value="${p.id}">${esc(p.full_name || p.email)}</option>`).join('')}</select></div>` : ''}
           <div class="field"><label for="tk-status">Status</label><select id="tk-status">${Object.entries(TSTATUS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
           <div class="field"><label for="tk-pri">Priority</label><select id="tk-pri">${Object.entries(PRIORITY).map(([v, [, l]]) => `<option value="${v}" ${t.priority === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+          <div class="field"><label for="tk-start">Start date</label><input id="tk-start" type="date" value="${esc(t.start_date || (isNew ? istDate() : ''))}"></div>
           <div class="field"><label for="tk-due">Due date</label><input id="tk-due" type="date" value="${esc(t.due_date || '')}"></div>
-          <div class="field">${isNew ? '' : `<label>Time logged</label><div style="padding:6px 0;font-weight:600;display:flex;gap:10px;align-items:center">${hm(logs.reduce((s, l) => s + logMinutes(l), 0))}<button class="btn sm" type="button" id="tk-addtime">${icon('plus')}Add time</button></div>`}</div>
+          <div class="field"><label>Estimate <span id="tk-est-req">${isNew ? '<span class="must">*</span>' : ''}</span></label>${hmField('tk-est', t.estimate_minutes ?? null)}<span class="hint" id="tk-est-hint">${t.estimate_by && t.estimate_by !== S.me.id ? `Given by ${esc(nameOf(t.estimate_by))}` : 'How long you expect the work to take.'}</span></div>
+          <div class="field">${isNew ? '' : (() => { const sp = logs.reduce((s, l) => s + logMinutes(l), 0), e = t.estimate_minutes; return `<label>Time spent</label><div style="padding:6px 0 0;font-weight:600;display:flex;gap:10px;align-items:center"><span class="est ${e && sp > e ? 'over' : ''}">${hm(sp)}${e ? ` <span class="task-sub">of ${hm(e)}</span>` : ''}</span><button class="btn sm" type="button" id="tk-addtime">${icon('plus')}Add time</button></div>${e ? `<div class="est-bar"><i class="${sp > e ? 'over' : ''}" style="width:${Math.min(100, Math.round(sp / e * 100))}%"></i></div>` : ''}`; })()}</div>
           <div class="field full"><label>Description</label>${richEditor('tk-desc', t.description || '', 'What needs to be done? Links, notes…', 120)}</div>
         </div>
         <div class="section-h"><b>Checklist</b><span class="task-sub" id="ck-count"></span></div>
@@ -4074,7 +4487,7 @@ async function openTask(task, opts = {}) {
           </div>
         </div>
         ${isNew ? '' : '<div class="section-h"><b>Attachments</b></div><div id="tk-docs"></div>'}
-        ${logs.length ? `<details style="margin-top:16px"><summary class="task-sub" style="cursor:pointer">Time log (${logs.length})</summary><div class="table-wrap" style="margin-top:8px;border:1px solid var(--line);border-radius:8px"><table><thead><tr><th>Who</th><th>Date</th><th>From – to</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${esc(nameOf(l.employee_id))}</td><td>${fmtShort(istDate(new Date(l.started_at)))}</td><td class="num">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}${l.kind === 'manual' ? ' <span class="pill info">added</span>' : ''}</td><td class="num">${hm(logMinutes(l))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
+        ${logs.length ? `<div class="section-h"><b>Work sessions</b><span class="task-sub">${logs.length}${logs.length === 50 ? '+' : ''} · what was done each time</span></div><div class="table-wrap" style="border:1px solid var(--line);border-radius:8px;max-height:320px;overflow:auto"><table class="sess-list"><thead><tr><th>When</th><th>Who</th><th>Time</th><th>What was done</th></tr></thead><tbody>${logs.map(l => `<tr><td class="num">${fmtShort(istDate(new Date(l.started_at)))}<div class="task-sub">${fmtTime(l.started_at)} – ${l.ended_at ? fmtTime(l.ended_at) : 'running'}${l.kind === 'manual' ? ' · added' : ''}</div></td><td>${esc(nameOf(l.employee_id))}</td><td class="num"><b>${hm(logMinutes(l))}</b></td><td style="white-space:normal;min-width:200px"><div class="sess-note ${l.note ? '' : 'empty'}">${l.note ? esc(l.note) : 'No note'}</div>${!l.note && l.ended_at && l.employee_id === S.me.id ? `<button class="btn link" type="button" data-snote="${l.id}" style="font-size:13px">Add what you did</button>` : ''}</td></tr>`).join('')}</tbody></table></div>` : ''}
       </div>
       <div class="task-side">
         <div class="section-h" style="margin-top:0"><b>Comments</b></div>
@@ -4121,6 +4534,10 @@ async function openTask(task, opts = {}) {
       $('#tk-sopid', root).onchange = () => { if ($('#tk-sopid', root).value) { $('input[name=tk-sop][value=existing]', root).checked = true; syncSop(); } };
       $('#tk-writesop', root) && ($('#tk-writesop', root).onclick = () => { close(); writeSopFor(t, null); });
       $('#tk-addtime', root) && ($('#tk-addtime', root).onclick = () => { close(); openTimeEntry({ taskId: t.id }); });
+      $$('[data-snote]', root).forEach(b => b.onclick = () => { const l = logs.find(x => x.id === b.dataset.snote); close(); openSessionNote(l, () => openTask({ ...t })); });
+      const syncEstReq = () => { const r = $('#tk-est-req', root); if (!r || !isNew) return; const mine = ($('#tk-who', root)?.value || S.me.id) === S.me.id;
+        r.innerHTML = mine ? '<span class="must">*</span>' : ''; $('#tk-est-hint', root).textContent = mine ? 'How long you expect the work to take.' : `Optional. ${nameOf($('#tk-who', root).value).split(' ')[0]} will be asked for it before starting the timer.`; };
+      $('#tk-who', root) && $('#tk-who', root).addEventListener('change', syncEstReq); syncEstReq();
       if (!isNew) { mountComments($('#tk-comments', root), { taskId: t.id, projectId: t.project_id || null }); mountDocs($('#tk-docs', root), { taskId: t.id }, { empty: 'No files yet.' }); }
 
       const finish = () => { close(); if (changed) route(); };
@@ -4131,8 +4548,12 @@ async function openTask(task, opts = {}) {
         const mode = $('input[name=tk-sop]:checked', root)?.value || 'needed', sopId = $('#tk-sopid', root).value || null;
         if (mode === 'existing' && !sopId) return toast('Choose the SOP to follow, or pick another SOP option', 'bad');
         const row = { title: v('#tk-title'), project_id: pid, project: S.projects.find(p => p.id === pid)?.name || null, assigned_to: v('#tk-who') || S.me.id, status: v('#tk-status'), due_date: v('#tk-due') || null, priority: v('#tk-pri'), description: getRich(root, 'tk-desc') || null, checklist,
-          sop_needed: mode !== 'none', sop_article_id: mode === 'existing' ? sopId : mode === 'needed' ? (t.sop_article_id || null) : null };
+          sop_needed: mode !== 'none', sop_article_id: mode === 'existing' ? sopId : mode === 'needed' ? (t.sop_article_id || null) : null,
+          start_date: v('#tk-start') || null, estimate_minutes: readHM(root, 'tk-est') };
         if (!row.title) return toast('Enter a task name', 'bad');
+        if (row.start_date && row.due_date && row.start_date > row.due_date) return toast('The start date must be on or before the due date', 'bad');
+        if (isNew && row.assigned_to === S.me.id && !row.estimate_minutes) { $('#tk-est-h', root).focus(); return toast('Add your estimate: how long will this take?', 'bad'); }
+        if (row.estimate_minutes === (t.estimate_minutes ?? null)) delete row.estimate_minutes;   // unchanged: keep who estimated it
         try {
           let savedId = t.id;
           if (isNew) savedId = (await q(sb.from('tasks').insert({ ...row, created_by: S.me.id }).select('id').single())).id;
@@ -4144,7 +4565,7 @@ async function openTask(task, opts = {}) {
             const { status, ...rest } = row;
             try { await q(sb.from('tasks').update(rest).eq('id', t.id)); } catch { }
             close(); sopPrompt({ ...t, ...rest }, status);
-          } else toast(e.message, 'bad');
+          } else toast(/start_date|estimate_minutes/.test(e.message) && /column|schema/i.test(e.message) ? 'Ask an admin to run update_v21.sql in Supabase first' : /tasks_start_before_due/.test(e.message) ? 'The start date must be on or before the due date' : e.message, 'bad');
         }
       };
       $('#tk-del', root) && ($('#tk-del', root).onclick = async () => {
