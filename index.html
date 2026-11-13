@@ -3606,6 +3606,11 @@ const PS_CSS = `
 .ps-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:18px;border-bottom:1.5px solid #E3E7EC}
 .ps-brand{display:flex;align-items:center;gap:14px}.ps-brand svg{height:50px;width:auto}
 .ps-co b{display:block;font-size:19px;color:#131C3F}.ps-co span{color:#5B6577;font-size:13px;white-space:pre-line}
+.ps-logo{display:inline-flex;align-items:center;background:#131C3F;border-radius:10px;padding:10px 16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ps-logo img{height:40px;max-width:200px;object-fit:contain;display:block}.ps-logo .ps-logo-fb svg{height:42px;width:auto}
+.ps-att{margin:0 0 16px;border:1px solid #E3E7EC;border-radius:12px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:6px 28px;align-items:baseline}
+.ps-att .ps-att-h{width:100%;font-size:11.5px;font-weight:700;color:#5B6577;letter-spacing:.06em;text-transform:uppercase}
+.ps-att span{color:#5B6577}.ps-att small{width:100%;color:#2F7D45;font-size:12px;font-weight:600}
 .ps-month{text-align:right}.ps-month span{color:#5B6577;font-size:13px}.ps-month b{display:block;font-size:20px;color:#131C3F;margin-top:2px}
 .ps-sum{display:grid;grid-template-columns:1.25fr 1fr;gap:26px;padding:22px 0 18px;border-bottom:1.5px dashed #D5DAE1}
 .ps-h{font-size:11.5px;font-weight:700;color:#5B6577;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
@@ -3641,27 +3646,34 @@ async function payslipYTD(ps) {
   return { earn: sum('earnings'), ded: sum('deductions') };
 }
 function payslipHTML(ps, ytd) {
-  const e = ps.employee || {}, c = ps.company || {};
+  const e = ps.employee || {}, c = ps.company || {}, b = ps.breakdown || {};
   const kv = (k, v) => `<span>${k}</span><span>:</span><b>${esc(v || '—')}</b>`;
   const ids = [['PAN', e.pan], ['UAN', e.uan], ['PF A/C Number', e.pf_number], ['Bank Account', e.bank_name || e.account_masked ? `${e.bank_name || ''}${e.account_masked ? ` · ${e.account_masked}` : ''}` : '']];
   const rowsE = ps.earnings || [], rowsD = ps.deductions || [], n = Math.max(rowsE.length, rowsD.length, 1);
   const ytdOf = (map, x) => inr(map[x.lop ? 'Loss of Pay' : x.name] ?? x.amount);
   const cell = (x, map) => x ? `<td>${esc(x.name)}${x.one_off ? ' <span class="one">one-off</span>' : ''}</td><td class="r"><b>${inr(x.amount)}</b></td><td class="r y">${ytdOf(map, x)}</td>` : '<td></td><td></td><td></td>';
   return `<div class="ps">
-    <div class="ps-top"><div class="ps-brand">${LOGO_SVG_DARK()}<div class="ps-co"><b>${esc(c.name || CONFIG.COMPANY)}</b><span>${esc(c.address || '')}</span></div></div>
+    <div class="ps-top"><div class="ps-brand"><span class="ps-logo"><img src="${esc(CONFIG.LOGO_URL)}" alt="${esc(c.name || CONFIG.COMPANY)}" referrerpolicy="no-referrer" onerror="window.logoFail?logoFail(this):(this.style.display='none',this.nextElementSibling.style.display='inline-flex')"><span class="ps-logo-fb brand-fallback" style="display:none">${LOGO_SVG}</span></span>${c.address ? `<div class="ps-co"><span>${esc(c.address)}</span></div>` : ''}</div>
       <div class="ps-month"><span>Payslip for the month</span><b>${monthLabel(ps.period)}${ps.status !== 'published' ? '<span class="ps-draft">DRAFT</span>' : ''}</b></div></div>
     <div class="ps-sum">
       <div><div class="ps-h">Employee summary</div><div class="ps-kv">${kv('Employee Name', e.name)}${kv('Designation', e.designation)}${kv('Employee ID', e.employee_code)}${kv('Date of Joining', e.date_of_joining ? fmtDate(e.date_of_joining) : '')}${kv('Pay Period', monthLabel(ps.period))}${kv('Pay Date', ps.pay_date ? fmtDate(ps.pay_date) : '')}</div></div>
       <div class="ps-net"><div class="ps-net-top"><b>${inr(ps.net_pay)}</b><span>Employee Net Pay</span></div>
-        <div class="ps-net-kv"><span>Working Days</span><span>:</span><b>${num(ps.working_days)}</b><span>Paid Days</span><span>:</span><b>${num(ps.paid_days)}</b><span>LOP Days</span><span>:</span><b>${num(ps.lop_days)}</b></div></div>
+        <div class="ps-net-kv"><span>Working Days</span><span>:</span><b>${num(ps.working_days)}</b><span>Paid Days</span><span>:</span><b>${num(ps.paid_days)}</b>${lopDeducted(ps) ? `<span>LOP Days</span><span>:</span><b>${num(ps.lop_days)}</b>` : `${b.leave_days != null ? `<span>Leave Days</span><span>:</span><b>${num(b.leave_days)}</b>` : ''}<span>Absent Days</span><span>:</span><b>${num(b.absent)}</b>`}</div></div>
     </div>
     <div class="ps-ids">${ids.map(([k, v]) => `<div><span>${k}</span><span>:</span><b>${esc(v || '—')}</b></div>`).join('')}</div>
+    ${!lopDeducted(ps) ? `<div class="ps-att"><div class="ps-att-h">Attendance this month</div>
+      ${b.leave_days != null ? `<div><span>Leave taken: </span><b>${num(b.leave_days)} day${+b.leave_days === 1 ? '' : 's'}</b></div>` : ''}
+      <div><span>Absent: </span><b>${num(b.absent)} day${+b.absent === 1 ? '' : 's'}</b></div>
+      ${+b.unpaid_leave ? `<div><span>Unpaid leave: </span><b>${num(b.unpaid_leave)} day${+b.unpaid_leave === 1 ? '' : 's'}</b></div>` : ''}
+      <div><span>Late check-ins: </span><b>${+b.late_checkins || 0}</b></div>
+      <div><span>Missed check-outs: </span><b>${+b.missed_checkouts || 0}</b></div>
+      <small>For information only. Nothing has been deducted from salary.</small></div>` : ''}
     <div class="ps-tbl">
       <table><thead><tr><th>Earnings</th><th class="r">Amount</th><th class="r">YTD</th></tr></thead><tbody>
         ${Array.from({ length: n }, (_, i) => `<tr>${cell(rowsE[i], ytd.earn)}</tr>`).join('')}
         <tr class="tot"><td>Gross Earnings</td><td class="r">${inr(ps.gross_earnings)}</td><td></td></tr></tbody></table>
       <table><thead><tr><th>Deductions</th><th class="r">Amount</th><th class="r">YTD</th></tr></thead><tbody>
-        ${Array.from({ length: n }, (_, i) => `<tr>${cell(rowsD[i], ytd.ded)}</tr>`).join('')}
+        ${Array.from({ length: n }, (_, i) => `<tr>${!rowsD.length && i === 0 ? '<td colspan="3" class="y">No deductions</td>' : cell(rowsD[i], ytd.ded)}</tr>`).join('')}
         <tr class="tot"><td>Total Deductions</td><td class="r">${inr(ps.total_deductions)}</td><td></td></tr></tbody></table>
     </div>
     <div class="ps-pay"><div><b>TOTAL NET PAYABLE</b><small>Gross Earnings − Total Deductions</small></div><div>${inr(ps.net_pay)}</div></div>
@@ -3669,7 +3681,18 @@ function payslipHTML(ps, ytd) {
     <div class="ps-foot">-- ${esc(c.footer || 'This is a system-generated payslip and does not require a signature.')} --</div>
   </div>`;
 }
+const lopDeducted = ps => ps.breakdown?.lop_deducted ?? (ps.deductions || []).some(d => d.lop);
+function attendanceNote(ps) {
+  const b = ps.breakdown || {}, n = (v, w) => `${num(v)} ${w}${+v === 1 ? '' : 's'}`, parts = [];
+  if (b.leave_days != null) parts.push(n(b.leave_days, 'leave day'));
+  parts.push(n(b.absent || 0, 'absent day'));
+  if (+b.unpaid_leave) parts.push(n(b.unpaid_leave, 'unpaid leave day'));
+  if (+b.late_checkins) parts.push(n(b.late_checkins, 'late check-in'));
+  if (+b.missed_checkouts) parts.push(n(b.missed_checkouts, 'missed check-out'));
+  return parts.join(' · ');
+}
 function lopExplain(ps) {
+  if (!lopDeducted(ps)) return `${attendanceNote(ps)}. Not deducted from pay.`;
   const b = ps.breakdown || {}, parts = [];
   if (+b.absent) parts.push(`${num(b.absent)} absent`);
   if (+b.unpaid_leave) parts.push(`${num(b.unpaid_leave)} unpaid leave`);
@@ -3683,7 +3706,7 @@ async function viewPayslip(ps) {
   const ytd = await payslipYTD(ps);
   openModal({
     title: `Payslip · ${ps.employee?.name || ''} · ${monthLabel(ps.period)}`, wide: true,
-    body: `<style>${PS_CSS}</style><div class="note" style="margin-bottom:14px"><b>Loss of pay:</b> ${esc(lopExplain(ps))}${ps.breakdown?.per_day ? ` · per day ${inr(ps.breakdown.per_day)} (salary ÷ ${num(ps.working_days)} working days)` : ''}</div>
+    body: `<style>${PS_CSS}</style><div class="note" style="margin-bottom:14px"><b>${lopDeducted(ps) ? 'Loss of pay' : 'Attendance'}:</b> ${esc(lopExplain(ps))}${lopDeducted(ps) && ps.breakdown?.per_day ? ` · per day ${inr(ps.breakdown.per_day)} (salary ÷ ${num(ps.working_days)} working days)` : ''}</div>
       <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden">${payslipHTML(ps, ytd)}</div>`,
     footer: `<button class="btn" data-close>Close</button><button class="btn primary" id="ps-pdf">${icon('download')}Download PDF</button>`,
     onMount: (root, close) => { $('[data-close]', root).onclick = close; $('#ps-pdf', root).onclick = () => printPayslips([[ps, ytd]]); }
@@ -3716,7 +3739,7 @@ VIEWS.payslips = async (el, param) => {
     <div class="stats"><div class="stat"><span>Monthly salary</span><b>${sal ? inr0(sal.monthly_gross) : '—'}</b></div><div class="stat"><span>Payslips</span><b>${mine.length}</b></div><div class="stat"><span>Latest net pay</span><b>${mine[0] ? inr0(mine[0].net_pay) : '—'}</b></div><div class="stat"><span>Payslips come out on</span><b>${S.settings.payroll_run_day || 10}th</b></div></div>
     <div class="card"><div class="card-h"><h2>My payslips</h2><span class="sub">Only you and admins can see these</span></div>
       <div class="table-wrap"><table><thead><tr><th>Month</th><th>Paid days</th><th>LOP days</th><th>Gross</th><th>Deductions</th><th>Net pay</th><th></th></tr></thead><tbody>
-      ${mine.map(p => `<tr><td><b>${monthLabel(p.period)}</b><div class="task-sub">Paid on ${fmtDate(p.pay_date)}</div></td><td class="num">${num(p.paid_days)} / ${num(p.working_days)}</td><td class="num">${+p.lop_days ? `<span class="pill warn">${num(p.lop_days)}</span>` : '0'}</td><td class="num">${inr0(p.gross_earnings)}</td><td class="num">${inr0(p.total_deductions)}</td><td class="num"><b>${inr0(p.net_pay)}</b></td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-view="${p.id}">View</button> <button class="btn sm" data-pdf="${p.id}">${icon('download')}PDF</button></td></tr>`).join('') || `<tr><td colspan="7" class="empty">No payslips yet. They are published on the ${S.settings.payroll_run_day || 10}th of every month for the month before.</td></tr>`}
+      ${mine.map(p => `<tr><td><b>${monthLabel(p.period)}</b><div class="task-sub">Paid on ${fmtDate(p.pay_date)}</div></td><td class="num">${num(p.paid_days)} / ${num(p.working_days)}</td><td class="num">${+p.lop_days ? `<span class="pill warn">${num(p.lop_days)}</span>` : !lopDeducted(p) && (+p.breakdown?.absent || +p.breakdown?.leave_days) ? `<span class="task-sub" title="${esc(attendanceNote(p))}. Not deducted.">0 <small>(${esc([+p.breakdown?.leave_days ? `${num(p.breakdown.leave_days)} leave` : '', +p.breakdown?.absent ? `${num(p.breakdown.absent)} absent` : ''].filter(Boolean).join(', '))})</small></span>` : '0'}</td><td class="num">${inr0(p.gross_earnings)}</td><td class="num">${inr0(p.total_deductions)}</td><td class="num"><b>${inr0(p.net_pay)}</b></td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-view="${p.id}">View</button> <button class="btn sm" data-pdf="${p.id}">${icon('download')}PDF</button></td></tr>`).join('') || `<tr><td colspan="7" class="empty">No payslips yet. They are published on the ${S.settings.payroll_run_day || 10}th of every month for the month before.</td></tr>`}
       </tbody></table></div></div>`;
   $('#ps-bank') && ($('#ps-bank').onclick = () => openPayrollDetails(S.me.id, det));
   $$('[data-view]', el).forEach(b => b.onclick = () => viewPayslip(mine.find(p => p.id === b.dataset.view)));
@@ -3787,12 +3810,14 @@ VIEWS.payroll = async el => {
       <div class="card"><div class="card-h"><h2>Rules</h2></div><div class="card-b"><div class="form-grid" style="grid-template-columns:1fr">
         <div class="field"><label for="ps-day">Publish payslips on day</label><input id="ps-day" type="number" min="1" max="28" value="${st.payroll_run_day || 10}"><span class="hint">Payslips for the previous month are published automatically at 9:00 AM on this day.</span></div>
         <label class="check"><input type="checkbox" id="ps-auto" ${st.payroll_auto !== false ? 'checked' : ''}> Publish automatically every month</label>
+        <label class="check"><input type="checkbox" id="ps-deduct" ${st.payroll_deduct_lop ? 'checked' : ''}> Deduct loss of pay from salary</label>
+        <span class="hint" style="margin:-8px 0 0 26px">Off: leave, absent days and late check-ins are shown on the payslip but salary is paid in full. The rules below apply only when this is on.</span>
         <div class="field"><label for="ps-late">Late check-ins that make ½ day LOP</label><input id="ps-late" type="number" min="1" max="10" value="${st.payroll_lates_per_half_day || 3}"></div>
         <div class="field"><label for="ps-miss">Missed check-out counts as</label><select id="ps-miss" data-nosearch>${[['0', 'No deduction (flag only)'], ['0.5', '½ day LOP'], ['1', '1 day LOP']].map(([v, l]) => `<option value="${v}" ${Number(st.payroll_missed_checkout_lop || 0) === +v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
         <div class="note">LOP per day = monthly salary ÷ working days in that month (Sundays, off Saturdays and holidays are not working days). Paid leave is never deducted.</div></div></div></div></div>
       <div style="margin-top:16px"><button class="btn primary" id="ps-save">Save settings</button></div>`;
     $('#ps-save').onclick = async () => {
-      try { await q(sb.from('settings').update({ payroll_company: $('#ps-co').value.trim() || 'Sharvii Technologies', payroll_address: $('#ps-addr').value.trim(), payroll_footer: $('#ps-foot').value.trim(), payroll_run_day: Math.min(28, Math.max(1, +$('#ps-day').value || 10)), payroll_auto: $('#ps-auto').checked, payroll_lates_per_half_day: Math.max(1, +$('#ps-late').value || 3), payroll_missed_checkout_lop: +$('#ps-miss').value }).eq('id', 1)); await loadDirectory(); toast('Payslip settings saved. Refresh drafts to apply them.'); route(); }
+      try { await q(sb.from('settings').update({ payroll_company: $('#ps-co').value.trim() || 'Sharvii Technologies', payroll_address: $('#ps-addr').value.trim(), payroll_footer: $('#ps-foot').value.trim(), payroll_run_day: Math.min(28, Math.max(1, +$('#ps-day').value || 10)), payroll_auto: $('#ps-auto').checked, payroll_deduct_lop: $('#ps-deduct').checked, payroll_lates_per_half_day: Math.max(1, +$('#ps-late').value || 3), payroll_missed_checkout_lop: +$('#ps-miss').value }).eq('id', 1)); await loadDirectory(); toast('Payslip settings saved. Refresh drafts to apply them.'); route(); }
       catch (e) { toast(e.message, 'bad'); }
     };
     return;
@@ -3816,7 +3841,7 @@ VIEWS.payroll = async el => {
     <div class="stats"><div class="stat"><span>Employees</span><b>${slips.length}/${onPay.length}</b></div><div class="stat"><span>Gross</span><b>${inr0(slips.reduce((s, x) => s + +x.gross_earnings, 0))}</b></div><div class="stat"><span>Loss of pay</span><b>${inr0(slips.reduce((s, x) => s + (x.deductions || []).filter(d => d.lop).reduce((a, d) => a + +d.amount, 0), 0))}</b></div><div class="stat"><span>Net payable</span><b>${inr0(slips.reduce((s, x) => s + +x.net_pay, 0))}</b></div></div>
     <div class="card"><div class="table-wrap"><table><thead><tr><th>Employee</th><th>Working</th><th>Paid</th><th>LOP</th><th>Gross</th><th>Deductions</th><th>Net pay</th><th>Status</th><th></th></tr></thead><tbody>
     ${slips.sort((a, b) => (a.employee?.name || '').localeCompare(b.employee?.name || '')).map(s => `<tr><td><b>${esc(s.employee?.name || nameOf(s.employee_id))}</b><div class="task-sub">${esc(s.employee?.designation || '')}</div></td>
-      <td class="num">${num(s.working_days)}</td><td class="num">${num(s.paid_days)}</td><td class="num" title="${esc(lopExplain(s))}">${+s.lop_days ? `<span class="pill warn">${num(s.lop_days)}</span>` : '0'}${s.lop_override != null ? ' ✎' : ''}${+s.breakdown?.missed_checkouts && !+s.breakdown?.missed_lop ? ` <span class="task-sub" title="Missed check-outs (not deducted)">⚑${s.breakdown.missed_checkouts}</span>` : ''}</td>
+      <td class="num">${num(s.working_days)}</td><td class="num">${num(s.paid_days)}</td><td class="num" title="${esc(lopExplain(s))}">${+s.lop_days ? `<span class="pill warn">${num(s.lop_days)}</span>` : !lopDeducted(s) && (+s.breakdown?.absent || +s.breakdown?.leave_days) ? `0 <span class="task-sub">(${esc([+s.breakdown?.leave_days ? `${num(s.breakdown.leave_days)} leave` : '', +s.breakdown?.absent ? `${num(s.breakdown.absent)} absent` : ''].filter(Boolean).join(', '))}, not deducted)</span>` : '0'}${s.lop_override != null ? ' ✎' : ''}${+s.breakdown?.missed_checkouts && !+s.breakdown?.missed_lop ? ` <span class="task-sub" title="Missed check-outs (not deducted)">⚑${s.breakdown.missed_checkouts}</span>` : ''}</td>
       <td class="num">${inr0(s.gross_earnings)}</td><td class="num">${inr0(s.total_deductions)}</td><td class="num"><b>${inr0(s.net_pay)}</b></td>
       <td>${s.status === 'published' ? '<span class="pill ok">Published</span>' : '<span class="pill muted">Draft</span>'}</td>
       <td style="text-align:right;white-space:nowrap"><button class="btn sm" data-psv="${s.id}">View</button> ${s.status === 'draft' ? `<button class="btn sm" data-psa="${s.id}">Adjust</button> <button class="btn sm" data-psp="${s.id}">Publish</button> <button class="x-btn" data-psd="${s.id}" title="Delete draft">${icon('trash')}</button>` : `<button class="btn sm" data-psu="${s.id}" title="Move back to draft to correct it">Unpublish</button>`}</td></tr>`).join('') || `<tr><td colspan="9" class="empty">No payslips for ${monthLabel(period)} yet. Click <b>Prepare drafts</b> to calculate them now from attendance and leave, or wait for the automatic run.</td></tr>`}
