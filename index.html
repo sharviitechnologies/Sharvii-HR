@@ -631,6 +631,12 @@ select.mini{width:auto;padding:5px 8px;font-size:13px}
   th,td{padding:10px 12px}
 }
 
+/* ---------- Observer (view-only) ---------- */
+body.ro .btn.primary:not(.ro-ok), body.ro .btn.ok:not(.ro-ok), body.ro .btn.danger:not(.ro-ok), body.ro .x-btn, body.ro .t-act, body.ro #pj-new, body.ro [data-newfor],
+body.ro #pv-add, body.ro #pv-edit, body.ro #pv-live, body.ro #tk-new, body.ro #t-new, body.ro [data-addtime], body.ro .timer-pill,
+body.ro #pj-addcall, body.ro .doc-add, body.ro [data-add], body.ro #home-addtime, body.ro #eod-addtime, body.ro #ts-add, body.ro #tk-addtime,
+body.ro #t-addtime, body.ro #cp-proj, body.ro #kb-new, body.ro #kb-new2, body.ro .cm-new, body.ro [data-ttab="time"], body.ro [data-snote] { display:none !important }
+body.ro .ro-lock .dialog-f .btn.primary, body.ro .ro-lock .dialog-f .btn.danger { display:none !important }
 /* ---------- v21: projects by client, go-live, timeline, work log, sessions ---------- */
 .pg-tbl td,.pg-tbl th{padding:10px 14px}
 .pg-tbl tr.grp td{background:#F7F9FB;border-bottom:1px solid var(--line);padding:9px 14px}
@@ -748,12 +754,14 @@ const fmtRange = (a, b) => a === b ? fmtDate(a) : `${fmtShort(a)} – ${fmtDate(
 const dur = ms => { if (!ms || ms < 0) return '0h 00m'; const m = Math.floor(ms / 60000); return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; };
 const num = n => (Math.round(Number(n || 0) * 10) / 10).toString();
 const initials = n => ((n || '?').trim().split(/\s+/).filter(w => /^[\p{L}\p{N}]/u.test(w)).slice(0, 2).map(x => x[0]).join('') || '?').toUpperCase();
-const isAdmin = () => S.me?.role === 'admin';
-const isMgr = () => S.me?.role === 'manager' || isAdmin();
+const isAdmin = () => S.me?.role === 'admin' && !S.me?.is_observer;
+const isMgr = () => !isObs() && (S.me?.role === 'manager' || isAdmin());
+const isObs = () => !!S.me?.is_observer;          // view-only: sees the whole team, changes nothing
+const canSeeAll = () => isMgr() || isObs();
 const eodEmailOn = () => !!(CONFIG.EOD_EMAIL || S.settings?.eod_email_enabled);
-const canLeads = () => isAdmin() || !!S.me?.can_leads;
-const nameOf = id => S.profiles.find(p => p.id === id)?.full_name || S.profiles.find(p => p.id === id)?.email || 'Unknown';
-const profileOf = id => S.profiles.find(p => p.id === id) || {};
+const canLeads = () => !isObs() && (isAdmin() || !!S.me?.can_leads);
+const nameOf = id => { const p = (S.allProfiles || S.profiles).find(x => x.id === id); return p?.full_name || p?.email || 'Unknown'; };
+const profileOf = id => (S.allProfiles || S.profiles).find(p => p.id === id) || {};
 const typeName = id => S.leaveTypes.find(t => t.id === id)?.name || 'Leave';
 const monthBounds = ym => { const [y, m] = ym.split('-').map(Number); const last = new Date(y, m, 0).getDate(); return { first: `${ym}-01`, last: `${ym}-${String(last).padStart(2, '0')}`, days: last }; };
 async function q(p) { const { data, error } = await p; if (error) throw error; return data; }
@@ -827,7 +835,7 @@ async function saveDetails(id, root) {
 const logMinutes = l => l.ended_at ? Number(l.minutes || 0) : (Date.now() - new Date(l.started_at)) / 60000;
 
 function teamList() {
-  if (isMgr()) return S.profiles.filter(p => p.is_active);   // admins and project managers see everyone
+  if (canSeeAll()) return S.profiles.filter(p => p.is_active);   // admins, managers and observers see everyone
   return S.profiles.filter(p => p.is_active && (p.manager_id === S.me.id || p.id === S.me.id));
 }
 
@@ -887,10 +895,10 @@ function logoFail(img) {
 const logoImg = (cls = '') => `<img class="${cls}" src="${esc(CONFIG.LOGO_URL)}" alt="${esc(CONFIG.COMPANY)}" referrerpolicy="no-referrer" onerror="logoFail(this)">`;
 
 /* ---------- Modal ---------- */
-function openModal({ title, body, footer = '', onMount, wide = false }) {
+function openModal({ title, body, footer = '', onMount, wide = false, editable = false }) {
   const root = $('#modal-root');
   root.innerHTML = `<div class="overlay" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-    <div class="dialog${wide ? ' wide' : ''}"><div class="dialog-h"><h3>${esc(title)}</h3><button class="x" aria-label="Close">&times;</button></div>
+    <div class="dialog${wide ? ' wide' : ''}${isObs() && !editable ? ' ro-lock' : ''}"><div class="dialog-h"><h3>${esc(title)}</h3><button class="x" aria-label="Close">&times;</button></div>
     <div class="dialog-b">${body}</div>${footer ? `<div class="dialog-f">${footer}</div>` : ''}</div></div>`;
   const close = () => { root.innerHTML = ''; document.removeEventListener('keydown', onKey); };
   const onKey = e => { if (e.key === 'Escape') close(); };
@@ -898,8 +906,29 @@ function openModal({ title, body, footer = '', onMount, wide = false }) {
   $('.x', root).onclick = close;
   $('.overlay', root).addEventListener('mousedown', e => { if (e.target.classList.contains('overlay')) close(); });
   onMount && onMount(root, close);
-  const first = $('input,select,textarea', root); first && first.focus();
+  if (isObs() && !editable) roLock(root);
+  const first = $('input:not([disabled]),select:not([disabled]),textarea:not([disabled])', root); first && first.focus();
   return close;
+}
+/* ---------- Observer (view-only) layer ----------
+   The database already refuses every change from an observer; this just removes the controls. */
+function roLock(root) {
+  $$('.ro-lock input, .ro-lock textarea, .ro-lock select', root).forEach(x => { if (x.type !== 'search') x.disabled = true; });
+  $$('.ro-lock [contenteditable="true"]', root).forEach(x => x.setAttribute('contenteditable', 'false'));
+  $$('.ro-lock button', root).forEach(b => { if (b.matches('.x,[data-close],.ro-ok,[data-open],[data-go],[data-tl]')) { if (b.matches('[data-close]') && b.textContent.trim() === 'Cancel') b.textContent = 'Close'; return; } b.hidden = true; });
+}
+function roView(view) {
+  if (!view) return;
+  $$('[draggable="true"]', view).forEach(x => x.setAttribute('draggable', 'false'));
+  $$('select[data-status], input[type="checkbox"][data-ck], [contenteditable="true"]', view).forEach(x => { x.disabled = true; if (x.isContentEditable) x.setAttribute('contenteditable', 'false'); });
+  $$('.ro-hide', view).forEach(x => x.hidden = true);
+}
+function startObserverMode() {
+  document.body.classList.toggle('ro', isObs());
+  if (!isObs() || S.roMO) return;
+  let queued = false;
+  S.roMO = new MutationObserver(() => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; roLock($('#modal-root')); roView($('#view')); }); });
+  S.roMO.observe(document.body, { childList: true, subtree: true });
 }
 
 /* ---------- Auth screens ---------- */
@@ -987,7 +1016,7 @@ async function loadDirectory() {
     q(sb.from('holidays').select('*').order('holiday_date')),
     sb.from('settings').select('*').eq('id', 1).maybeSingle()
   ]);
-  S.profiles = profiles; S.leaveTypes = types; S.holidays = hols;
+  S.allProfiles = profiles; S.profiles = profiles.filter(p => !p.is_observer); S.leaveTypes = types; S.holidays = hols;   // observers are not team members
   S.projects = await q(sb.from('projects').select('*').order('name')).catch(() => []);
   S.settings = { ...DEFAULT_SETTINGS, ...(st.data || {}) };
 }
@@ -996,7 +1025,7 @@ async function startApp() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return renderLogin();
   try { await loadDirectory(); } catch (e) { toast(e.message, 'bad'); }
-  S.me = S.profiles.find(p => p.id === user.id);
+  S.me = (S.allProfiles || S.profiles).find(p => p.id === user.id);   // observers are not in the team list, so look in everyone
   if (!S.me) { toast('Your employee profile was not found. Contact your HR admin.', 'bad'); await sb.auth.signOut(); return renderLogin(); }
   if (!S.me.is_active) { toast('Your account is inactive. Contact your HR admin.', 'bad'); await sb.auth.signOut(); return renderLogin(); }
   S.shell = false;
@@ -1004,6 +1033,17 @@ async function startApp() {
 }
 
 function navItems() {
+  if (isObs()) return [   // observer: team-wide pages, nothing personal or financial
+    { id: 'home', label: 'Team today', icon: 'home' },
+    { id: 'projects', label: 'Projects', icon: 'folder' },
+    { id: 'tasks', label: 'Tasks', icon: 'tasks' },
+    { id: 'attendance', label: 'Attendance', icon: 'clock' },
+    { id: 'eod', label: 'EOD reports', icon: 'eod' },
+    { id: 'clients', label: 'Clients', icon: 'clients' },
+    { id: 'team', label: 'Team', icon: 'team' },
+    { id: 'insights', label: 'Insights', icon: 'spark' },
+    { id: 'kb', label: 'Knowledge base', icon: 'book' }
+  ];
   const m = isMgr(), a = isAdmin();
   return [
     { id: 'home', label: 'Home', icon: 'home' },
@@ -1053,6 +1093,7 @@ function renderShell() {
   </div>`;
   $('#user-btn').onclick = openProfile;
   S.shell = true;
+  startObserverMode();
   refreshBadge();
   refreshRunning();
   $('#bell').onclick = e => { e.stopPropagation(); const p = $('#bell-pop'); p.hidden = !p.hidden; if (!p.hidden) paintBell(); };
@@ -1074,7 +1115,7 @@ async function route() {
   const [id, param] = (location.hash.replace('#/', '') || 'home').split('/');
   let item = items.find(n => n.id === id);
   if (id === 'project' && param) item = { id: 'project', label: 'Project', nav: 'projects' };
-  if (id === 'person' && param && (isMgr() || param === S.me.id)) item = { id: 'person', label: 'Team member', nav: isMgr() ? 'team' : 'home' };
+  if (id === 'person' && param && (canSeeAll() || param === S.me.id)) item = { id: 'person', label: 'Team member', nav: isObs() ? 'home' : canSeeAll() ? 'team' : 'home' };
   item = item || items[0];
   if (!S.shell || !$('#view')) renderShell();
   $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === (item.nav || item.id)));
@@ -1088,6 +1129,7 @@ window.addEventListener('hashchange', route);
 
 /* ---------- Profile ---------- */
 async function openProfile() {
+  if (isObs()) return openObserverProfile();
   const me = S.me, d = await getDetails(me.id);
   openModal({
     title: 'My profile',
@@ -1338,7 +1380,51 @@ function openSessionNote(l, after) {
   });
 }
 
+
+function openObserverProfile() {
+  openModal({ title: 'My account', editable: true,
+    body: `<div class="list-row" style="padding:0 0 14px"><span class="avatar">${esc(initials(S.me.full_name || S.me.email))}</span><div><b>${esc(S.me.full_name || '')}</b><div class="task-sub">${esc(S.me.email)}</div></div><span class="pill info" style="margin-left:auto">View only</span></div>
+      <p class="task-sub" style="margin-top:0">You can see how the team and projects are doing. This account cannot change anything.</p>
+      <div class="field"><label for="ob-pw">New password <span class="task-sub" style="font-weight:400">(optional)</span></label><input id="ob-pw" type="password" autocomplete="new-password" placeholder="At least 8 characters"></div>`,
+    footer: '<button class="btn danger ro-ok" id="ob-out" style="margin-right:auto">Sign out</button><button class="btn" data-close>Close</button><button class="btn primary ro-ok" id="ob-save">Change password</button>',
+    onMount: (root, close) => {
+      $('[data-close]', root).onclick = close;
+      $('#ob-out', root).onclick = async () => { close(); await sb.auth.signOut(); S.me = null; renderLogin(); };
+      $('#ob-save', root).onclick = async () => { const pw = $('#ob-pw', root).value;
+        if (pw.length < 8) return toast('Password must be at least 8 characters', 'bad');
+        const { error } = await sb.auth.updateUser({ password: pw }); if (error) return toast(error.message, 'bad');
+        close(); toast('Password changed'); };
+    } });
+}
+async function homeObserver(el) {
+  const today = istDate();
+  const [projects, tasks] = await Promise.all([
+    q(sb.from('projects').select('*').neq('status', 'completed')).catch(() => []),
+    allRows(() => sb.from('tasks').select('*').neq('status', 'done')).catch(() => [])
+  ]);
+  const active = projects.filter(p => p.status === 'active');
+  const glSoon = active.filter(p => ['today', 'soon', 'week'].includes(goLiveInfo(p, today).state)), glMissed = active.filter(p => goLiveInfo(p, today).state === 'missed');
+  const inProj = tasks.filter(t => t.project_id), overdue = inProj.filter(t => t.due_date && t.due_date < today), review = inProj.filter(t => t.status === 'review');
+  const watch = [...glMissed, ...glSoon].sort((a, b) => a.go_live_date.localeCompare(b.go_live_date));
+  el.innerHTML = `<div class="note" style="margin-bottom:16px">👀 <b>View-only access.</b> You can see how the team and projects are doing. Nothing can be changed from this account.</div>
+    <div class="stats">
+      <a class="stat" href="#/projects" style="text-decoration:none;color:inherit"><span>Active projects</span><b>${active.length}</b><small>Open projects →</small></a>
+      <button class="stat stat-btn" data-gl="soon"><span>Go-live in 7 days</span><b class="${glSoon.some(p => goLiveInfo(p, today).d <= 2) ? 'overdue' : ''}">${glSoon.length}</b><small>View list →</small></button>
+      <button class="stat stat-btn" data-gl="missed"><span>Go-live missed</span><b class="${glMissed.length ? 'overdue' : ''}">${glMissed.length}</b><small>View list →</small></button>
+      <button class="stat stat-btn" data-ov="over"><span>Overdue tasks</span><b class="${overdue.length ? 'overdue' : ''}">${overdue.length}</b><small>View list →</small></button>
+      <button class="stat stat-btn" data-ov="review"><span>Waiting for review</span><b>${review.length}</b><small>View list →</small></button>
+    </div>
+    ${watch.length ? `<div class="card" style="margin-bottom:20px"><div class="card-h"><h2>Go-lives to watch</h2><span class="sub">Missed or due in the next 7 days</span></div><div class="table-wrap"><table><thead><tr><th>Project</th><th>Client</th><th>Project manager</th><th>Go-live</th></tr></thead><tbody>
+      ${watch.map(p => `<tr data-go="${p.id}" style="cursor:pointer"><td><span class="dot" style="background:${esc(p.color)}"></span> <b>${esc(p.name)}</b></td><td>${esc(p.client || 'Internal')}</td><td>${p.owner_id ? esc(nameOf(p.owner_id)) : '—'}</td><td>${goLiveCell(goLiveInfo(p, today))}</td></tr>`).join('')}</tbody></table></div></div>` : ''}
+    <div id="obs-team"><div class="loading">Loading the team…</div></div>`;
+  $$('[data-gl]', el).forEach(b => b.onclick = () => projectListModal(b.dataset.gl === 'soon' ? 'Go-live in the next 7 days' : 'Go-live missed', b.dataset.gl === 'soon' ? glSoon : glMissed, today));
+  $$('[data-ov]', el).forEach(b => b.onclick = () => taskListModal(b.dataset.ov === 'over' ? 'Overdue tasks' : 'Waiting for review', b.dataset.ov === 'over' ? overdue : review));
+  $$('[data-go]', el).forEach(r => r.onclick = () => location.hash = `#/project/${r.dataset.go}`);
+  await VIEWS.team($('#obs-team', el));
+}
+
 VIEWS.home = async el => {
+  if (isObs()) return homeObserver(el);
   const st = S.settings, today = istDate(), year = today.slice(0, 4);
   if (!S.bdays) S.bdays = await q(sb.rpc('upcoming_birthdays', { p_days: 7 })).catch(() => []);
   S.homeDemos = canLeads() ? await q(sb.from('leads').select('id,name,organisation,demo_at,status').eq('status', 'demo_scheduled').gte('demo_at', new Date(Date.now() - 2 * 3600e3).toISOString()).lte('demo_at', `${addDays(today, 1)}T23:59:59+05:30`).order('demo_at')).catch(() => []) : [];
@@ -1493,8 +1579,8 @@ VIEWS.home = async el => {
 /* ---------- Attendance ---------- */
 VIEWS.attendance = async el => {
   const month = S.attMonth || istDate().slice(0, 7);
-  const team = isMgr() ? teamList() : [];
-  const who = S.attWho && team.some(p => p.id === S.attWho) ? S.attWho : S.me.id;
+  const team = canSeeAll() ? teamList() : [];
+  const who = S.attWho && team.some(p => p.id === S.attWho) ? S.attWho : isObs() ? team[0]?.id : S.me.id;
   el.innerHTML = `<div class="toolbar">
       <div class="field"><label for="a-month">Month</label><input id="a-month" type="month" value="${month}" max="${istDate().slice(0, 7)}"></div>
       ${team.length > 1 ? `<div class="field" style="min-width:220px"><label for="a-who">Employee</label><select id="a-who">${team.map(p => `<option value="${p.id}" ${p.id === who ? 'selected' : ''}>${esc(p.full_name || p.email)}${p.id === S.me.id ? ' (you)' : ''}</option>`).join('')}</select></div>` : ''}
@@ -1997,7 +2083,7 @@ VIEWS.person = async (el, id) => {
   const [r] = registerFor([p], datesBetween(first, today), att, lvMonth);
   const fact = (k, v) => `<div><dt>${k}</dt><dd>${v || '<span class="muted">Not added</span>'}</dd></div>`;
   const ago = p.date_of_joining ? (() => { const m = (dObj(today) - dObj(p.date_of_joining)) / (30.44 * 864e5); return m >= 12 ? `${Math.floor(m / 12)} yr ${Math.floor(m % 12)} mo` : `${Math.max(0, Math.floor(m))} months`; })() : '';
-  el.innerHTML = `<a class="back" href="#/${isMgr() ? 'team' : 'home'}">${icon('back')}Back</a>
+  el.innerHTML = `<a class="back" href="#/${canSeeAll() ? 'team' : 'home'}">${icon('back')}Back</a>
     <div class="card person-head">
       <span class="avatar lg">${esc(initials(p.full_name || p.email))}</span>
       <div><h2>${esc(p.full_name || p.email)}</h2><div class="muted">${esc([p.designation, p.department].filter(Boolean).join(' · ') || '—')}</div>
@@ -2033,7 +2119,7 @@ VIEWS.person = async (el, id) => {
     </div>
     <div class="card" style="margin-top:20px"><div class="card-h"><h2>Open tasks</h2><span class="sub">${tasks.length}</span></div>
       <div class="table-wrap"><table><thead><tr><th>Task</th><th>Project</th><th>Due</th><th>Status</th></tr></thead><tbody>
-      ${tasks.map(t => `<tr><td class="task-title" style="white-space:normal">${esc(t.title)}</td><td>${t.project_id && isMgr() ? `<a class="plink" href="#/project/${t.project_id}"><b>${esc(projName(t))}</b></a>` : esc(projName(t) || '—')}</td><td class="num">${t.due_date ? `<span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '—'}</td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td></tr>`).join('') || '<tr><td colspan="4" class="empty">No open tasks.</td></tr>'}
+      ${tasks.map(t => `<tr><td class="task-title" style="white-space:normal">${esc(t.title)}</td><td>${t.project_id && canSeeAll() ? `<a class="plink" href="#/project/${t.project_id}"><b>${esc(projName(t))}</b></a>` : esc(projName(t) || '—')}</td><td class="num">${t.due_date ? `<span class="${t.due_date < today ? 'overdue' : ''}">${fmtShort(t.due_date)}</span>` : '—'}</td><td><span class="pill" style="background:${TCOLOR[t.status]}1f;color:${TCOLOR[t.status]}">${TSTATUS[t.status]}</span></td></tr>`).join('') || '<tr><td colspan="4" class="empty">No open tasks.</td></tr>'}
       </tbody></table></div></div>`;
   $('#pp-edit') && ($('#pp-edit').onclick = () => editEmployee(id));
   $('#pp-me') && ($('#pp-me').onclick = () => openProfile());
@@ -2164,7 +2250,7 @@ VIEWS.projects = async el => {
   const pIds = tasks.filter(t => t.project_id).map(t => t.id);
   const logs = pIds.length ? await inChunksAll(pIds, ch => sb.from('time_logs').select('id,task_id,started_at,ended_at,minutes').in('task_id', ch)).catch(() => []) : [];
   const actLogs = await allRows(() => sb.from('time_logs').select('project_id,started_at,ended_at,minutes').is('task_id', null).not('project_id', 'is', null)).catch(() => []);
-  const clients = isMgr() ? await loadClients() : [];
+  const clients = canSeeAll() ? await loadClients() : [];
   const list = S.projects.filter(p => filter === 'all' || p.status === filter);
   const stats = Object.fromEntries(S.projects.map(p => [p.id, projectStats(p, tasks, logs, today, actLogs)]));
   const counts = k => S.projects.filter(p => k === 'all' || p.status === k).length;
@@ -2206,7 +2292,7 @@ VIEWS.projects = async el => {
   const grpRow = g => { const its = g.items.map(p => stats[p.id]), eff = its.reduce((s, x) => s + x.mins + x.meetMins, 0), open = its.reduce((s, x) => s + x.ts.length - x.done, 0), late = its.reduce((s, x) => s + x.overdue, 0);
     return `<tr class="grp ${S.projShut.has(g.key) ? 'shut' : ''}" data-grp="${esc(g.key)}"><td colspan="${cols}"><div class="grp-in">
       <button class="grp-tog" data-tog="${esc(g.key)}" aria-label="Show or hide ${esc(g.name)} projects" aria-expanded="${!S.projShut.has(g.key)}">${icon('next')}</button>
-      ${g.id && isMgr() ? `<a class="plink" href="#/clients/${g.id}"><b>${esc(g.name)}</b></a>` : `<b>${esc(g.name)}</b>`}
+      ${g.id && canSeeAll() ? `<a class="plink" href="#/clients/${g.id}"><b>${esc(g.name)}</b></a>` : `<b>${esc(g.name)}</b>`}
       ${g.status && g.status !== 'active' ? `<span class="pill ${(CSTATUS[g.status] || CSTATUS.active)[0]}">${(CSTATUS[g.status] || CSTATUS.active)[1]}</span>` : ''}
       <span class="grp-meta"><b>${g.items.length}</b> project${g.items.length === 1 ? '' : 's'}, <b>${open}</b> open tasks${late ? `, <b style="color:var(--bad)">${late} overdue</b>` : ''}, <b>${hm(eff)}</b> logged</span>
       ${isMgr() && g.id ? `<button class="btn sm" data-newfor="${g.id}" style="margin-left:auto">${icon('plus')}Project</button>` : ''}</div></td></tr>`; };
@@ -2429,7 +2515,7 @@ VIEWS.project = async (el, id) => {
         <div class="task-sub" style="margin-top:8px">Members can see this project. Anyone given a task here is added automatically.</div>
       </div></div>
       <div class="card" style="align-self:start"><div class="card-h"><h2>Needs attention</h2><span class="sub">Overdue or due in 7 days</span></div><div class="card-b">
-        ${attention.filter(t => isMgr() || t.assigned_to === S.me.id || t.created_by === S.me.id).map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="dot" style="background:${TCOLOR[t.status]}"></span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}</div></div>${due(t)}</div>`).join('') || '<div class="empty">Nothing overdue or due this week.</div>'}
+        ${attention.filter(t => canSeeAll() || t.assigned_to === S.me.id || t.created_by === S.me.id).map(t => `<div class="list-row" data-open="${t.id}" style="cursor:pointer"><span class="dot" style="background:${TCOLOR[t.status]}"></span><div style="flex:1;min-width:0"><div class="task-title">${esc(t.title)}</div><div class="task-sub">${esc(nameOf(t.assigned_to))} · ${TSTATUS[t.status]}</div></div>${due(t)}</div>`).join('') || '<div class="empty">Nothing overdue or due this week.</div>'}
       </div></div></div>
       <div class="grid" style="align-content:start">
       <div class="card"><div class="card-h"><h2>Meetings & calls</h2><span class="sub">${meetLogs.length} · ${hm(st.meetMins)}</span><div class="right"><button class="btn sm" id="pj-addcall">${icon('plus')}Log a call</button></div></div>
@@ -2443,7 +2529,7 @@ VIEWS.project = async (el, id) => {
     <div class="card proj-head" style="--pc:${esc(pr.color || '#3A9A52')}">
       <div style="min-width:0;flex:1">
         <h2>${esc(pr.name)}</h2>
-        <div class="muted">${pr.client_id && isMgr() ? `<a class="plink" href="#/clients/${pr.client_id}"><b>${esc(pr.client || 'Client')}</b></a>` : esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}${pr.go_live_date || pr.live_on ? ` · Go-live ${pr.live_on ? fmtShort(pr.live_on) : fmtShort(pr.go_live_date)} <span class="pill ${goLiveInfo(pr, today).cls}">${esc(goLiveInfo(pr, today).txt)}</span>` : ''}</div>
+        <div class="muted">${pr.client_id && canSeeAll() ? `<a class="plink" href="#/clients/${pr.client_id}"><b>${esc(pr.client || 'Client')}</b></a>` : esc(pr.client || 'Internal')}${pr.owner_id ? ` · PM ${esc(nameOf(pr.owner_id))}` : ''}${pr.start_date || pr.due_date ? ` · ${pr.start_date ? fmtShort(pr.start_date) : '…'} → ${pr.due_date ? fmtDate(pr.due_date) : '…'}` : ''}${pr.go_live_date || pr.live_on ? ` · Go-live ${pr.live_on ? fmtShort(pr.live_on) : fmtShort(pr.go_live_date)} <span class="pill ${goLiveInfo(pr, today).cls}">${esc(goLiveInfo(pr, today).txt)}</span>` : ''}</div>
         ${pr.description ? `<p style="margin:10px 0 0;color:var(--ink-2);white-space:pre-line">${esc(pr.description)}</p>` : ''}
       </div>
       <div class="right"><span class="pill ${pc}">${pl}</span>${pr.drive_url ? `<a class="btn" href="${esc(pr.drive_url)}" target="_blank" rel="noopener">📁 Drive folder</a>` : ''}${isMgr() && !pr.live_on && pr.status !== 'completed' ? `<button class="btn ok" id="pv-live">🚀 Mark as live</button>` : ''}${isMgr() ? `<button class="btn" id="pv-report">${icon('download')}Report</button>` : ''}${isMgr() ? '<button class="btn" id="pv-edit">Edit project</button>' : ''}${isAdmin() ? `<button class="btn danger" id="pv-del" title="Delete project">${icon('trash')}</button>` : ''}<button class="btn primary" id="pv-add">${icon('plus')}Add task</button></div>
@@ -2572,11 +2658,11 @@ async function openEod(r, title) {
 }
 
 VIEWS.eod = async el => {
-  const tab = S.eodTab || 'today', today = istDate();
+  const tab = isObs() ? 'team' : S.eodTab || 'today', today = istDate();
   el.innerHTML = `<div class="tabs" role="tablist">
-      <button data-et="today" class="${tab === 'today' ? 'on' : ''}">Today's report</button>
-      <button data-et="mine" class="${tab === 'mine' ? 'on' : ''}">My reports</button>
-      ${isMgr() ? `<button data-et="team" class="${tab === 'team' ? 'on' : ''}">Team reports</button>` : ''}</div><div id="eod-body"><div class="loading">Loading…</div></div>`;
+      ${isObs() ? '' : `<button data-et="today" class="${tab === 'today' ? 'on' : ''}">Today's report</button>
+      <button data-et="mine" class="${tab === 'mine' ? 'on' : ''}">My reports</button>`}
+      ${canSeeAll() ? `<button data-et="team" class="${tab === 'team' ? 'on' : ''}">Team reports</button>` : ''}</div><div id="eod-body"><div class="loading">Loading…</div></div>`;
   $$('[data-et]', el).forEach(b => b.onclick = () => { S.eodTab = b.dataset.et; route(); });
   const body = $('#eod-body');
 
@@ -3043,7 +3129,7 @@ async function aiCard(box, scope) {
 }
 
 VIEWS.insights = async el => {
-  const tab = isAdmin() ? (S.insTab || 'team') : 'me', today = istDate();
+  const tab = isAdmin() ? (S.insTab || 'team') : isObs() ? 'team' : 'me', today = istDate();
   el.innerHTML = `${isAdmin() ? `<div class="tabs"><button data-it="team" class="${tab === 'team' ? 'on' : ''}">Team</button><button data-it="me" class="${tab === 'me' ? 'on' : ''}">My focus</button></div>` : ''}<div id="ai-box"></div><div id="ins-body"><div class="loading">Checking…</div></div>`;
   $$('[data-it]', el).forEach(b => b.onclick = () => { S.insTab = b.dataset.it; route(); });
   aiCard($('#ai-box'), tab);
@@ -3943,7 +4029,7 @@ function openSalary(empId, s) {
 /* ---------- Employees (admin) ---------- */
 VIEWS.employees = async el => {
   await loadDirectory();
-  const list = S.profiles;
+  const list = S.allProfiles || S.profiles;
   const details = await q(sb.from('employee_details').select('employee_id,phone')).catch(() => []);
   const phoneOf = id => details.find(d => d.employee_id === id)?.phone;
   const showOff = !!S.empInactive, shown = list.filter(p => showOff ? !p.is_active : p.is_active), offN = list.filter(p => !p.is_active).length;
@@ -3954,7 +4040,7 @@ VIEWS.employees = async el => {
     <tbody id="e-rows">${shown.map(p => `<tr data-s="${esc((p.full_name + ' ' + p.email + ' ' + (p.department || '')).toLowerCase())}">
       <td>${personLink(p, p.email)}</td>
       <td class="muted">${esc(p.employee_code || '—')}</td><td class="num">${phoneOf(p.id) ? `<a href="tel:${esc(phoneOf(p.id))}" style="color:inherit">${esc(phoneOf(p.id))}</a>` : '<span class="muted">—</span>'}</td><td>${p.date_of_joining ? fmtDate(p.date_of_joining) : '<span class="muted">—</span>'}</td>
-      <td style="text-transform:capitalize">${esc(p.role === 'manager' ? 'Project manager' : p.role)}${p.can_leads && p.role !== 'admin' ? ' <span class="pill info">Leads</span>' : ''}</td><td>${p.manager_id ? esc(nameOf(p.manager_id)) : '<span class="muted">—</span>'}</td>
+      <td style="text-transform:capitalize">${esc(p.role === 'manager' ? 'Project manager' : p.role)}${p.can_leads && p.role !== 'admin' ? ' <span class="pill info">Leads</span>' : ''}${p.is_observer ? ' <span class="pill muted">Observer · view only</span>' : ''}</td><td>${p.manager_id ? esc(nameOf(p.manager_id)) : '<span class="muted">—</span>'}</td>
       <td>${p.is_active ? '<span class="pill ok">Active</span>' : '<span class="pill muted">Inactive</span>'}</td>
       <td style="text-align:right"><button class="btn sm" data-edit="${p.id}">Edit</button></td></tr>`).join('') || `<tr><td colspan="8" class="empty">${showOff ? 'No deactivated employees.' : 'No employees.'}</td></tr>`}</tbody></table></div></div>`;
   $$('[data-ea]', el).forEach(b => b.onclick = () => { S.empInactive = b.dataset.ea === '1'; route(); });
@@ -4051,6 +4137,7 @@ async function editEmployee(id) {
       <div class="field"><label for="f-mgr">Reports to</label><select id="f-mgr"><option value="">No manager</option>${managers.map(m => `<option value="${m.id}" ${p.manager_id === m.id ? 'selected' : ''}>${esc(m.full_name || m.email)}</option>`).join('')}</select></div>
       <div class="field"><label for="f-doj">Date of joining</label><input id="f-doj" type="date" value="${esc(p.date_of_joining || '')}"></div>
       <label class="check full"><input type="checkbox" id="f-leads" ${p.can_leads || p.role === 'admin' ? 'checked' : ''} ${p.role === 'admin' ? 'disabled' : ''}> Leads access <span class="task-sub">(admins always have it)</span></label>
+      ${id !== S.me.id ? `<label class="check full"><input type="checkbox" id="f-obs" ${p.is_observer ? 'checked' : ''}> View-only observer <span class="task-sub">(sees the whole team’s projects, tasks, attendance and reports; cannot change anything; no salary or payroll data)</span></label>` : ''}
       <div class="field"><label>Status</label><div style="padding:8px 0">${p.is_active ? '<span class="pill ok">Active</span>' : '<span class="pill muted">Deactivated</span>'}</div></div>
       <div class="full note">Phone, date of birth, emergency contact and address are added by the employee in <b>My profile</b>.</div>
       <div class="full" style="margin-top:6px"><b>Leave allotted for ${year}</b><div class="hint muted" style="font-size:12.5px">Days used so far are kept as they are.</div></div>
@@ -4073,7 +4160,8 @@ async function editEmployee(id) {
           await q(sb.from('profiles').update({
             full_name: v('#f-name'), employee_code: v('#f-code') || null, department: v('#f-dept') || null,
             designation: v('#f-desig') || null, role: v('#f-role'), manager_id: v('#f-mgr') || null,
-            date_of_joining: v('#f-doj') || null, can_leads: $('#f-leads', root).checked
+            date_of_joining: v('#f-doj') || null, can_leads: $('#f-leads', root).checked,
+            ...($('#f-obs', root) ? { is_observer: $('#f-obs', root).checked } : {})
           }).eq('id', id));
           const ups = $$('[data-bal]', root).filter(i => i.value !== '').map(i => ({ employee_id: id, leave_type_id: +i.dataset.bal, year, allotted: +i.value }));
           if (ups.length) await q(sb.from('leave_balances').upsert(ups, { onConflict: 'employee_id,leave_type_id,year' }));
@@ -4195,7 +4283,8 @@ VIEWS.tasks = async el => {
   const key = 'sp-task-filters-' + S.me.id;
   if (!S.tf) { try { S.tf = JSON.parse(localStorage.getItem(key) || 'null'); } catch { } }
   S.tf = Object.assign({ view: 'mine', status: 'open', project: '', assignee: '', priority: '', due: '', period: '', dateField: 'due', from: '', to: '', sort: 'smart', q: '', page: 0, size: 25 }, S.tf || {});
-  if (S.tf.view === 'all' && !isMgr()) S.tf.view = 'mine';
+  if (S.tf.view === 'all' && !canSeeAll()) S.tf.view = 'mine';
+  if (isObs()) { S.tf.view = 'all'; S.taskTab = 'list'; }
   const f = S.tf, save = () => { try { localStorage.setItem(key, JSON.stringify({ ...f, q: '' })); } catch { } };
   const tab = S.taskTab || 'list';
 
@@ -4212,7 +4301,7 @@ VIEWS.tasks = async el => {
   const opt = (v, l, cur) => `<option value="${esc(v)}" ${String(cur) === String(v) ? 'selected' : ''}>${esc(l)}</option>`;
   const body = $('#t-body');
   body.innerHTML = `<div class="t-head">
-      <div class="seg" role="tablist" aria-label="Whose tasks"><button data-view="mine">My tasks</button><button data-view="byme">Assigned by me</button>${isMgr() ? '<button data-view="all">Everyone</button>' : ''}</div>
+      <div class="seg" role="tablist" aria-label="Whose tasks">${isObs() ? '' : '<button data-view="mine">My tasks</button><button data-view="byme">Assigned by me</button>'}${canSeeAll() ? '<button data-view="all">Everyone</button>' : ''}</div>
       <div class="grow"></div>
       <button class="btn" id="t-addtime" title="Meetings, calls or work done without the timer">${icon('plus')}Add time</button>
       <button class="btn primary" id="t-new">${icon('plus')}New task</button></div>
